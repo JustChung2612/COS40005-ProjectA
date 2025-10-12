@@ -1,0 +1,248 @@
+:root {
+  --bg: #fafafa;
+  --card: #ffffff;
+  --text: #0a0f17;
+  --muted: #ffffff;
+  --accent: #06b6d4;
+  --ok: #10b981;
+  --border: #1f2937;
+}
+
+/* Reset & Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', Arial, sans-serif;
+  background: radial-gradient(125% 125% at 50% 90%, #ffffff 40%, #14b8a6 100%);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Header */
+header {
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.56);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(9.9px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 12px 16px;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Timer Badge */
+.timer-badge {
+  display: inline-block;
+  padding: 10px 24px;
+  background: var(--bg);
+  border: 2px solid var(--accent);
+  border-radius: 9999px;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* Main Container */
+main {
+  max-width: 1600px; /* was 1200px → more horizontal space */
+  margin: 0 auto;
+  padding: 40px 24px 60px; /* less padding → cards closer to edges */
+}
+
+/* Layout */
+.content-grid {
+  display: grid;
+  grid-template-columns: 38% 62%;
+  gap: 20px; /* smaller gap between columns */
+  align-items: start;
+}
+
+/* Cards */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 32px 28px; /* larger padding for “bigger” feel */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Patient Info (Left) */
+.patient-info {
+  position: sticky;
+  top: 80px;
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+}
+
+/* Questions (Right) */
+.questions {
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+}
+
+/* Headings */
+h2 {
+  font-size: 1.75rem; /* larger section titles */
+  font-weight: 700;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 3px solid var(--accent);
+}
+
+h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 20px;
+  margin-bottom: 12px;
+  color: var(--accent);
+}
+
+/* Texts */
+p {
+  margin-bottom: 14px;
+}
+
+ul {
+  margin-left: 20px;
+  margin-bottom: 16px;
+}
+
+/* Questions */
+.question-item {
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.question-text {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.options {
+  list-style: none;
+  margin: 0;
+}
+
+.options li {
+  padding: 14px 18px;
+  margin-bottom: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.options li:hover {
+  border-color: var(--accent);
+  background: rgba(6, 182, 212, 0.1);
+}
+
+/* Next Button */
+.next-button {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  padding: 18px 36px;
+  background: var(--ok);
+  color: #000;
+  font-size: 1.125rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  transition: all 0.3s ease;
+  z-index: 50;
+}
+
+.next-button:hover {
+  background: #059669;
+  transform: translateY(-2px);
+}
+
+/* Scrollbars */
+.patient-info::-webkit-scrollbar,
+.questions::-webkit-scrollbar {
+  width: 8px;
+}
+
+.patient-info::-webkit-scrollbar-thumb,
+.questions::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+.patient-info::-webkit-scrollbar-thumb:hover,
+.questions::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .patient-info {
+    position: relative;
+    top: 0;
+    max-height: none;
+  }
+
+  .questions {
+    max-height: none;
+  }
+
+  .next-button {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 0;
+    width: 100%;
+    padding: 20px;
+  }
+
+  main {
+    padding-bottom: 80px;
+  }
+}
+
+.toast-button {
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+
+  &:hover {
+    background-color: #444;
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}

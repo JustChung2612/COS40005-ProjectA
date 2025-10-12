@@ -1,8 +1,71 @@
-import React from 'react'
+import { Link } from "react-router-dom";
+import './header.scss';
+import { School, LibraryBig ,UserRoundPen, LogIn, LogOut , UserPlus  } from 'lucide-react';
 
 const Header = () => {
+
+  const currentUser = true ;
+
   return (
-    <div>Header</div>
+    <div className='header'>
+      <div className='wrapper' >
+          <div className='logo'> 
+            Logo
+          </div>
+
+          <div className='items' >
+            <div className='item'>
+              <School className="icon" />
+              Thi OSCE
+            </div>
+            <div className='item'>
+               <LibraryBig className="icon" />
+                Thư Viện
+            </div>
+            <div className='item'>
+              {currentUser ? (
+                <div className="user">
+                  <Link to="/profile" className='avatarLink' >
+                    <div className='avatar' >             
+                      <img
+                        src={ './noAvatar.jpg' }
+                        alt=""
+                      />
+                      {/* <span>{currentUser.username}</span> */}
+                      <span>Duc Chung</span>
+                    </div>
+                  </Link>
+
+                  
+                  <Link to="/logout" className="navButton" >
+                      <LogOut className="icon" /> 
+                      <span>Đăng Xuất</span>
+                  </Link>
+                </div>
+              ) : (
+                <>
+                <Link to='/signIn' className="navButton" >
+                  
+                    <LogIn className="icon"  /> 
+                    <span> Đăng Nhập </span>
+                  
+                </Link>
+                <Link to='/signUp' className="navButton" >
+                  
+                    <UserPlus className="icon" /> 
+                    <span> Đăng Ký </span>
+                  
+                </Link>
+
+                </>
+              )}
+            </div>
+
+
+
+          </div>
+      </div>      
+    </div>
   )
 }
 
