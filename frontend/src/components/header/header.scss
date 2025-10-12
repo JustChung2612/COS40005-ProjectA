@@ -32,12 +32,19 @@
         display: flex;
         align-items: center;
 
+        .osceLink , .libraryLink{
+            text-decoration: none;
+            color: black;
+            font-size: 1.1rem;
+            font-weight: 500 ;
+        }
+
         .item {
             display: flex;
             align-items: center;
             margin-right: 20px;
             position: relative;
-            
+            gap: 5px;
 
             .user {
                 display: flex;

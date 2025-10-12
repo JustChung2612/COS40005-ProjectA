@@ -14,14 +14,21 @@ const Header = () => {
           </div>
 
           <div className='items' >
-            <div className='item'>
-              <School className="icon" />
-              Thi OSCE
-            </div>
-            <div className='item'>
-               <LibraryBig className="icon" />
-                Thư Viện
-            </div>
+            
+            <Link to='/osce' className='osceLink' >  
+              <div className='item'>
+                <School className="icon" />
+                Thi OSCE
+              </div>
+            </Link>
+            
+              <Link to='/thuvien' className='libraryLink' > 
+                <div className='item'>
+                <LibraryBig className="icon" />
+                  Thư Viện
+                </div>
+              </Link>
+            
             <div className='item'>
               {currentUser ? (
                 <div className="user">
