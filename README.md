@@ -15,7 +15,7 @@ git clone + link
 2. npm install
 ```
 
-### 1.2 Frontend
+### 1.2 Backend
 ```
 1. cd backend
 ```
