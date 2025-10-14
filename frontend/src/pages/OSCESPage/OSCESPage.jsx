@@ -25,7 +25,7 @@ const OSCESPage = () => {
       <Toaster position="top-center" reverseOrder={false} />
 
       {/* Fixed Header */}
-      <header className="header">
+      <header className="header-timer-badge">
         <span className="timer-badge">Thời gian còn lại: 07:00</span>
       </header>
 
