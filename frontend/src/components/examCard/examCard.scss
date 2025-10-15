@@ -1,0 +1,89 @@
+.examCard {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 12px 12px 0px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  transition: 0.2s ease;
+  
+  width: 460px ;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .subject {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .difficultyBadge {
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      color: #fff;
+      font-weight: 500;
+
+      &.basic {
+        background: #10b981; // xanh lá
+      }
+      &.medium {
+        background: #facc15; // vàng
+      }
+      &.advanced {
+        background: #ef4444 ; // đỏ
+      }
+    }
+  }
+
+  .cardBody {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #374151;
+    line-height: 1.4;
+  }
+
+  .cardFooter {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+
+    .btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s ease;
+
+      &.view {
+        background: #00b4d8 ;
+        color: #fff;
+      }
+      &.edit {
+        background: #FF9B00 ;
+        color: #fff;
+      }
+      &.delete {
+        background: #E4004B ;
+        color: #fff;
+      }
+
+      &:hover {
+        opacity: 0.85;
+      }
+    }
+  }
+}
