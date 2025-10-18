@@ -6,64 +6,77 @@ import {
   Award,
   CheckCircle2,
   TrendingUp,
+  Microscope
 } from "lucide-react";
 import "./HomePage.scss";
-
-/* Nút nội bộ (thay cho shadcn Button) */
-const Button = ({ children, variant = "primary", size = "lg", className = "", ...props }) => {
-  const cls = ["btn", `btn--${variant}`, `btn--${size}`, className].join(" ");
-  return (
-    <button className={cls} {...props}>
-      {children}
-    </button>
-  );
-};
 
 const HomePage = () => {
   return (
     <div className="home">
       {/* Section 1 - Giới thiệu nền tảng (nền trắng) */}
       <section className="section section--intro">
-        <div className="container intro">
-          <div className="intro__grid">
+          <div className="intro__flex">
             <div className="intro__copy">
               <h1 className="intro__title">
-                Nền tảng luyện thi OSCE toàn diện dành cho sinh viên y khoa.
+                Nền tảng thi 
+                <br/> 
+                <span className="loader" > 
+                  <span className="loader-text">Trạm OSCE</span> 
+                </span> 
+                <br/> 
+                toàn diện dành cho sinh viên y khoa.
               </h1>
               <p className="intro__subtitle">
-                Luyện tập với bệnh nhân ảo, rubric đánh giá chuẩn hoá và phản hồi tức thì giúp bạn
-                nâng cao kỹ năng lâm sàng và tự tin bước vào kỳ thi thật.
+                Nền tảng giúp sinh viên Y thuận tiện trong việc thi Trạm OSCE dưới dạng Trắc Nghiệm và tự Luận
               </p>
+
+                <div className="intro__visual__inner">
+                  <div className="visual-car-input " >
+                    Nhập Mã Trạm Thi Tại Đây
+                  </div>
+
+                  <div className="visual-card">
+                    <div className="visual-row">
+                      <Stethoscope className="icon icon--lg text-primary" />
+                      <span className="visual-row__title">Giao diện Bệnh nhân Ảo</span>
+                    </div>
+                    <div className="visual-list">
+                      <div className="visual-list__item">
+                        <CheckCircle2 className="icon icon--sm text-success" />
+                        <span>Tình huống OSCE thực tế</span>
+                      </div>
+                      <div className="visual-list__item">
+                        <CheckCircle2 className="icon icon--sm text-success" />
+                        <span>Phiên luyện tập có giới hạn thời gian</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+
+              </div> 
+
             </div>
 
-            <div className="intro__visual">
-              <div className="visual-card">
-                <div className="visual-card__inner">
-                  <div className="visual-row">
-                    <Stethoscope className="icon icon--lg text-primary" />
-                    <span className="visual-row__title">Giao diện Bệnh nhân Ảo</span>
+            <div className='intro__images' >    
+                
+                  <div className="box box1" > 
+                      <img src="https://hips.hearstapps.com/hmg-prod/images/2026-ferrari-f80-176-686e843d2569f.jpg?crop=0.636xw:0.536xh;0.165xw,0.325xh&resize=700:*" alt="img1" /> 
                   </div>
+                  <div className="box box2" > 
+                      <img src="https://hips.hearstapps.com/hmg-prod/images/2025-chevrolet-corvette-zr-1-2021-68309392a5327.jpg?crop=0.595xw:0.501xh;0.210xw,0.321xh&resize=700:*" alt="img2" />
+                  </div>
+                  <div className="box box3" > 
+                      <img src="https://hips.hearstapps.com/hmg-prod/images/2024-mclaren-750s-120-66cdd39ae5413.jpg?crop=0.522xw:0.442xh;0.442xw,0.272xh&resize=700:*" alt="img3" />
+                  </div>
+            
+            </div>
 
-                  <div className="visual-list">
-                    <div className="visual-list__item">
-                      <CheckCircle2 className="icon icon--sm text-success" />
-                      <span>Tình huống OSCE thực tế</span>
-                    </div>
-                    <div className="visual-list__item">
-                      <CheckCircle2 className="icon icon--sm text-success" />
-                      <span>Phiên luyện tập có giới hạn thời gian</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>{/* intro__visual */}
           </div>
-        </div>
       </section>
 
       {/* Section 2 - Lời kêu gọi hành động (nền xanh teal gradient) */}
       <section className="section section--cta">
-        <div className="container cta">
+        <div className=" cta">
           <h2 className="cta__title">
             Sẵn sàng luyện tập và theo dõi tiến trình học tập
           </h2>
@@ -71,19 +84,33 @@ const HomePage = () => {
             Truy cập các trạm luyện tập OSCE mọi lúc, mọi nơi — và theo dõi sự tiến bộ của bạn theo thời gian.
           </p>
 
-          <div className="cta__actions">
-            <Link to="/stations">
-              <Button variant="primary" size="xl" className="tile">
-                <Stethoscope className="icon icon--tile" />
-                <span>Bắt đầu luyện tập</span>
-              </Button>
+        
+          <div className="cta_cards_area">
+            <Link to="/library" className='link' >
+              <div className='cta_card' >
+                <img src="https://www.healthskillstraining.com/wp-content/uploads/2020/05/Classroom-pix-1.jpg" 
+                     alt="CTA Card Image 1" 
+                />
+                <div className='overlay'>
+                  <h3> Vào Luyện Tập  </h3>
+                  <Microscope className="icon" />
+                </div>
+              </div>
+
             </Link>
 
-            <Link to="/history">
-              <Button variant="outline" size="xl" className="tile">
-                <BarChart3 className="icon icon--tile" />
-                <span>Xem tiến trình</span>
-              </Button>
+            <Link to="/history" >
+
+              <div className='cta_card' >
+                <img src="https://library.mednet.iu.edu/_images/banners/hom-tablet.webp" 
+                     alt="CTA Card Image 1" 
+                />
+                <div className='overlay'>
+                  <h3> Thư Viện  </h3>
+                  <Microscope className="icon" />
+                </div>
+              </div>
+
             </Link>
           </div>
         </div>
@@ -132,9 +159,6 @@ const HomePage = () => {
                 </li>
               </ul>
 
-              <Link to="/stations">
-                <Button variant="primary" size="lg" className="features__cta">Thử ngay</Button>
-              </Link>
             </div>
 
             <div className="features__mock">

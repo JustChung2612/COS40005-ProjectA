@@ -10,13 +10,13 @@ import SignupPage from './pages/signUpPage/SignUpPage.jsx';
 import AdminPage from './pages/adminPage/AdminPage.jsx';
 
 const App = () => {
-  const user = 'teacher';
+  const user = 'student';
   return (
     <>
 
-      <div class="gradient-wrapper">
-        <div class="gradient-inner">
-          <div class="gradient-bg"></div>
+      <div className="gradient-wrapper">
+        <div className="gradient-inner">
+          <div className="gradient-bg"></div>
         </div>
       </div>
 
