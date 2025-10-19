@@ -2,16 +2,18 @@
 // 🩺 MẪU BỆNH ÁN TÌNH HUỐNG (CHUẨN HÓA)
 // ===========================
 
-const Mau_Benh_An = {
+const Mau_Tram_Thi = {
+  "tram_thi_ID": '', // VD: tramthiid1
   // ======= METADATA (Dành cho bộ lọc tìm kiếm trong Admin) =======
   "metadata": {
-    "mon_thi": "",           // Ví dụ: "Nội tim mạch – Suy tim"
+    "chuan_doan": "",           // Ví dụ: "Nội tim mạch – Suy tim"
     "co_quan": "",           // Ví dụ: "Tim mạch", "Hô hấp", "Thận – tiết niệu"
     "trieu_chung": "",       // Ví dụ: "Khó thở", "Ho ra máu", "Lơ mơ", ...
     "do_kho": "",            // Ví dụ: "Cơ bản", "Trung bình", "Nâng cao"
     "doi_tuong": "",         // Ví dụ: "Người lớn", "Người già", "Trẻ em", "Thai phụ"
-    "loai_benh": "",         // Ví dụ: "Cấp tính", "Mạn tính", "Tái phát"
   },
+
+  "ten_tram" : "", // Ví dụ: Hô Hấp , Tim Mạch (Giống Cơ Quan)
 
   // ======= BỆNH ÁN TÌNH HUỐNG =======
   "benh_an_tinh_huong": {
@@ -90,4 +92,4 @@ const Mau_Benh_An = {
   ]
 };
 
-export default Mau_Benh_An;
+export default Mau_Tram_Thi;

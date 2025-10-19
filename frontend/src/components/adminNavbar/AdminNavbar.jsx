@@ -9,14 +9,14 @@ const AdminNavbar = () => {
         <div className="adNavWrapper">
             <div className="adNavSearch">
               <Search className='icon' />
-              <input type="text" id="SearchInput" placeholder="Tìm đề thi dễ hơn với AI..." />
+              <input type="text" id="SearchInput" placeholder="Tìm trạm thi dễ hơn với AI..." />
             </div>
 
             <div className="adNavItems" >
               
               <div className="adNavItem notUser ">
                   <NotebookPen/>
-                  Tạo Phòng Thi
+                  Tạo Phòng
               </div>
 
               <div className="adNavItem ">

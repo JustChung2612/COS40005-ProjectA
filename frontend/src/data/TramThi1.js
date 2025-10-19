@@ -4,16 +4,17 @@
 // ===========================
 
 const Mau_Benh_An = {
+  "tram_thi_ID": "tramthiid1",
 
   "metadata": {
-  "mon_thi": "Nội tim mạch – Suy tim",
-  "co_quan": "Tim mạch",
-  "trieu_chung": "Khó thở",
-  "do_kho": "Trung bình",
-  "doi_tuong": "Người lớn",
-  "loai_benh": "Mạn tính",
-  "nam": 2025
-},
+    "chuan_doan": "Suy tim",
+    "co_quan": "Tim mạch",
+    "trieu_chung": "Khó thở",
+    "do_kho": "Trung bình",
+    "doi_tuong": "Người lớn",
+    "loai_benh": "Mạn tính",
+    "nam": 2025
+  },
   "benh_an_tinh_huong": {
     "thong_tin_benh_nhan": {
       "ho_ten": "Lê Văn Ph.",
@@ -65,6 +66,7 @@ const Mau_Benh_An = {
     {
       "id": 1,
       "noi_dung": "Nguyên nhân thường gặp nhất gây ho ra máu ở bệnh nhân này là gì?",
+      "hinh_anh" : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Bugatti_Divo%2C_GIMS_2019%2C_Le_Grand-Saconnex_%28GIMS0029%29.jpg/1200px-Bugatti_Divo%2C_GIMS_2019%2C_Le_Grand-Saconnex_%28GIMS0029%29.jpg',
       "kieu": "radio",
       "lua_chon": [
         "Lao phổi cũ tái phát",

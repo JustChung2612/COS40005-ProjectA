@@ -1,9 +1,24 @@
 import './sidebar.scss'
 import { Link } from "react-router-dom";
-import { BookCopy } from 'lucide-react';
+import { BookCopy , Building  } from 'lucide-react';
 
 
-const Sidebar = () => {
+const Sidebar = ({ active, onSelect }) => {
+  
+  // 1️⃣ Define all menu items here
+  const menuItems = [
+    { key: 'station', label: 'Danh sách trạm thi', icon: <BookCopy className="sidebarIcon" /> },
+    { key: 'roomStation', label: 'Danh sách phòng', icon: <Building className="sidebarIcon" /> },
+  ];
+
+  // 2️⃣ Function: handle click
+  const handleSelect = (key) => {
+     onSelect(key)
+  }
+
+  // 3️⃣ Function: determine class
+  const getItemClass = (key) => (active === key ? 'chosen' : '');
+
   return (
     <>
       <div className="sidebar">
@@ -17,10 +32,19 @@ const Sidebar = () => {
 
         <div className="center">
           <ul>
-            <li>
-              <BookCopy className='sidebarIcon' />
-              <span>Danh sách đề thi</span>
-            </li>
+            {menuItems?.map((item) => (
+              
+                <li
+                  key={item.key}
+                  className={getItemClass(item.key)}
+                  onClick={() => handleSelect(item.key) }
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+
+                </li>
+            
+            ))}
           </ul>
         </div>
         

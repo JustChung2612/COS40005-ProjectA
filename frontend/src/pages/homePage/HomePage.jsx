@@ -1,12 +1,14 @@
 import { Link } from "react-router-dom";
 import {
+  Search,
   Stethoscope,
   ClipboardCheck,
   BarChart3,
   Award,
   CheckCircle2,
   TrendingUp,
-  Microscope
+  Microscope,
+  LibraryBig 
 } from "lucide-react";
 import "./HomePage.scss";
 
@@ -30,9 +32,16 @@ const HomePage = () => {
                 Nền tảng giúp sinh viên Y thuận tiện trong việc thi Trạm OSCE dưới dạng Trắc Nghiệm và tự Luận
               </p>
 
-                <div className="intro__visual__inner">
-                  <div className="visual-car-input " >
-                    Nhập Mã Trạm Thi Tại Đây
+              <div className="intro__visual__inner">
+                
+                  <div className='intro-search-con' >
+                    <div className="intro-search">
+                      <Search className='icon' />
+                      <input type="text" id="intro-search-input" 
+                            placeholder="Nhập mã phòng trạm tại đây..." 
+                      />
+                    </div>
+                    <input type="button" className='vao-tram' value="Vào Trạm" />
                   </div>
 
                   <div className="visual-card">
@@ -107,7 +116,7 @@ const HomePage = () => {
                 />
                 <div className='overlay'>
                   <h3> Thư Viện  </h3>
-                  <Microscope className="icon" />
+                  <LibraryBig className="icon" />
                 </div>
               </div>
 

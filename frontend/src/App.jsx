@@ -10,7 +10,7 @@ import SignupPage from './pages/signUpPage/SignUpPage.jsx';
 import AdminPage from './pages/adminPage/AdminPage.jsx';
 
 const App = () => {
-  const user = 'student';
+  const user = '';
   return (
     <>
 
@@ -28,7 +28,7 @@ const App = () => {
             <Route path='/' element={<HomePage/>} />
             <Route path='/login' element = {<LoginPage/>}/>
             <Route path='/signup' element = {<SignupPage/>} />
-            <Route path='/osce' element = {<OSCESPage/>} />
+            <Route path='/tramthiOSCE/:id' element = {<OSCESPage/>} />
             <Route path='/loading' element = {<LoadingPage/>} />
             <Route path='/admin' element={<AdminPage/>} />
         </Routes>

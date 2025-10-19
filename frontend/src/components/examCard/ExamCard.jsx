@@ -1,6 +1,6 @@
-import React from "react";
 import "./examCard.scss";
-import { Eye, Edit, Trash2 } from "lucide-react"; // nice icons
+import { Eye, Edit, Trash2 } from "lucide-react"; 
+import { Link } from "react-router-dom"
 
 const ExamCard = ({ data, onView, onEdit, onDelete }) => {
   const { metadata, benh_an_tinh_huong } = data;
@@ -15,41 +15,54 @@ const ExamCard = ({ data, onView, onEdit, onDelete }) => {
 
   return (
     <div className="examCard">
-      <div className="cardHeader">
-        <h3 className="subject">{metadata.mon_thi}</h3>
-        <span className={`difficultyBadge ${diffClass}`}>
-          {metadata.do_kho}
-        </span>
-      </div>
+        {/* Card Header */}
+        <div className="cardHeader">
+          <p>Chuẩn Đoán: </p>
+          <div className="cardHeader_Inner" >
+            <h2 className="subject">{metadata.chuan_doan}</h2>
+            <span className={`difficultyBadge ${diffClass}`}>
+              {metadata.do_kho}
+            </span>
+          </div>
+        </div>
 
-      <div className="cardBody">
-        <p>
-          <strong>👤 Bệnh nhân:</strong> {patient.ho_ten} – {patient.tuoi} tuổi –{" "}
-          {patient.gioi_tinh}
-        </p>
-        <p>
-          <strong>💬 Lý do:</strong> {patient.ly_do_nhap_vien}
-        </p>
-        <p>
-          <strong>⚙️ Cơ quan:</strong> {metadata.co_quan} |{" "}
-          <strong>🕰 Loại bệnh:</strong> {metadata.loai_benh}
-        </p>
-        <p>
-          <strong>🧍‍♀️ Đối tượng:</strong> {metadata.doi_tuong}
-        </p>
-      </div>
+        {/* Card Body */}
+        <div className="cardBody">
+          <p>
+            <strong>👤 Bệnh nhân:</strong> {patient.ho_ten} – {patient.tuoi} tuổi –{" "}
+            {patient.gioi_tinh}
+          </p>
+          <p>
+            <strong>💬 Lý do:</strong> {patient.ly_do_nhap_vien}
+          </p>
+          <p>
+            <strong>⚙️ Cơ quan:</strong> {metadata.co_quan} 
+          </p>
+          <p>
+            <strong>🧍‍♀️ Đối tượng:</strong> {metadata.doi_tuong}
+          </p>
+        </div>
 
-      <div className="cardFooter">
-        <button className="btn view" onClick={() => onView(data)}>
-          <Eye size={16} /> Xem
-        </button>
-        <button className="btn edit" onClick={() => onEdit(data)}>
-          <Edit size={16} /> Sửa
-        </button>
-        <button className="btn delete" onClick={() => onDelete(data)}>
-          <Trash2 size={16} /> Xóa
-        </button>
-      </div>
+        {/* Card Footer */}
+        <div className="cardFooter">
+          <Link to={`/tramthiOSCE/${data.tram_thi_ID}`} className='examLink' >
+            <button className="btn view">
+              <Eye size={16} /> Xem
+            </button>
+          </Link>
+
+          <Link className='examLink' >
+            <button className="btn edit" onClick={() => onEdit(data)}>
+              <Edit size={16} /> Sửa
+            </button>
+          </Link>
+
+          <Link className='examLink' >
+            <button className="btn delete" onClick={() => onDelete(data)}>
+              <Trash2 size={16} /> Xóa
+            </button>
+          </Link>
+        </div>
     </div>
   );
 };

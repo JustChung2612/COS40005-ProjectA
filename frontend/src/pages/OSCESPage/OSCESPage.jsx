@@ -1,49 +1,50 @@
+import "./OSCESPage.scss";
 import React, { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import "./OSCESPage.scss";
+import { useParams } from "react-router-dom";
 
-// 🩺 Import any case JSON
-import benhAnData from "../../data/benhAn2.js";
+// 🩺 Import all case JSON
+import TramThi1 from "../../data/TramThi1.js";
+import TramThi2 from "../../data/TramThi2.js";
+import TramThi3 from "../../data/TramThi3.js";
 
 const OSCESPage = () => {
-  const [benhAn, setBenhAn] = useState(null);
+  const { id } = useParams();
+  const [thongTin, setThongtin] = useState(null);
   const [openSections, setOpenSections] = useState({});
 
   useEffect(() => {
-    setBenhAn(benhAnData);
-  }, []);
+    const allStations = [TramThi1, TramThi2, TramThi3 ];
+    const selected = allStations.find((s) => s.tram_thi_ID === id);
+    if (selected) {
+      setThongtin(selected);
+    } else {
+      toast.error("Không tìm thấy trạm thi tương ứng!");
+    }
+  }, [id]);
 
   const toggleSection = (section) => {
     setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
   };
 
   const handleNext = () => {
-    toast.success("Đang chuyển đến trạm kế tiếp...", {
-      duration: 2000,
-      style: {
-        borderRadius: "10px",
-        background: "#333",
-        color: "#fff",
-      },
-    });
-
-    setTimeout(() => alert("Đi đến trạm kế tiếp!"), 2000);
   };
 
-  if (!benhAn) {
+  if (!thongTin) {
     return (
       <div className="loading">
-        <p>Đang tải dữ liệu bệnh án...</p>
+        <h2>Đang tải dữ liệu bệnh án...</h2>
       </div>
     );
   }
 
   // 🆕 Extract all parts (with new bullet/paragraph-ready design)
-  const info = benhAn.benh_an_tinh_huong.thong_tin_benh_nhan;
-  const benhSu = benhAn.benh_an_tinh_huong.benh_su;
-  const tienCan = benhAn.benh_an_tinh_huong.tien_can;
-  const luocQua = benhAn.benh_an_tinh_huong.luoc_qua_cac_co_quan;
-  const kham = benhAn.benh_an_tinh_huong.kham_lam_sang;
+  const info = thongTin.benh_an_tinh_huong.thong_tin_benh_nhan;
+  const benhSu = thongTin.benh_an_tinh_huong.benh_su;
+  const tienCan = thongTin.benh_an_tinh_huong.tien_can;
+  const luocQua = thongTin.benh_an_tinh_huong.luoc_qua_cac_co_quan;
+  const kham = thongTin.benh_an_tinh_huong.kham_lam_sang;
+
 
   return (
     <div className="osce-page">
@@ -131,11 +132,19 @@ const OSCESPage = () => {
           {/* ================= RIGHT COLUMN ================= */}
           <section className="card questions">
             <h2>Câu hỏi</h2>
-            {benhAn.cau_hoi.map((q, index) => (
+            {thongTin.cau_hoi.map((q, index) => (
               <div key={q.id} className="question-item">
                 <div className="question-text">
                   {index + 1}. {q.noi_dung}
                 </div>
+                { q.hinh_anh && (
+                  <>
+                    <div className='question-img' >
+                      <img className='image' src={q.hinh_anh} alt='Hình Ảnh Bệnh Án (Nếu Có)' />
+                    </div>
+                  </>
+                )
+                }
 
                 {q.kieu === "radio" && (
                   <ul className="options">
@@ -162,11 +171,10 @@ const OSCESPage = () => {
                 )}
 
                 {q.kieu === "text" && (
-                  <input
-                    type="text"
+                  <textarea
                     className="text-answer"
                     placeholder={q.goi_y || "Nhập câu trả lời"}
-                  />
+                  ></textarea>
                 )}
               </div>
             ))}
