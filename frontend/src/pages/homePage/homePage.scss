@@ -177,7 +177,7 @@
           // +++++ UNCOMMENT THIS
 
           // Text Animation 
-         /*
+         
           @keyframes typewriter {
             0% {
               width: 0;
@@ -194,7 +194,7 @@
               border-right-color: transparent;
             }
           }
-        */
+        
 
           .intro__visual__inner { 
             background: linear-gradient(180deg, rgba(20,184,166,.15), rgba(20,184,166,.08));
@@ -237,6 +237,7 @@
           .box{
               position: absolute;
               background-color: #F75270;
+              box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
               width: 25rem ;
               height: 25rem ;
               font-size: 4rem;
@@ -248,7 +249,7 @@
 
           // +++++ UNCOMMENT THIS 
 
-        /*
+        
           @keyframes rotateBox {
               from {
                 transform: rotate(-10deg);
@@ -275,7 +276,7 @@
             --rotate-angle: 10deg;
             z-index: 98 ;
           }
-        */
+        
         }
         
     }

@@ -5,7 +5,7 @@ import Mau_Tram_Thi from '../../../../data/TramThi1.js';
 import Tram_Thi_2 from '../../../../data/TramThi2.js';
 import Tram_Thi_3 from '../../../../data/TramThi3.js';
 
-const StationList = () => {
+const StationList = ({ selectionMode=false, selectedIds=[], onToggleSelect=()=>{} }) => {
     const [examCases] = useState([ Mau_Tram_Thi, Tram_Thi_2, Tram_Thi_3 ]);
 
     // -------------------- Filter State
@@ -166,20 +166,23 @@ const StationList = () => {
 
         {/* ---------- EXAM LIST SECTION ---------- */}
         <div className='examListContainer' >
-            <h3 className='listTitle' >Danh sách trạm thi</h3>
-            <div className="examList">
-                {examCases.map((caseData, i) => (
-                <ExamCard
-                    key={i}
-                    data={caseData}
-                    onView={(d) => console.log("View", d)}
-                    onEdit={(d) => console.log("Edit", d)}
-                    onDelete={(d) => console.log("Delete", d)}
-                />
-                ))}
-            </div>
-
+          <h3 className='listTitle' >Danh sách trạm thi</h3>
+          <div className="examList">
+            {examCases.map((caseData, i) => (
+              <ExamCard
+                key={caseData.tram_thi_ID || i}
+                data={caseData}
+                selectionMode={selectionMode}
+                checked={selectedIds.includes(caseData.tram_thi_ID)}
+                onToggleSelect={onToggleSelect}
+                onView={(d) => console.log("View", d)}
+                onEdit={(d) => console.log("Edit", d)}
+                onDelete={(d) => console.log("Delete", d)}
+              />
+            ))}
+          </div>
         </div>
+
     </div>
     </>
   )

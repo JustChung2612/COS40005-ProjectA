@@ -69,13 +69,13 @@ const HomePage = () => {
             <div className='intro__images' >    
                 
                   <div className="box box1" > 
-                      <img src="https://hips.hearstapps.com/hmg-prod/images/2026-ferrari-f80-176-686e843d2569f.jpg?crop=0.636xw:0.536xh;0.165xw,0.325xh&resize=700:*" alt="img1" /> 
+                      <img src='./homepage/rotate1.png' alt="img1" /> 
                   </div>
                   <div className="box box2" > 
-                      <img src="https://hips.hearstapps.com/hmg-prod/images/2025-chevrolet-corvette-zr-1-2021-68309392a5327.jpg?crop=0.595xw:0.501xh;0.210xw,0.321xh&resize=700:*" alt="img2" />
+                      <img src="./homepage/rotate2.png" alt="img2" />
                   </div>
                   <div className="box box3" > 
-                      <img src="https://hips.hearstapps.com/hmg-prod/images/2024-mclaren-750s-120-66cdd39ae5413.jpg?crop=0.522xw:0.442xh;0.442xw,0.272xh&resize=700:*" alt="img3" />
+                      <img src='./homepage/rotate1.png' alt="img3" />
                   </div>
             
             </div>

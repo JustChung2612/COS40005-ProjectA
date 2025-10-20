@@ -1,33 +1,50 @@
-import "./OSCESPage.scss";
+// pages/OSCESPage/OSCESPage.jsx
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";              // keep route mode
 import toast, { Toaster } from "react-hot-toast";
-import { useParams } from "react-router-dom";
-
-// 🩺 Import all case JSON
+import "./OSCESPage.scss";
 import TramThi1 from "../../data/TramThi1.js";
 import TramThi2 from "../../data/TramThi2.js";
 import TramThi3 from "../../data/TramThi3.js";
+import { stationById } from "../../data/stationsData.js";
 
-const OSCESPage = () => {
-  const { id } = useParams();
+const OSCESPage = ({ overrideStations = null, currentIndex = 0, onNext = null }) => {
+  const params = useParams(); // will be {} when embedded
   const [thongTin, setThongtin] = useState(null);
   const [openSections, setOpenSections] = useState({});
 
   useEffect(() => {
-    const allStations = [TramThi1, TramThi2, TramThi3 ];
-    const selected = allStations.find((s) => s.tram_thi_ID === id);
-    if (selected) {
-      setThongtin(selected);
-    } else {
+    if (overrideStations && overrideStations.length) {
+      setThongtin(overrideStations[currentIndex] || null);
+      return;
+    }
+
+    // Route mode fallback:
+    const { id } = params || {};
+    if (!id) {
+      setThongtin(null);
+      return;
+    }
+
+    // pick station by id
+    const selected = stationById[id] || [TramThi1, TramThi2, TramThi3].find(s => s.tram_thi_ID === id);
+    if (selected) setThongtin(selected);
+    else {
+      setThongtin(null);
       toast.error("Không tìm thấy trạm thi tương ứng!");
     }
-  }, [id]);
+  }, [overrideStations, currentIndex, params]);
 
   const toggleSection = (section) => {
     setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
   };
 
   const handleNext = () => {
+    if (overrideStations && typeof onNext === 'function') {
+      onNext();
+    } else {
+      toast("Chuyển trạm bằng danh sách phòng.", { icon: "ℹ️" });
+    }
   };
 
   if (!thongTin) {
@@ -38,13 +55,12 @@ const OSCESPage = () => {
     );
   }
 
-  // 🆕 Extract all parts (with new bullet/paragraph-ready design)
+  // Extract parts
   const info = thongTin.benh_an_tinh_huong.thong_tin_benh_nhan;
   const benhSu = thongTin.benh_an_tinh_huong.benh_su;
   const tienCan = thongTin.benh_an_tinh_huong.tien_can;
   const luocQua = thongTin.benh_an_tinh_huong.luoc_qua_cac_co_quan;
   const kham = thongTin.benh_an_tinh_huong.kham_lam_sang;
-
 
   return (
     <div className="osce-page">
@@ -55,7 +71,7 @@ const OSCESPage = () => {
 
       <main>
         <div className="content-grid">
-          {/* ================= LEFT COLUMN ================= */}
+          {/* LEFT */}
           <aside className="card patient-info">
             <h2>Thông tin bệnh nhân</h2>
             <p>
@@ -66,7 +82,7 @@ const OSCESPage = () => {
               <strong>Lý do nhập viện:</strong> {info.ly_do_nhap_vien}
             </p>
 
-            {/* 🆕 BỆNH SỬ - show 1–3 paragraphs */}
+            {/* BỆNH SỬ */}
             <div className="accordion-section">
               <h3 onClick={() => toggleSection("benhSu")}>
                 {openSections.benhSu ? "▼" : "▶"} Bệnh sử
@@ -80,7 +96,7 @@ const OSCESPage = () => {
               )}
             </div>
 
-            {/* 🆕 TIỀN CĂN - render bullets */}
+            {/* TIỀN CĂN */}
             {Array.isArray(tienCan) && tienCan.length > 0 && (
               <div className="accordion-section">
                 <h3 onClick={() => toggleSection("tienCan")}>
@@ -96,7 +112,7 @@ const OSCESPage = () => {
               </div>
             )}
 
-            {/* 🆕 LƯỢC QUA CÁC CƠ QUAN - render bullets */}
+            {/* LƯỢC QUA CÁC CƠ QUAN */}
             {Array.isArray(luocQua) && luocQua.length > 0 && (
               <div className="accordion-section">
                 <h3 onClick={() => toggleSection("luocQua")}>
@@ -112,7 +128,7 @@ const OSCESPage = () => {
               </div>
             )}
 
-            {/* 🆕 KHÁM LÂM SÀNG - render bullets */}
+            {/* KHÁM LÂM SÀNG */}
             {Array.isArray(kham) && kham.length > 0 && (
               <div className="accordion-section">
                 <h3 onClick={() => toggleSection("kham")}>
@@ -129,7 +145,7 @@ const OSCESPage = () => {
             )}
           </aside>
 
-          {/* ================= RIGHT COLUMN ================= */}
+          {/* RIGHT */}
           <section className="card questions">
             <h2>Câu hỏi</h2>
             {thongTin.cau_hoi.map((q, index) => (
@@ -137,14 +153,12 @@ const OSCESPage = () => {
                 <div className="question-text">
                   {index + 1}. {q.noi_dung}
                 </div>
+
                 { q.hinh_anh && (
-                  <>
-                    <div className='question-img' >
-                      <img className='image' src={q.hinh_anh} alt='Hình Ảnh Bệnh Án (Nếu Có)' />
-                    </div>
-                  </>
-                )
-                }
+                  <div className='question-img'>
+                    <img className='image' src={q.hinh_anh} alt='Hình Ảnh Bệnh Án (Nếu Có)' />
+                  </div>
+                )}
 
                 {q.kieu === "radio" && (
                   <ul className="options">
@@ -182,7 +196,6 @@ const OSCESPage = () => {
         </div>
       </main>
 
-      {/* NEXT STATION BUTTON */}
       <div className="button-container">
         <button className="toast-button" onClick={handleNext}>
           ⟶ Next station
