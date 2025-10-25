@@ -11,6 +11,7 @@ import {
   LibraryBig 
 } from "lucide-react";
 import "./HomePage.scss";
+import ExamRoomCard from "../../components/examRoomCard/ExamRoomCard";
 
 const HomePage = () => {
   return (
@@ -41,7 +42,9 @@ const HomePage = () => {
                             placeholder="Nhập mã phòng trạm tại đây..." 
                       />
                     </div>
-                    <input type="button" className='vao-tram' value="Vào Trạm" />
+                    <button className=' btn-section btn-vaoTram ' >
+                      Vào Trạm 
+                    </button>
                   </div>
 
                   <div className="visual-card">
@@ -83,7 +86,40 @@ const HomePage = () => {
           </div>
       </section>
 
-      {/* Section 2 - Lời kêu gọi hành động (nền xanh teal gradient) */}
+      {/* Section 2 - Hiện các phòng đang thi */}
+      <section className="section--examRoom">
+        <h2>Danh Sách Các Phòng Đang Thi</h2>
+
+        <div className="examRoom-container">
+          {/* Demo room cards — replace with your real data/map() later */}
+          <ExamRoomCard
+            roomLabel="Phòng 302 · RM-302"
+            status="Chuẩn bị"
+            title="OSCE Nội tổng hợp – Ca 2"
+            timeRange="14:00–15:30"
+          />
+          <ExamRoomCard
+            roomLabel="Phòng 205 · RM-205"
+            status="Đang thi"
+            title="OSCE Ngoại khoa – Ca 1"
+            timeRange="13:00–14:30"
+          />
+          <ExamRoomCard
+            roomLabel="Phòng 118 · RM-118"
+            status="Sắp mở"
+            title="OSCE Nhi khoa – Ca 3"
+            timeRange="16:00–17:30"
+          />
+                    
+        </div>
+
+        <button className='  btn-section btn-findRoom' >
+          Tìm Phòng Thi
+        </button>
+        
+      </section>
+
+      {/* Section 3 - Hiện mục Luyện Tập - Thư Viện */}
       <section className="section section--cta">
         <div className=" cta">
           <h2 className="cta__title">
@@ -125,98 +161,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Section 3 - Tính năng chính (nền trắng) */}
-      <section className="section section--features">
-        <div className="container features">
-          <div className="features__grid">
-            <div className="features__copy">
-              <h2 className="features__title">
-                Trải nghiệm mô phỏng OSCE chân thực — như trong kỳ thi thật.
-              </h2>
-
-              <ul className="features__list">
-                <li className="features__item">
-                  <ClipboardCheck className="icon icon--md text-primary" />
-                  <div>
-                    <h3 className="features__item-title">Đa dạng chuyên khoa và loại trạm thi</h3>
-                    <p className="muted">Luyện tập qua nhiều tình huống lâm sàng khác nhau</p>
-                  </div>
-                </li>
-
-                <li className="features__item">
-                  <Award className="icon icon--md text-primary" />
-                  <div>
-                    <h3 className="features__item-title">Chấm điểm tự động theo rubric</h3>
-                    <p className="muted">Nhận đánh giá khách quan, nhanh chóng sau mỗi lần luyện tập</p>
-                  </div>
-                </li>
-
-                <li className="features__item">
-                  <BarChart3 className="icon icon--md text-primary" />
-                  <div>
-                    <h3 className="features__item-title">Phân tích hiệu suất và theo dõi kỹ năng</h3>
-                    <p className="muted">Theo dõi quá trình phát triển năng lực của bạn</p>
-                  </div>
-                </li>
-
-                <li className="features__item">
-                  <TrendingUp className="icon icon--md text-primary" />
-                  <div>
-                    <h3 className="features__item-title">Gợi ý cải thiện cá nhân hóa</h3>
-                    <p className="muted">Nhận phản hồi chi tiết để cải thiện qua từng buổi luyện tập</p>
-                  </div>
-                </li>
-              </ul>
-
-            </div>
-
-            <div className="features__mock">
-              <div className="mock">
-                <div className="mock__card">
-                  <div className="mock__row">
-                    <span className="small font-medium">Ca bệnh</span>
-                    <span className="small muted">15:00</span>
-                  </div>
-                  <div className="mock__bar">
-                    <div className="mock__bar-fill" style={{ width: "75%" }} />
-                  </div>
-                </div>
-
-                <div className="mock__card">
-                  <h4 className="mock__title">Chấm điểm theo rubric</h4>
-                  <div className="mock__scores">
-                    <div className="mock__line">
-                      <span>Khai thác bệnh sử</span>
-                      <span className="text-success strong">8/10</span>
-                    </div>
-                    <div className="mock__line">
-                      <span>Kỹ năng giao tiếp</span>
-                      <span className="text-success strong">9/10</span>
-                    </div>
-                    <div className="mock__line">
-                      <span>Lập kế hoạch điều trị</span>
-                      <span className="text-warning strong">6/10</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mock__card">
-                  <h4 className="mock__title mock__title--icon">
-                    <TrendingUp className="icon icon--sm text-success" />
-                    Biểu đồ tiến bộ
-                  </h4>
-                  <div className="mock__bars">
-                    <div style={{ height: "40%" }} />
-                    <div style={{ height: "60%" }} />
-                    <div style={{ height: "75%" }} />
-                    <div style={{ height: "90%" }} />
-                  </div>
-                </div>
-              </div>{/* .mock */}
-            </div>
-          </div>
-        </div>
-      </section>
+  
     </div>
   );
 };

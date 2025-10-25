@@ -1,6 +1,5 @@
 :root {
   --bg: #fafafa;
-  --card: #ffffff;
   --text: #0a0f17;
   --muted: #ffffff;
   --accent: #06b6d4;
@@ -39,45 +38,94 @@
   color: var(--accent);
 }
 
-/* Main Container */
+/* ----- Main Container ----- */
 main {
-  max-width: 1600px; /* was 1200px → more horizontal space */
+  max-width: 1900px; /* was 1200px → more horizontal space */
   margin: 0 auto;
-  padding: 40px 24px 60px; /* less padding → cards closer to edges */
+  padding: 40px 14px 60px; /* less padding → cards closer to edges */
 
 }
 
-/* Layout */
+/* ----- Layout ----- */
 .content-grid {
-  display: grid;
-  grid-template-columns: 47% 50% ;
-  gap: 20px; /* smaller gap between columns */
-  align-items: start;
-  // border: 2px solid chocolate;
-  justify-content: center; // centers horizontally if there’s free space
+  // border: 2px solid #8C00FF;
+  display: flex;              /* was: display: grid */
+  align-items: flex-start ;    
+  gap: 1.25rem;    
 
-  /* Cards */
+
+  /* ----- Cards ----- */
   .card {
-    background: var(--card);
+    background: #ffffff ;
     border: 1px solid var(--border);
     border-radius: 14px;
     padding: 32px 28px; /* larger padding for “bigger” feel */
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
   }
 
-  /* Patient Info (Left) */
-  .patient-info {
-    position: sticky;
-    top: 80px;
+  .patient-biref {
+    span{
+      font-weight: 600;
+      line-height: 25px;
+    }
+  }
+
+  .patient-container , 
+  .questions-container {
+    flex: 1 ;     
+    display: flex;
+    padding: 2px;
+    position: relative; 
+    
+  }
+
+  /* ----- Patient Info (Left) , Questions (Right) ----- */
+   .patient-info , .questions {
+    position: relative;
+    z-index: 1;
     max-height: calc(100vh - 140px);
     overflow-y: auto;
   }
 
-  /* Questions (Right) */
-  .questions {
-    max-height: calc(100vh - 140px);
-    overflow-y: auto;
+  // Toc Button Container
+  .Toc-btn-Container {
+    // border: 2px solid #CD2C58;
+    margin: 5px;
+    height: max-content;
+    border-radius: 10px ;
+    overflow: hidden;
+
+    ul{
+      list-style: none;
+      padding: 0;
+      margin: 0 ;
+    }
+
+    .toc-panel {
+      background: #ffffff;
+      padding: 10px;
+      z-index: 2100;
+
+      .toc-title {
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+        color: #222;
+      }
+    }
+    
   }
+
+  // Toc Button Container for Patient Case
+  .patient-container .Toc-btn-Container {
+    width: 30rem;
+  } 
+
+  // Toc Button Container for Question 
+  .questions-container .Toc-btn-Container {
+    width: 10rem;
+  } 
 
   /* Headings */
   h2 {
@@ -98,7 +146,7 @@ main {
 
   /* Texts */
   p {
-    margin-bottom: 14px;
+    margin-bottom: 1px;
   }
 
   ul {
@@ -106,59 +154,66 @@ main {
     margin-bottom: 16px;
   }
 
-  /* Questions */
-  .question-item {
-    margin-bottom: 32px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--border);
-  }
 
-  .question-text {
-    font-size: 1.15rem;
-    font-weight: 600;
-    margin-bottom: 14px;
-  }
+  /* ---- Questions ---- */
+  .questions{
 
-  .question-img{
-    width: 25rem ;
-    height: 20rem ;
-    margin: 10px;
-
-    .image{
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 15px ;
+    .question-item {
+      margin-bottom: 32px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
     }
-    
-  }
 
-  .options {
-    list-style: none;
-    margin: 0;
-  }
+    .question-text {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 14px;
+      padding: 5px;
+      border-radius: 10px;
+    }
 
-  .options li {
-    padding: 14px 18px;
-    margin-bottom: 10px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
+    .question-img{
+      width: 25rem ;
+      height: 20rem ;
+      margin: 10px;
 
-  .options li:hover {
-    border-color: var(--accent);
-    background: rgba(6, 182, 212, 0.1);
-  }
+      .image{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 15px ;
+      }
+      
+    }
 
-  .text-answer{
-    width: 100%;
-    height: 450px;
-    padding: 12px;
-    font-size: 17px;
-    resize: none;
+    .options {
+      list-style: none;
+      margin: 0;
+    }
+
+    .options li {
+      padding: 14px 18px;
+      margin-bottom: 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .options li:hover {
+      border-color: var(--accent);
+      background: rgba(6, 182, 212, 0.1);
+    }
+
+    .text-answer{
+      width: 100%;
+      height: 450px;
+      padding: 12px;
+      font-size: 17px;
+      resize: none;
+    }
+
   }
 
   /* Next Button */
@@ -184,7 +239,7 @@ main {
     transform: translateY(-2px);
   }
 
-  /* Scrollbars */
+  /* ---- Scrollbars ---- */
   .patient-info::-webkit-scrollbar,
   .questions::-webkit-scrollbar {
     width: 8px;
@@ -200,6 +255,7 @@ main {
   .questions::-webkit-scrollbar-thumb:hover {
     background: var(--accent);
   }
+
 }
 
 /* Responsive */
@@ -260,3 +316,6 @@ main {
   justify-content: center;
   margin: 2rem 0;
 }
+
+
+

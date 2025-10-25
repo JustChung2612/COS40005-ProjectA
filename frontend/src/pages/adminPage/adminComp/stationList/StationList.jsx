@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import ExamCard from '../../../../components/examCard/ExamCard.jsx';
+import StationCard from '../../../../components/stationCard/StationCard.jsx';
 import Mau_Tram_Thi from '../../../../data/TramThi1.js';
 import Tram_Thi_2 from '../../../../data/TramThi2.js';
 import Tram_Thi_3 from '../../../../data/TramThi3.js';
@@ -169,7 +169,7 @@ const StationList = ({ selectionMode=false, selectedIds=[], onToggleSelect=()=>{
           <h3 className='listTitle' >Danh sách trạm thi</h3>
           <div className="examList">
             {examCases.map((caseData, i) => (
-              <ExamCard
+              <StationCard
                 key={caseData.tram_thi_ID || i}
                 data={caseData}
                 selectionMode={selectionMode}

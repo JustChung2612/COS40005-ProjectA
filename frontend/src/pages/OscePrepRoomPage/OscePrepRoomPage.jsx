@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
-import "./OSCETestEntryPage.scss";
+import { useState, useEffect } from "react";
+import "./oscePrepRoomPage.scss";
 
 /**
- * OSCETestEntryPage Component
+ * OscePrepRoomPage Component
  * ---------------------------------------------
  * Displays exam information and a timed start sequence.
  * - Initially shows a "Bắt đầu làm bài" (Start) button.
  * - When clicked, triggers a countdown (default 5s).
  * - After countdown ends, displays a "Vào làm bài" (Enter) button.
  */
-const OSCETestEntryPage = () => {
+const OscePrepRoomPage = () => {
   // Controls whether the countdown has started
   const [isStarting, setIsStarting] = useState(false);
 
@@ -126,4 +126,4 @@ const OSCETestEntryPage = () => {
   );
 };
 
-export default OSCETestEntryPage;
+export default OscePrepRoomPage;

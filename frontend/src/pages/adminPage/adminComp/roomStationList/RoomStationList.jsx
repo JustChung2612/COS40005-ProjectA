@@ -1,6 +1,6 @@
 // pages/adminPage/adminComp/roomStationList/RoomStationList.jsx
 import React, { useMemo, useState } from 'react'
-import OSCESPage from '../../../../pages/OSCESPage/OSCESPage.jsx'
+import OSCESPage from '../../../OsceStationPage/OsceStationPage.jsx'
 import { stationById } from '../../../../data/stationsData.js'
 import './roomstationlist.scss'
 

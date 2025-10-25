@@ -15,7 +15,7 @@ const Header = () => {
 
           <div className='items' >
             
-            <Link to='/osce' className='osceLink' >  
+            <Link to='' className='osceLink' >  
               <div className='item'>
                 <School className="icon" />
                 Thi OSCE
@@ -32,7 +32,7 @@ const Header = () => {
             <div className='item'>
               {currentUser ? (
                 <div className="user">
-                  <Link to="/profile" className='avatarLink' >
+                  <Link to="/quan-tri" className='avatarLink' >
                     <div className='avatar' >             
                       <img
                         src={ './noAvatar.jpg' }
@@ -44,20 +44,20 @@ const Header = () => {
                   </Link>
 
                   
-                  <Link to="/logout" className="navButton" >
+                  <Link to="" className="navButton" >
                       <LogOut className="icon" /> 
                       <span>Đăng Xuất</span>
                   </Link>
                 </div>
               ) : (
                 <>
-                <Link to='/signIn' className="navButton" >
+                <Link to='/dang-nhap' className="navButton" >
                   
                     <LogIn className="icon"  /> 
                     <span> Đăng Nhập </span>
                   
                 </Link>
-                <Link to='/signUp' className="navButton" >
+                <Link to='/dang-ky' className="navButton" >
                   
                     <UserPlus className="icon" /> 
                     <span> Đăng Ký </span>

@@ -1,6 +1,6 @@
 // pages/adminPage/AdminPage.jsx
 import './adminPage.scss';
-import {useState, useMemo} from 'react';
+import { useState, useMemo } from 'react';
 import Sidebar from '../../components/sidebar/Sidebar';
 import AdminNavbar from '../../components/adminNavbar/AdminNavbar';
 import StationList from './adminComp/stationList/StationList.jsx';

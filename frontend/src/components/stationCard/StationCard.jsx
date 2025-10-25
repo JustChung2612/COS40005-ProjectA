@@ -1,9 +1,9 @@
-// components/examCard/ExamCard.jsx
-import "./examCard.scss";
+// components/stationCard/StationCard.jsx
+import "./stationCard.scss";
 import { Eye, Edit, Trash2 } from "lucide-react"; 
 import { Link } from "react-router-dom"
 
-const ExamCard = ({ data, onView, onEdit, onDelete, selectionMode=false, checked=false, onToggleSelect=()=>{} }) => {
+const StationCard = ({ data, onView, onEdit, onDelete, selectionMode=false, checked=false, onToggleSelect=()=>{} }) => {
   const { metadata, benh_an_tinh_huong } = data;
 
   const patient = benh_an_tinh_huong.thong_tin_benh_nhan;
@@ -57,7 +57,7 @@ const ExamCard = ({ data, onView, onEdit, onDelete, selectionMode=false, checked
 
       {/* Card Footer */}
       <div className="cardFooter">
-        <Link to={`/tramthiOSCE/${data.tram_thi_ID}`} className='examLink' >
+        <Link to={`/osce/tram/${data.tram_thi_ID}`} className='examLink' >
           <button className="btn view">
             <Eye size={16} /> Xem
           </button>
@@ -79,4 +79,4 @@ const ExamCard = ({ data, onView, onEdit, onDelete, selectionMode=false, checked
   );
 };
 
-export default ExamCard;
+export default StationCard ;
