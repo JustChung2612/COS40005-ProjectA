@@ -8,9 +8,11 @@ import LoadingPage from './pages/loadingPage/LoadingPage.jsx';
 import LoginPage from './pages/loginPage/LoginPage.jsx';
 import SignupPage from './pages/signUpPage/SignUpPage.jsx';
 import AdminPage from './pages/adminPage/AdminPage.jsx';
+import Library from './pages/libraryPage/Library.jsx';
+import OSCETestEntryPage from './pages/osceTestEntryPage/OSCETestEntryPage.jsx';
 
 const App = () => {
-  const user = '';
+  const user = '' ;
   return (
     <>
 
@@ -25,12 +27,14 @@ const App = () => {
         }
         
         <Routes>
-            <Route path='/' element={<HomePage/>} />
+            <Route path='/' element = {<HomePage/>} />
             <Route path='/login' element = {<LoginPage/>}/>
             <Route path='/signup' element = {<SignupPage/>} />
+            <Route path='/phong-chuan-bi' element={ <OSCETestEntryPage/> } />
             <Route path='/tramthiOSCE/:id' element = {<OSCESPage/>} />
             <Route path='/loading' element = {<LoadingPage/>} />
-            <Route path='/admin' element={<AdminPage/>} />
+            <Route path='/admin' element = {<AdminPage/>} />
+            <Route path='thuvien' element = {<Library/>} />
         </Routes>
         <Footer/>
       </div>

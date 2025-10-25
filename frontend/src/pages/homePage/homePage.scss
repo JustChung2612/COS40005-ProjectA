@@ -247,35 +247,51 @@
               animation: rotateBox 2.5s alternate infinite;
           }
 
-          // +++++ UNCOMMENT THIS 
-
-        
-          @keyframes rotateBox {
-              from {
-                transform: rotate(-10deg);
-              }
-              to {
-                transform: translate(var(--move-x)) rotate(var(--rotate-angle));
-              }
-          }
-
+          // +++++ UNCOMMENT THIS
+          
           .box1 {
-            --move-x: 0px;
-            --rotate-angle: 0deg;
             z-index: 100;
+            transform: translate(0px) rotate(0deg);
           }
 
           .box2 {
-            --move-x: 180px;
-            --rotate-angle: 10deg;
-            z-index: 99;
+            z-index: 99 ;
+            transform: translate(180px) rotate(10deg);
           }
 
           .box3 {
-            --move-x: 290px;
-            --rotate-angle: 10deg;
             z-index: 98 ;
+            transform: translate(290px) rotate(10deg);
           }
+
+          // Animation
+        
+          // @keyframes rotateBox {
+          //     from {
+          //       transform: rotate(-10deg);
+          //     }
+          //     to {
+          //       transform: translate(var(--move-x)) rotate(var(--rotate-angle));
+          //     }
+          // }
+
+          // .box1 {
+          //   --move-x: 0px;
+          //   --rotate-angle: 0deg;
+          //   z-index: 100;
+          // }
+
+          // .box2 {
+          //   --move-x: 180px;
+          //   --rotate-angle: 10deg;
+          //   z-index: 99;
+          // }
+
+          // .box3 {
+          //   --move-x: 290px;
+          //   --rotate-angle: 10deg;
+          //   z-index: 98 ;
+          // }
         
         }
         
