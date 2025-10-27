@@ -118,7 +118,7 @@ export const login = async ( req, res ) => {
         }
 
     } catch(error) {
-        console.log("Error in register controller", error.message);
+        console.log("Error in Log In controller", error.message);
         res.status(500).json({ message: error.message });
     }
 }
@@ -140,7 +140,7 @@ export const logout = async ( req, res ) => {
         }
 
     } catch(error) {
-        console.log("Error in log out controller", error.message);
+        console.log("Error in Log Out controller", error.message);
         res.status(500).json({ message: error.message });
     }
 }
@@ -170,10 +170,10 @@ export const refreshToken = async ( req, res ) => {
 			maxAge: 15 * 60 * 1000,
         });
 
-        res.json({ message: "Token refreshToken successfully" });
+        res.json({ message: "Token Refresh Token successfully" });
 
     } catch(error) {
-        console.log("Error in register controller", error.message);
+        console.log("Error in Refresh Token controller", error.message);
         res.status(500).json({ message: error.message });
     }
 }
@@ -184,7 +184,7 @@ export const getProfile = async ( req, res ) => {
         res.json(req.user)
 
     } catch(error) {
-        console.log("Error in getProfile controller", error.message);
+        console.log("Error in Get Profile controller", error.message);
         res.status(500).json({ message: error.message });
     }   
 }
