@@ -5,7 +5,6 @@ import Sidebar from '../../components/sidebar/Sidebar';
 import AdminNavbar from '../../components/adminNavbar/AdminNavbar';
 import StationList from './adminComp/stationList/StationList.jsx';
 import RoomStationlist from './adminComp/roomStationList/RoomStationList.jsx';
-import { stations } from '../../data/stationsData.js';
 
 const AdminPage = () => {
   const [activeSection , setActiveSection ] = useState('station');

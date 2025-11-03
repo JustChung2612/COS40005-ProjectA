@@ -9,7 +9,6 @@ import SignupPage from './pages/signUpPage/SignUpPage.jsx';
 import AdminPage from './pages/adminPage/AdminPage.jsx';
 import Library from './pages/libraryPage/Library.jsx';
 import OscePrepRoomPage from './pages/OscePrepRoomPage/OscePrepRoomPage.jsx';
-import Stations from './pages/HuyAnh/Stations.jsx';
 
 const App = () => {
  
@@ -35,7 +34,7 @@ const App = () => {
             <Route path='/osce/tram/:tramId' element = {<OSCESPage/>} />
             <Route path='/quan-tri' element = {<AdminPage/>} />
             <Route path='/thu-vien' element = {<Library/>} />
-            <Route path='/station' element = {<Stations/>} />
+            
         </Routes>
         <Footer/>
       </div>

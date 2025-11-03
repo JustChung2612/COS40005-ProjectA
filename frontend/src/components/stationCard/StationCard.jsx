@@ -22,7 +22,7 @@ const StationCard = ({ data, onView, onEdit, onDelete, selectionMode=false, chec
           <input
             type="checkbox"
             checked={checked}
-            onChange={() => onToggleSelect(data.tram_thi_ID)}
+            onChange={() => onToggleSelect(data.stationID)}
           />
         </label>
       )}
@@ -57,7 +57,7 @@ const StationCard = ({ data, onView, onEdit, onDelete, selectionMode=false, chec
 
       {/* Card Footer */}
       <div className="cardFooter">
-        <Link to={`/osce/tram/${data.tram_thi_ID}`} className='examLink' >
+        <Link to={`/osce/tram/${data.stationID}`} className='examLink' >
           <button className="btn view">
             <Eye size={16} /> Xem
           </button>

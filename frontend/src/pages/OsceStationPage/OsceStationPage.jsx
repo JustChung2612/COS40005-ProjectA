@@ -1,282 +1,354 @@
-// pages/OsceStationPage/OsceStationPage.jsx
-import  { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom";              // keep route mode
-import toast, { Toaster } from "react-hot-toast";
+// ✅ UPDATED PART — dynamic station fetching by ID
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import axios from "axios";
+import { Clock, FileText, AlertCircle, CheckCircle2, ArrowBigRight } from "lucide-react";
 import "./osceStationPage.scss";
-import TramThi1 from "../../data/TramThi1.js";
-import TramThi2 from "../../data/TramThi2.js";
-import TramThi3 from "../../data/TramThi3.js";
-import { stationById } from "../../data/stationsData.js";
 
-const OsceStationPage = ({ overrideStations = null, currentIndex = 0, onNext = null }) => {
-  const params = useParams(); // will be {} when embedded
-  const [thongTin, setThongtin] = useState(null);
+/* ========= UI PRIMITIVES (same as before) ========= */
+const Button = ({ children, variant = "primary", size = "md", className = "", ...props }) => {
+  const cls = ["btn", `btn--${variant}`, `btn--${size}`, className].join(" ");
+  return <button className={cls} {...props}>{children}</button>;
+};
+const Card = ({ className = "", children, ...p }) => <div className={["card", className].join(" ")} {...p}>{children}</div>;
+const CardContent = ({ className = "", children, ...p }) => <div className={["card__content", className].join(" ")} {...p}>{children}</div>;
+const Progress = ({ value = 0, className = "" }) => (
+  <div className={["ui-progress", className].join(" ")}>
+    <div className="ui-progress__bar" style={{ width: `${Math.max(0, Math.min(100, value))}%` }} />
+  </div>
+);
+const Textarea = ({ className = "", ...p }) => <textarea className={["ui-textarea", className].join(" ")} {...p} />;
+const RadioGroup = ({ value, onChange, name, children }) => {
+  const kids = (Array.isArray(children) ? children : [children]).map((c, i) =>
+    c && c.type === RadioGroupItem
+      ? { ...c, props: { ...c.props, name, checked: value === c.props.value, onChange: () => onChange(c.props.value) } }
+      : c
+  );
+  return <div className="ui-radio-group">{kids}</div>;
+};
+const RadioGroupItem = ({ id, value, checked, onChange, label }) => (
+  <label className="ui-radio">
+    <input type="radio" id={id} value={value} checked={!!checked} onChange={onChange} />
+    <span className="ui-radio__control" />
+    <span className="ui-radio__label">{label ?? value}</span>
+  </label>
+);
+const Checkbox = ({ id, checked, onChange, label }) => (
+  <label className="ui-checkbox">
+    <input type="checkbox" id={id} checked={!!checked} onChange={(e) => onChange(e.target.checked)} />
+    <span className="ui-checkbox__control" />
+    <span className="ui-checkbox__label">{label}</span>
+  </label>
+);
+const Badge = ({ children, variant = "default", className = "" }) => (
+  <span className={["ui-badge", `ui-badge--${variant}`, className].join(" ")}>{children}</span>
+);
+const ScrollArea = ({ className = "", style, children, scrollRef }) => (
+  <div className={["ui-scroll", className].join(" ")} style={style} ref={scrollRef}>{children}</div>
+);
 
-  // TOC toggles
-  const [showLeftMenu, setShowLeftMenu]   = useState(true);
-  const [showQMenu, setShowQMenu]         = useState(true);
+/* ========= 🧩 UPDATED MAIN COMPONENT ========= */
+const OsceStationPage = () => {
+  const { tramId } = useParams();
+  const [examData, setExamData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Refs for patient-info sections
-  const infoRef    = useRef(null);
-  const benhSuRef  = useRef(null);
-  const tienCanRef = useRef(null);
-  const luocQuaRef = useRef(null);
-  const khamRef    = useRef(null);
+  // 🆕 Fetch station by ID from backend
+  useEffect(() => {
+    const fetchStation = async () => {
+      try {
+        // 🧹 Clear old data right away when switching stations
+        setExamData(null);
+        setError(null);
+        setLoading(true);
 
-  // Refs for each question (q.id -> element)
-  const qRefs = useRef({});
+        const res = await axios.get(`http://localhost:5000/api/stations?stationID=${tramId}`);
+        const station = res.data?.data?.[0];
+        if (!station) throw new Error("Không tìm thấy trạm thi");
+        setExamData(station);
+      } catch (err) {
+        console.error(err);
+        setError("Không thể tải dữ liệu trạm thi này");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (tramId) fetchStation(); // ✅ only run if param exists
+  }, [tramId]);
+
+
+  // ✅ Now use dynamic backend data instead of TramThi1
+  const caseData = examData?.benh_an_tinh_huong || {};
+  const questions = examData?.cau_hoi || [];
+  const totalQuestions = questions.length;
+
+  // ✅ Safe hook order — all hooks before any return
+
+  // 1️⃣ Timer hooks
+  const totalDurationSec = useMemo(() => 15 * 60, []);
+  const [timeRemaining, setTimeRemaining] = useState(totalDurationSec);
 
   useEffect(() => {
-    if (overrideStations && overrideStations.length) {
-      setThongtin(overrideStations[currentIndex] || null);
-      return;
-    }
+    if (timeRemaining <= 0) return;
+    const t = setInterval(() => setTimeRemaining((s) => Math.max(0, s - 1)), 1000);
+    return () => clearInterval(t);
+  }, [timeRemaining]);
 
-    // Route mode fallback:
-    const { tramId } = params || {};
-    if (!tramId ) {
-      setThongtin(null);
-      return;
-    }
+  const progress = (timeRemaining / totalDurationSec) * 100;
+  const formatTime = (sec) =>
+  `${String(Math.floor(sec / 60)).padStart(2, "0")}:${String(sec % 60).padStart(2, "0")}`;
 
-    // pick station by tramId
-    const selected = stationById[tramId] || [TramThi1, TramThi2, TramThi3].find(s => s.tram_thi_ID === id);
-    if (selected) setThongtin(selected);
-    else {
-      setThongtin(null);
-      toast.error("Không tìm thấy trạm thi tương ứng!");
-    }
-  }, [overrideStations, currentIndex, params]);
+// 2️⃣ Refs & UI state
+const thongTinRef = useRef(null);
+const benhSuRef = useRef(null);
+const tienCanRef = useRef(null);
+const luocQuaRef = useRef(null);
+const khamLSRef = useRef(null);
+const qScrollRef = useRef(null);
+const questionRefs = useRef({});
 
-  const handleNext = () => {
-    if (overrideStations && typeof onNext === 'function') {
-      onNext();
-    } else {
-      toast("Chuyển trạm bằng danh sách phòng.", { icon: "ℹ️" });
+const [activeSection, setActiveSection] = useState("thong_tin");
+const [activeQuestion, setActiveQuestion] = useState(1);
+const [answers, setAnswers] = useState({});
+
+const scrollToSection = (ref, key) => {
+  setActiveSection(key);
+  ref?.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+};
+
+const scrollToQuestion = (n) => {
+  setActiveQuestion(n);
+  questionRefs.current[n]?.scrollIntoView({ behavior: "smooth", block: "start" });
+};
+
+// 3️⃣ Scroll handler for active question
+useEffect(() => {
+  const el = qScrollRef.current;
+  if (!el) return;
+  const handler = () => {
+    const rect = el.getBoundingClientRect();
+    const mid = rect.top + rect.height / 2;
+    for (let i = totalQuestions; i >= 1; i--) {
+      const r = questionRefs.current[i]?.getBoundingClientRect();
+      if (r && r.top <= mid) {
+        setActiveQuestion(i);
+        break;
+      }
     }
   };
+  el.addEventListener("scroll", handler, { passive: true });
+  return () => el.removeEventListener("scroll", handler);
+}, [totalQuestions]);
 
-  const smoothScrollTo = (el) => {
-    if (!el) return;
-    el.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
-  };
+const isAnswered = (n) => {
+  const v = answers[n];
+  if (v === undefined || v === null) return false;
+  if (Array.isArray(v)) return v.length > 0;
+  return String(v).trim().length > 0;
+};
 
-  if (!thongTin) {
-    return (
-      <div className="loading">
-        <h2>Đang tải dữ liệu bệnh án...</h2>
-      </div>
-    );
-  }
+const submit = () => {
+  console.log("BÀI LÀM:", answers);
+  alert("Đã nộp bài! (Bạn có thể nối API chấm điểm sau)");
+};
 
-  // Extract parts
-  const info    = thongTin.benh_an_tinh_huong.thong_tin_benh_nhan;
-  const benhSu  = thongTin.benh_an_tinh_huong.benh_su;
-  const tienCan = thongTin.benh_an_tinh_huong.tien_can;
-  const luocQua = thongTin.benh_an_tinh_huong.luoc_qua_cac_co_quan;
-  const kham    = thongTin.benh_an_tinh_huong.kham_lam_sang;
+// ✅ Now safe conditional rendering
+if (loading) return <div className="loading">Đang tải dữ liệu trạm thi...</div>;
+if (error) return <div className="error">{error}</div>;
+if (!examData) return null;
 
-  // Determine which patient-info sections actually exist to show in TOC
-  const leftTocItems = [
-    { key: "ttbn",    label: "Thông tin bệnh nhân",  ref: infoRef,    show: true },
-    { key: "benh_su", label: "Bệnh sử",              ref: benhSuRef,  show: !!(benhSu?.mo_ta1 || benhSu?.mo_ta2 || benhSu?.mo_ta3) },
-    { key: "tien_can",label: "Tiền căn",             ref: tienCanRef, show: Array.isArray(tienCan) && tienCan.length > 0 },
-    { key: "luoc_qua",label: "Lược qua các cơ quan", ref: luocQuaRef, show: Array.isArray(luocQua) && luocQua.length > 0 },
-    { key: "kham",    label: "Khám lâm sàng",        ref: khamRef,    show: Array.isArray(kham) && kham.length > 0 },
-  ].filter(i => i.show);
+  
 
-
-  // UPDATED--- simplified layout; inline TOC buttons in headers; removed openSections 🧭
   return (
-    <div className="osce-page">
-      <Toaster position="top-center" />
-      <header className="header-timer-badge">
-        <span className="timer-badge">Thời gian còn lại: 07:00</span>
-      </header>
-
-      <main>
-        <div className="content-grid">
-
-          {/* LEFT */}
-          <div className='patient-container' >
-              <div className="Toc-btn-Container" >
-                  {showLeftMenu && (
-                    <div className="toc-panel" role="menu">
-                      <div className="toc-title">Bệnh Án</div>
-                        <ul className="toc-grid" >
-                          {leftTocItems.map(item => (
-                            <li key={item.key}>
-                              <button
-                                className="toc-link"
-                                onClick={() => {
-                                  
-                                  smoothScrollTo(item.ref.current);
-                                }}
-                              >
-                                {item.label}
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
-                    </div>
-                  )}
-              </div>
-              <section className="card patient-info ">
-                
-                  <div className="section-header">
-                    <h2 ref={infoRef}>Thông tin bệnh nhân</h2>
-                  </div>
-
-                  <div className='patient-biref'>
-                    <span>Họ tên:</span> {info.ho_ten} <br />
-                    <span>Tuổi:</span> {info.tuoi} <br />
-                    <span>Giới tính:</span> {info.gioi_tinh} <br />
-                    <span>Nghề nghiệp:</span> {info.nghe_nghiep} <br />
-                    <span>Lý do nhập viện:</span> {info.ly_do_nhap_vien}
-                  </div>
-
-                  <div className="accordion-section" ref={benhSuRef}>
-                    <h3>Bệnh sử</h3>
-                    <div className="accordion-content">
-                      {benhSu.mo_ta1 && <p>{benhSu.mo_ta1}</p>}
-                      {benhSu.mo_ta2 && <p>{benhSu.mo_ta2}</p>}
-                      {benhSu.mo_ta3 && <p>{benhSu.mo_ta3}</p>}
-                    </div>
-                  </div>
-
-                  {Array.isArray(tienCan) && tienCan.length > 0 && (
-                    <div className="accordion-section" ref={tienCanRef}>
-                      <h3>Tiền căn</h3>
-                      <ul className="accordion-content">
-                        {tienCan.map((item, i) => (
-                          <li key={i}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {Array.isArray(luocQua) && luocQua.length > 0 && (
-                    <div className="accordion-section" ref={luocQuaRef}>
-                      <h3>Lược qua các cơ quan</h3>
-                      <ul className="accordion-content">
-                        {luocQua.map((item, i) => (
-                          <li key={i}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {Array.isArray(kham) && kham.length > 0 && (
-                    <div className="accordion-section" ref={khamRef}>
-                      <h3>Khám lâm sàng</h3>
-                      <ul className="accordion-content">
-                        {kham.map((item, i) => (
-                          <li key={i}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                
-              </section>
+    <div className="stations-page">
+      {/* Dải nền/gradient giống OSCESPage */}
+      <div className="page-hero">
+        <div className="hero-inner">
+          <div className="timer">
+            <Clock className={["ico", timeRemaining < 60 ? "danger" : ""].join(" ")} />
+            <span className="label">Thời gian còn lại:</span>
+            <Badge variant={timeRemaining < 60 ? "danger" : "muted"} className="mono">{formatTime(timeRemaining)}</Badge>
+            <Button variant="ghost" className="exit">
+              <Link to="/">Thoát</Link>
+            </Button>
           </div>
-
-          {/* RIGHT */}
-          <div className='questions-container' >
-              <section className="card questions ">
-                <div className="section-header">
-                  <h2>Câu hỏi</h2>
-                </div>
-
-                {thongTin.cau_hoi.map((q, index) => (
-                  <div
-                    key={q.id}
-                    className="question-item"
-                    ref={(el) => (qRefs.current[q.id] = el)}
-                    id={`q-${q.id}`}
-                  >
-                    <div className="question-text">
-                      {index + 1}. {q.noi_dung} 
-                    </div>
-
-                    {q.hinh_anh && (
-                      <div className="question-img">
-                        <img
-                          className="image"
-                          src={q.hinh_anh}
-                          alt="Hình Ảnh Bệnh Án (Nếu Có)"
-                        />
-                      </div>
-                    )}
-
-                    {q.kieu === "radio" && (
-                      <ul className="options">
-                        {q.lua_chon.map((opt, i) => (
-                          <li key={i}>
-                            <label>
-                              <input type="radio" name={`q${q.id}`} /> {opt}
-                            </label>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-
-                    {q.kieu === "checkbox" && (
-                      <ul className="options">
-                        {q.lua_chon.map((opt, i) => (
-                          <li key={i}>
-                            <label>
-                              <input type="checkbox" /> {opt}
-                            </label>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-
-                    {q.kieu === "text" && (
-                      <textarea
-                        className="text-answer"
-                        placeholder={q.goi_y || "Nhập câu trả lời"}
-                      ></textarea>
-                    )}
-                  </div>
-                ))}
-              </section>
-              <div className="Toc-btn-Container" >
-                {showQMenu && (
-                  <div className="toc-panel" role="menu">
-                    <div className="toc-title">Câu Hỏi</div>
-                      <ul className="toc-grid">
-                        {thongTin.cau_hoi.map((q, idx) => (
-                          <li key={q.id}>
-                            <button
-                              className="toc-link"
-                              onClick={() => {
-                               
-                                smoothScrollTo(qRefs.current[q.id]);
-                              }}
-                              title={q.noi_dung}
-                            >
-                              Câu {idx + 1}
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
-                  </div>
-                )}
-              </div>
-          </div>
-
+          <Progress value={progress} className={timeRemaining < 60 ? "pulse" : ""} />
         </div>
-      </main>
-
-      <div className="button-container">
-        <button className="toast-button" onClick={handleNext}>
-          ⟶ Next station
-        </button>
       </div>
+
+      {/* Split layout gốc của Stations */}
+      <div className="split">
+        {/* Bên trái: Bệnh án + TOC */}
+        <aside className="left">
+          <nav className="toc">
+            <div className="toc__title">Bệnh Án</div>
+            <button className={["toc__item", activeSection==="thong_tin" ? "is-active" : ""].join(" ")} onClick={() => scrollToSection(thongTinRef,"thong_tin")}>Thông tin bệnh nhân</button>
+            <button className={["toc__item", activeSection==="benh_su" ? "is-active" : ""].join(" ")} onClick={() => scrollToSection(benhSuRef,"benh_su")}>Bệnh sử</button>
+            <button className={["toc__item", activeSection==="tien_can" ? "is-active" : ""].join(" ")} onClick={() => scrollToSection(tienCanRef,"tien_can")}>Tiền căn</button>
+            <button className={["toc__item", activeSection==="luoc_qua" ? "is-active" : ""].join(" ")} onClick={() => scrollToSection(luocQuaRef,"luoc_qua")}>Lược qua các cơ quan</button>
+            <button className={["toc__item", activeSection==="kham" ? "is-active" : ""].join(" ")} onClick={() => scrollToSection(khamLSRef,"kham")}>Khám lâm sàng</button>
+          </nav>
+
+          <div className="case">
+            <Card className="mb">
+              <CardContent>
+                <section ref={thongTinRef} className="section">
+                  <h2 className="section__title">Thông tin bệnh nhân</h2>
+                  <ul className="list">
+                    <li><b>Họ tên:</b> {caseData?.thong_tin_benh_nhan?.ho_ten}</li>
+                    <li><b>Tuổi:</b> {caseData?.thong_tin_benh_nhan?.tuoi}</li>
+                    <li><b>Giới tính:</b> {caseData?.thong_tin_benh_nhan?.gioi_tinh}</li>
+                    <li><b>Nghề nghiệp:</b> {caseData?.thong_tin_benh_nhan?.nghe_nghiep}</li>
+                    <li><b>Lý do nhập viện:</b> {caseData?.thong_tin_benh_nhan?.ly_do_nhap_vien}</li>
+                  </ul>
+                </section>
+
+                <section ref={benhSuRef} className="section">
+                  <h3 className="section__title">Bệnh sử</h3>
+                  <div className="paras">
+                    <p>{caseData?.benh_su?.mo_ta1}</p>
+                    <p>{caseData?.benh_su?.mo_ta2}</p>
+                    <p>{caseData?.benh_su?.mo_ta3}</p>
+                  </div>
+                </section>
+
+                <section ref={tienCanRef} className="section">
+                  <h3 className="section__title">Tiền căn</h3>
+                  <ul className="list">
+                    {(caseData?.tien_can || []).map((t,i)=><li key={i}> {t}</li>)}
+                  </ul>
+                </section>
+
+                <section ref={luocQuaRef} className="section">
+                  <h3 className="section__title">Lược qua các cơ quan</h3>
+                  <ul className="list">
+                    {(caseData?.luoc_qua_cac_co_quan || []).map((t,i)=><li key={i}> {t}</li>)}
+                  </ul>
+                </section>
+
+                <section ref={khamLSRef} className="section">
+                  <h3 className="section__title">Khám lâm sàng</h3>
+                  <ul className="list">
+                    {(caseData?.kham_lam_sang || []).map((t,i)=><li key={i}> {t}</li>)}
+                  </ul>
+                </section>
+              </CardContent>
+            </Card>
+
+            <div className="note">
+              <div className="note__head"><AlertCircle className="ico primary" /><span>Ghi chú</span></div>
+              <p>Đọc kỹ bệnh án trước khi trả lời câu hỏi. Trả lời ngắn gọn, chính xác.</p>
+            </div>
+          </div>
+        </aside>
+
+        {/* Bên phải: Câu hỏi + thanh CÂU */}
+        <section className="right">
+          <ScrollArea className="q-scroll" scrollRef={qScrollRef}>
+            <div className="q-wrap">
+              {questions.map((q, idx) => {
+                const n = idx + 1;
+                const answered = isAnswered(n);
+                return (
+                  <div key={n} ref={(el)=>questionRefs.current[n]=el} className={["q-card", activeQuestion===n?"is-current":""].join(" ")}>
+                    <Card>
+                      <CardContent>
+                        <div className="q-head">
+                          <h3 className="q-title">Câu hỏi {n}</h3>
+                          <Badge variant={answered ? "default" : "outline"}>{answered ? "Đã trả lời" : "Chưa trả lời"}</Badge>
+                        </div>
+                        <p className="q-text">{q.noi_dung}</p>
+
+                        {q.kieu === "radio" && (
+                          <RadioGroup
+                            name={`q${n}`}
+                            value={answers[n] || ""}
+                            onChange={(val)=>setAnswers((p)=>({ ...p, [n]: val }))}
+                          >
+                            {(q.lua_chon||[]).map((opt,i)=>(
+                              <RadioGroupItem key={i} id={`q${n}-r${i}`} value={opt} label={opt} />
+                            ))}
+                          </RadioGroup>
+                        )}
+
+                        {q.kieu === "checkbox" && (
+                          <div className="ui-checkbox-group">
+                            {(q.lua_chon||[]).map((opt,i)=>{
+                              const cur = Array.isArray(answers[n]) ? answers[n] : [];
+                              const on = cur.includes(opt);
+                              return (
+                                <Checkbox
+                                  key={i}
+                                  id={`q${n}-c${i}`}
+                                  checked={on}
+                                  onChange={(flag)=>{
+                                    setAnswers((p)=>{
+                                      const arr = Array.isArray(p[n]) ? p[n] : [];
+                                      return { ...p, [n]: flag ? [...arr, opt] : arr.filter(x=>x!==opt) };
+                                    });
+                                  }}
+                                  label={opt}
+                                />
+                              );
+                            })}
+                          </div>
+                        )}
+
+                        {q.kieu === "text" && (
+                          <>
+                            <Textarea
+                              placeholder={q.goi_y || "Nhập câu trả lời…"}
+                              value={answers[n] || ""}
+                              onChange={(e)=>setAnswers((p)=>({ ...p, [n]: e.target.value }))}
+                              className="q-textarea"
+                            />
+                            <div className="q-meta">
+                              <span className="q-count">{String(answers[n] || "").length} ký tự</span>
+                              {q.goi_y && <span className="q-hint">{q.goi_y}</span>}
+                            </div>
+                          </>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </div>
+                );
+              })}
+
+              <div className="q-submit">
+                <Button className="w-100" size="lg" onClick={submit}>Nộp bài thi</Button>
+              </div>
+            </div>
+          </ScrollArea>
+
+          <div className="q-rail">
+            <div className="q-rail__title">Câu Hỏi</div>
+            <div className="q-rail__list">
+              {Array.from({length: totalQuestions}, (_,i)=>i+1).map((n)=>{
+                const answered = isAnswered(n);
+                const current = activeQuestion === n;
+                return (
+                  <button
+                    key={n}
+                    onClick={()=>scrollToQuestion(n)}
+                    className={["q-rail__btn", current?"is-current":"", !current && answered ? "is-answered":""].join(" ")}
+                    title={`Câu ${n}`}
+                  >
+                    {answered && !current && <CheckCircle2 className="tick" />} {n}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <button className="next-Btn-con" >
+        <Link to="/" className="next-Btn" > Trạm Kế Tiếp <ArrowBigRight /> </Link>
+      </button>
     </div>
   );
-
 };
 
 export default OsceStationPage;
