@@ -6,7 +6,10 @@
         // border: 2px solid rgb(220, 77, 77);
         flex: 6;
         min-height: 100vh;
-        // background-color: 	#e1e1e1 ; 
+        display: flex;
+        flex-direction: column;
+        transition: all 0.3s ease; 
+        overflow-x: hidden;
 
         .examContainer{
             // border: 3px solid rgb(76, 118, 59) ;
@@ -187,5 +190,11 @@
         }
 
     }
+
+    /* ✅ When popup is open, shift layout smoothly */
+    .homeContainer.popup-open {
+        margin-right: 450px; /* same width as popup */
+    }
+
 }
 

@@ -5,7 +5,6 @@ const { Schema } = mongoose;
 // 🩺 Station Schema (Trạm Thi)
 const StationSchema = new Schema(
   {
-    stationID: { type: String, required: true, unique: true },
 
     metadata: {
       chuan_doan: { type: String },   // Diagnosis

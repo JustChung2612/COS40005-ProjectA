@@ -2,14 +2,24 @@ import Station from '../models/station.model.js';
 
 export const createStation = async (req, res) => {
   try {
-    const { stationID } = req.body;
-    if (!stationID) {
-      return res.status(400).json({ message: 'stationID is required' });
-    }
+    const {       
+      metadata,
+      ten_tram,
+      benh_an_tinh_huong,
+      cau_hoi, 
+    } = req.body;
 
-    const station = await Station.create(req.body);
+
+    const station = await Station.create(
+      {
+        metadata,
+        ten_tram,
+        benh_an_tinh_huong,
+        cau_hoi,
+      }
+    );
     return res.status(201).json({ message: 'Station created', data: station });
-  } catch (err) {
+  } catch (error) {
     console.log("Error in Log In controller", error.message);
     res.status(500).json({ message: error.message });
   }
@@ -25,12 +35,12 @@ export const getStations = async (req, res) => {
       do_kho,
       doi_tuong,
       do_tuoi,
-      stationID    // ✅ added
+      _id, // ✅ UPDATED
     } = req.query;
 
     const query = {};
 
-    if (stationID) query.stationID = stationID;  // ✅ filter by ID
+    if (_id) query._id = _id;  // ✅ UPDATED: filter by ID
 
     if (chuan_doan) query['metadata.chuan_doan'] = { $regex: chuan_doan, $options: 'i' };
     if (co_quan) query['metadata.co_quan'] = { $regex: co_quan, $options: 'i' };

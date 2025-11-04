@@ -1,0 +1,73 @@
+/* ✅ createRoomPopup.scss — basic layout */
+
+
+
+/* ✅ UPDATED: Overlay now only darkens right area and allows drag on left side */
+.createRoomPopup__overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 480px; /* popup width + padding buffer */
+  display: flex;
+  justify-content: flex-end;
+  pointer-events: none; /* allow interaction behind except popup itself */
+  z-index: 1000;
+}
+
+.createRoomPopup {
+  pointer-events: all;
+  width: 450px;
+  background: #fff;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -2px 0 12px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.createRoomPopup__header,
+.createRoomPopup__footer {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.createRoomPopup__dropzone {
+  flex: 1;
+  margin: 1rem;
+  padding: 1rem;
+  border: 2px dashed #14b8a6;
+  border-radius: 12px;
+  overflow-y: auto;
+  background: #f9fafb;
+}
+
+.added-patient {
+  background: #e0f7f4;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  margin: 0.25rem 0;
+}
+
+.finish-btn,
+.next-btn,
+.cancel-btn {
+  background: #14b8a6;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background: #e53e3e;
+}

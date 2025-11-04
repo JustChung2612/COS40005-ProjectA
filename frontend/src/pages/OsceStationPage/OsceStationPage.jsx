@@ -63,7 +63,8 @@ const OsceStationPage = () => {
         setError(null);
         setLoading(true);
 
-        const res = await axios.get(`http://localhost:5000/api/stations?stationID=${tramId}`);
+        // ✅ UPDATED: query by _id instead of stationID
+        const res = await axios.get(`http://localhost:5000/api/stations?_id=${tramId}`);
         const station = res.data?.data?.[0];
         if (!station) throw new Error("Không tìm thấy trạm thi");
         setExamData(station);

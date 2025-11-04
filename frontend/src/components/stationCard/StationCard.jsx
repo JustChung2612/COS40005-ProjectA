@@ -1,11 +1,10 @@
-// components/stationCard/StationCard.jsx
 import "./stationCard.scss";
 import { Eye, Edit, Trash2 } from "lucide-react"; 
 import { Link } from "react-router-dom"
 
-const StationCard = ({ data, onView, onEdit, onDelete, selectionMode=false, checked=false, onToggleSelect=()=>{} }) => {
-  const { metadata, benh_an_tinh_huong } = data;
+const StationCard = ({ data, onEdit, onDelete }) => {
 
+  const { metadata, benh_an_tinh_huong } = data;
   const patient = benh_an_tinh_huong.thong_tin_benh_nhan;
   const diffClass =
     metadata.do_kho === "Cơ bản"
@@ -15,17 +14,16 @@ const StationCard = ({ data, onView, onEdit, onDelete, selectionMode=false, chec
       : "advanced";
 
   return (
-    <div className="examCard">
-      {/* selection checkbox in top-right */}
-      {selectionMode && (
-        <label className="selectBoxTopRight">
-          <input
-            type="checkbox"
-            checked={checked}
-            onChange={() => onToggleSelect(data.stationID)}
-          />
-        </label>
-      )}
+    <div 
+      className="stationCard"
+      draggable
+      onDragStart={ (e) => {
+          // ✅ Ensure we only use _id for backend and drag data
+          const { _id, ...rest } = data;
+          e.dataTransfer.setData("application/json", JSON.stringify({ _id, ...rest }));
+        }
+      }
+    >
 
       {/* Card Header */}
       <div className="cardHeader">
@@ -57,7 +55,7 @@ const StationCard = ({ data, onView, onEdit, onDelete, selectionMode=false, chec
 
       {/* Card Footer */}
       <div className="cardFooter">
-        <Link to={`/osce/tram/${data.stationID}`} className='examLink' >
+        <Link to={`/osce/tram/${data._id}`} className='examLink' >
           <button className="btn view">
             <Eye size={16} /> Xem
           </button>

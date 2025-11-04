@@ -7,6 +7,7 @@ const AdminNavbar = ({
   selectedCount = 0,
   onStartSelection = () => {},
   onCompleteSelection = () => {},
+  onStartRoom = () => {},  // ✅ UPDATED: add onStartRoom for the Create Room popup
 }) => {
   return (
     <>
@@ -19,7 +20,9 @@ const AdminNavbar = ({
 
           <div className="adNavItems" >
             {!selectionMode ? (
-              <button className="adNavItem notUser" onClick={onStartSelection}>
+              <button className="adNavItem notUser" 
+                onClick={onStartRoom}  // ✅ UPDATED
+              >
                 <NotebookPen/>
                 Tạo Phòng
               </button>

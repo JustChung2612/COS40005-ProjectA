@@ -12,8 +12,6 @@ import OscePrepRoomPage from './pages/OscePrepRoomPage/OscePrepRoomPage.jsx';
 
 const App = () => {
  
-  const location = useLocation();
-  const hideHeaderOnAdmin = location.pathname.startsWith('/quan-tri');
   return (
     <>
 
@@ -24,7 +22,7 @@ const App = () => {
       </div>
 
       <div>
-        {/* { !hideHeaderOnAdmin ? <Header /> : null} */}
+        <Header />
         
         <Routes>
             <Route path='/' element = {<HomePage/>} />
@@ -34,7 +32,8 @@ const App = () => {
             <Route path='/osce/tram/:tramId' element = {<OSCESPage/>} />
             <Route path='/quan-tri' element = {<AdminPage/>} />
             <Route path='/thu-vien' element = {<Library/>} />
-            
+
+          
         </Routes>
         <Footer/>
       </div>
