@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { motion } from "framer-motion"; // Thư viện animation 
 import "./loginPage.scss"; 
+import { useUserStore } from "../../stores/useUserStore";
 
 // Validation rules 
 // kiểm tra định dạng email chuẩn
@@ -9,12 +10,18 @@ const emailRegex =
 
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+
   const [showPassword, setShowPassword] = useState(false); // Bật/tắt hiển thị mật khẩu
   const [touched, setTouched] = useState({ email: false, password: false }); // Đã “chạm” vào input hay chưa
-  const [submitting, setSubmitting] = useState(false); // Trạng thái khi đang gửi form
-  const [success, setSuccess] = useState(false); // Hiển thị thông báo đăng nhập thành công
+  
+
+  // ✅ Unified sign-up data object
+  const [logInData, setLogInData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const { email, password } = logInData;
 
   // Kiểm tra lỗi email
   const emailError = useMemo(() => {
@@ -34,16 +41,28 @@ export default function LoginPage() {
   const allValid =
     emailRegex.test(email) && passErrors.length === 0 && password.length > 0;
 
-  
+  // ✅ UPDATED add handleChange
+  const handleChange = (e) => {
+    const name = e.target.name;
+    const value = e.target.value;
+    setLogInData(prev => ({...prev, [name]: value }))
+  }
+
+  // ✅ Call the Zustand hook
+  const { login, loading } = useUserStore();
+
   //  Gửi form đăng nhập
   const handleSubmit = async (e) => {
     e.preventDefault(); // Chặn reload trang
     setTouched({ email: true, password: true }); // Đánh dấu đã chạm vào cả hai input
     if (!allValid) return; // Nếu chưa hợp lệ thì ngừng
-    setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1100)); 
-    setSubmitting(false);
-    setSuccess(true); // Hiện toast 
+   
+    try {
+      await login(logInData);   
+      setLogInData({email: "", password: ""});
+    } catch(error){
+      console.error("Error in Handle Submit:",error.message);
+    }
   };
 
 
@@ -80,9 +99,10 @@ export default function LoginPage() {
                 <div className="input-wrapper">
                   <input
                     id="email"
+                    name="email"                // ✅ add this
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={handleChange}
                     onBlur={() =>
                       setTouched((t) => ({ ...t, email: true }))
                     }
@@ -101,9 +121,10 @@ export default function LoginPage() {
                 <div className="input-wrapper">
                   <input
                     id="password"
+                    name="password"             // ✅ add this
                     type={showPassword ? "text" : "password"}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={handleChange}
                     onBlur={() =>
                       setTouched((t) => ({ ...t, password: true }))
                     }
@@ -131,11 +152,9 @@ export default function LoginPage() {
               </div>
               <motion.button
                 type="submit"
-                disabled={submitting}
-                className="login-btn"
-                whileTap={{ scale: 0.98 }}
+                disabled={loading} className="login-btn" whileTap={{ scale: 0.98 }}
               >
-                {submitting ? <Spinner /> : "LOGIN"}
+                {loading ? <Spinner /> : "LOGIN"}
               </motion.button>
 
               <div className="divider">
@@ -153,14 +172,6 @@ export default function LoginPage() {
               </motion.button>
             </form>
           
-            {success && (
-              <div className="success-toast">
-                <div className="success-icon" />
-                <div>
-                  <p className="success-title">Login successful</p>
-                </div>
-              </div>
-            )}
           </motion.div>
         </motion.div>
       </div>

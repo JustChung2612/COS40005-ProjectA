@@ -37,7 +37,7 @@ const setCookies = (res, accessToken, refreshToken) => {
 };
 
 export const signup = async ( req, res ) => {
-    const { email, password, name } = req.body;
+    const { email, password, username } = req.body;
 
     try {
         const userExists = await User.findOne({ email });
@@ -52,7 +52,7 @@ export const signup = async ( req, res ) => {
         const user= await User.create({ 
             email,
             password: hashedPassword,
-            name 
+            username 
         });
 
         // ---- AUTHENTICATION ----
@@ -66,7 +66,7 @@ export const signup = async ( req, res ) => {
             message: 'Chào Thành Viên Mới!',
             userData : {
                 _id: user._id,
-                name: user.name,
+                username: user.username,
                 email: user.email,
                 role: user.role
             }
@@ -102,7 +102,7 @@ export const login = async ( req, res ) => {
             message: 'Welcome Back User!',
             userData : {
                 _id: user._id,
-                name: user.name,
+                username: user.username,
                 email: user.email,
                 role: user.role
             }
@@ -180,9 +180,7 @@ export const refreshToken = async ( req, res ) => {
 
 export const getProfile = async ( req, res ) => {
     try {
-
         res.json(req.user)
-
     } catch(error) {
         console.log("Error in Get Profile controller", error.message);
         res.status(500).json({ message: error.message });

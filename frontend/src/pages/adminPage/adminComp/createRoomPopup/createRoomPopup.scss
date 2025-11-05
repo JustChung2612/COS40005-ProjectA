@@ -31,7 +31,36 @@
   to { transform: translateX(0); }
 }
 
-.createRoomPopup__header,
+
+
+
+.createRoomPopup-header-container {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+  
+
+  .createRoomPopup-header-main{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .toggle-btn {
+    margin-right: 1rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    background-color: #14b8a6;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+
+  }
+
+}
+
 .createRoomPopup__footer {
   padding: 1rem;
   border-bottom: 1px solid #eee;
@@ -39,6 +68,7 @@
   justify-content: space-between;
   align-items: center;
 }
+
 
 .createRoomPopup__dropzone {
   flex: 1;
@@ -70,4 +100,33 @@
 
 .cancel-btn {
   background: #e53e3e;
+}
+
+.pagination-bar {
+  display: flex;
+  gap: 0.4rem;
+  margin-left: 1rem;
+
+  .page-dot {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    border: none;
+    background: #eee;
+    cursor: pointer;
+    &.active {
+      background: #14b8a6;
+      color: white;
+      font-weight: bold;
+    }
+  }
+}
+
+
+.pagination-section{
+  border: 2px solid teal;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+
 }

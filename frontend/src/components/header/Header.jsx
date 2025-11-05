@@ -1,16 +1,23 @@
 import { Link } from "react-router-dom";
 import './header.scss';
-import { School, LibraryBig ,UserRoundPen, LogIn, LogOut , UserPlus  } from 'lucide-react';
+import { School, LibraryBig , LogIn, LogOut , UserPlus  } from 'lucide-react';
+import { useUserStore } from "../../stores/useUserStore";
 
 const Header = () => {
 
-  const currentUser = true ;
+  
+  const { user, logout } = useUserStore();
+  const isAdmin = user?.role === "admin";
+  // console.log(user);
+
 
   return (
     <div className='header'>
       <div className='wrapper' >
           <div className='logo'> 
-            Logo
+            <Link to="/" style={{ textDecoration: "none" }}>
+              <span className="logo">Logo</span>
+            </Link>
           </div>
 
           <div className='items' >
@@ -30,24 +37,24 @@ const Header = () => {
               </Link>
             
             <div className='item'>
-              {currentUser ? (
+              {user ? (
                 <div className="user">
-                  <Link to="/quan-tri" className='avatarLink' >
+                  <Link to={isAdmin ? "/quan-tri" : "/hoc-sinh"} className='avatarLink' >
                     <div className='avatar' >             
                       <img
                         src={ './noAvatar.jpg' }
                         alt=""
                       />
                       {/* <span>{currentUser.username}</span> */}
-                      <span>Duc Chung</span>
+                      <span>{user.username}</span>
                     </div>
                   </Link>
 
                   
-                  <Link to="" className="navButton" >
+                  <button className="navButton" onClick={logout} >
                       <LogOut className="icon" /> 
                       <span>Đăng Xuất</span>
-                  </Link>
+                  </button>
                 </div>
               ) : (
                 <>

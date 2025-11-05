@@ -1,6 +1,7 @@
 // components/adminNavbar/AdminNavbar.jsx
 import './adminNavbar.scss'
 import { Search, NotebookPen, CheckCircle2 } from 'lucide-react';
+import { useUserStore } from '../../stores/useUserStore';
 
 const AdminNavbar = ({
   selectionMode = false,
@@ -9,6 +10,8 @@ const AdminNavbar = ({
   onCompleteSelection = () => {},
   onStartRoom = () => {},  // ✅ UPDATED: add onStartRoom for the Create Room popup
 }) => {
+  const { user, logout } = useUserStore();
+
   return (
     <>
       <div className='adminNavbar'>
@@ -37,7 +40,7 @@ const AdminNavbar = ({
               <div className="user" >
                 <img src="https://img.freepik.com/premium-photo/3d-cartoon-avatar-man-minimal-3d-character-avatar-profile_652053-2067.jpg" 
                     alt="Admin Avatar" />
-                <span>Duc Chung</span>
+                <span>{user.username}</span>
               </div>
             </div>
           </div>

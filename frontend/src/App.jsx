@@ -1,4 +1,6 @@
-import { Routes, Route, useLocation  } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { useEffect } from "react";
+import toast , { Toaster } from 'react-hot-toast';
 import './App.css'
 import Header from './components/header/Header.jsx'
 import Footer from './components/footer/Footer.jsx';
@@ -10,8 +12,22 @@ import AdminPage from './pages/adminPage/AdminPage.jsx';
 import Library from './pages/libraryPage/Library.jsx';
 import OscePrepRoomPage from './pages/OscePrepRoomPage/OscePrepRoomPage.jsx';
 
+import { useUserStore } from './stores/useUserStore.js';
+
 const App = () => {
- 
+
+  const { user, checkAuth, checkingAuth } = useUserStore();
+
+  const location = useLocation();
+  const hideHeader = location.pathname === '/quan-tri';
+
+  useEffect(() => {
+		checkAuth();
+	}, [checkAuth]);
+
+  if (checkingAuth) return <div className="route-loading">Đang kiểm tra phiên đăng nhập…</div>
+
+
   return (
     <>
 
@@ -22,16 +38,20 @@ const App = () => {
       </div>
 
       <div>
-        <Header />
+        <Toaster />
+        {!hideHeader && <Header />}
         
         <Routes>
             <Route path='/' element = {<HomePage/>} />
-            <Route path='/dang-nhap' element = {<LoginPage/>}/>
-            <Route path='/dang-ky' element = {<SignupPage/>} />
+            <Route path='/dang-nhap' element = { !user ? <LoginPage/> : <Navigate to='/' /> }/>
+            <Route path='/dang-ky' element = { !user ? <SignupPage/> : <Navigate to='/' /> } />
             <Route path='/osce/phong-chuan-bi' element={ <OscePrepRoomPage/> } />
             <Route path='/osce/tram/:tramId' element = {<OSCESPage/>} />
-            <Route path='/quan-tri' element = {<AdminPage/>} />
-            <Route path='/thu-vien' element = {<Library/>} />
+            <Route 
+              path='/quan-tri' 
+              element = {user?.role === "admin" ? <AdminPage/> : <Navigate to="/dang-nhap" /> } 
+            />
+            <Route path='/thu-vien' element = {user ? <Library/> : <Navigate to="/dang-nhap" /> } />
 
           
         </Routes>

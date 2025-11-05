@@ -110,13 +110,14 @@ const FooterSection = ({ section }) => (
     <h4 className="footer__section-title">{section.title}</h4>
     <ul className="footer__links">
       {section.links.map((link) => (
-        <li key={link.href}>
+        <li key={`${section.title}-${link.label}`}>
           <a href={link.href} className="footer__link">
             {link.label}
           </a>
         </li>
       ))}
     </ul>
+
   </div>
 );
 

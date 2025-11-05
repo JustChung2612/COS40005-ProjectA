@@ -1,6 +1,8 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import "./signupPage.scss";
+import { useUserStore } from "../../stores/useUserStore";
+import { toast } from "react-hot-toast";
 
 const emailRegex = /^(?:[a-zA-Z0-9_'^&/+-])+(?:\.(?:[a-zA-Z0-9_'^&/+-])+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/;
 const passwordRules = [
@@ -10,15 +12,19 @@ const passwordRules = [
 ];
 
 export default function SignupPage() {
-  const [username, setUsername]   = useState("");
-  const [email, setEmail]         = useState("");
-  const [password, setPassword]   = useState("");
-  const [confirm, setConfirm]     = useState("");
   const [showPwd, setShowPwd]     = useState(false);
-  const [touched, setTouched]     = useState({ username:false, email:false, password:false, confirm:false });
-  const [submitting, setSubmitting]= useState(false);
-  const [success, setSuccess]     = useState(false);
+  const [touched, setTouched]     = useState({ username:false, email:false, password:false, confirm:false }); 
 
+  // ✅ Unified sign-up data object
+  const [signUpData, setSignUpData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirm: "",
+  });
+
+  const { username, email, password, confirm } = signUpData;
+  
   const usernameError = useMemo(() => {
     if (!touched.username) return "";
     if (!username.trim()) return "Please enter username.";
@@ -52,19 +58,32 @@ export default function SignupPage() {
     confirm === password &&
     password.length > 0;
 
+  // ✅ UPDATED add handleChange
+  const handleChange = (e) => {
+    const name = e.target.name;
+    const value = e.target.value;
+    setSignUpData(prev => ({...prev, [name]: value }))
+  }
+
+  // ✅ Call the Zustand hook
+  const { signup, loading } = useUserStore();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setTouched({ username:true, email:true, password:true, confirm:true });
     if (!allValid) return;
 
-    setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1100));
-    setSubmitting(false);
-    setSuccess(true);
+    try {
+      await signup(signUpData);                        
+      setSignUpData({ username: "", email: "", password: "", confirm: "" }); 
+    } catch (error) {
+      console.error("Error in Handle Submit:",error.message);
+    }
+    
   };
 
   const googleSignUp = () => {
-    alert("Google OAuth");
+    toast("Google OAuth coming soon!");    
   };
 
   return (
@@ -96,9 +115,10 @@ export default function SignupPage() {
                 <div className="input-wrapper">
                   <input
                     id="username"
+                    name="username"        // ✅ add
                     type="text"
                     value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    onChange={handleChange}
                     onBlur={() => setTouched((t) => ({ ...t, username: true }))}
                     placeholder="Your user name?"
                     className={usernameError ? "error" : ""}
@@ -114,9 +134,10 @@ export default function SignupPage() {
                 <div className="input-wrapper">
                   <input
                     id="email"
+                    name="email"           // ✅ add
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={handleChange}
                     onBlur={() => setTouched((t) => ({ ...t, email: true }))}
                     placeholder="abcxyz@example.com"
                     className={emailError ? "error" : ""}
@@ -132,9 +153,10 @@ export default function SignupPage() {
                 <div className="input-wrapper">
                   <input
                     id="password"
+                    name="password"        // ✅ add
                     type={showPwd ? "text" : "password"}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={handleChange}
                     onBlur={() => setTouched((t) => ({ ...t, password: true }))}
                     placeholder="••••••••"
                     className={passErrors.length && touched.password ? "error" : ""}
@@ -164,9 +186,10 @@ export default function SignupPage() {
                 <div className="input-wrapper">
                   <input
                     id="confirm"
+                    name="confirm"         // ✅ add
                     type={showPwd ? "text" : "password"}
                     value={confirm}
-                    onChange={(e) => setConfirm(e.target.value)}
+                    onChange={handleChange}
                     onBlur={() => setTouched((t) => ({ ...t, confirm: true }))}
                     placeholder="Re-enter password"
                     className={confirmError ? "error" : ""}
@@ -177,8 +200,8 @@ export default function SignupPage() {
               </div>
 
               {/* Submit */}
-              <motion.button type="submit" disabled={submitting} className="signup-btn" whileTap={{ scale: 0.98 }}>
-                {submitting ? <Spinner /> : "SIGN UP"}
+              <motion.button type="submit" disabled={loading} className="signup-btn" whileTap={{ scale: 0.98 }}>
+                {loading ? <Spinner /> : "SIGN UP"}
               </motion.button>
 
               {/* Divider */}
@@ -191,14 +214,6 @@ export default function SignupPage() {
               </motion.button>
             </form>
 
-            {success && (
-              <div className="success-toast">
-                <div className="success-icon" />
-                <div>
-                  <p className="success-title">Account created successfully</p>
-                </div>
-              </div>
-            )}
           </motion.div>
         </motion.div>
       </div>

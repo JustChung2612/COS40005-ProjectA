@@ -1,6 +1,7 @@
-// ✅ CreateRoomPopup.jsx — Phase 1: Popup UI + Drag-Drop logic
-import React, { useState } from "react";
+
 import "./createRoomPopup.scss";
+import { useState } from "react";
+import { X, ArrowBigLeft, ArrowBigRight } from 'lucide-react';
 
 const CreateRoomPopup = ({
   isOpen,
@@ -9,42 +10,39 @@ const CreateRoomPopup = ({
   onFinishRoom,
   onAddPatientToStation
 }) => {
+  // ---------------------- STATE ----------------------
   const [currentStationIndex, setCurrentStationIndex] = useState(0);
   const [stations, setStations] = useState([{ name: "Trạm 1", patients: [] }]);
 
-  // ---- 🧩 Handle drop from StationCard ----
+  // ---------------------- 🧩 DROP HANDLER ----------------------
   const handleDrop = (e) => {
     e.preventDefault();
     const json = e.dataTransfer.getData("application/json");
     if (!json) return;
-
     const patient = JSON.parse(json);
     const id = patient._id; // ✅ unified: only _id now
 
-    setStations((prev) => {
-      const updated = prev.map((s, i) => {
+    setStations((prev) =>
+      prev.map((s, i) => {
         if (i !== currentStationIndex) return s;
-        const alreadyExists = s.patients.some(
-          (p) => String(p._id) === String(id)
-        );
+        const alreadyExists = s.patients.some((p) => String(p._id) === String(id));
         if (alreadyExists) return s;
-
-        // ✅ Always return a fresh copy
-        return {
-          ...s,
-          patients: [...s.patients, patient],
-        };
-      });
-      return updated;
-    });
+        return { ...s, patients: [...s.patients, patient] };
+      })
+    );
 
     onAddPatientToStation?.(patient, currentStationIndex);
   };
-
-
   const handleDragOver = (e) => e.preventDefault();
 
-  // ---- 🧩 Navigation buttons ----
+  // ---------------------- ⚙️ NEW: PAGINATION ----------------------
+  const handleGoToStation = (index) => {
+    if (index >= 0 && index < stations.length) {
+      setCurrentStationIndex(index);
+    }
+  };
+
+  // ---------------------- ✅ BUTTON LOGIC ----------------------
   const handleNextStation = () => {
     setStations((prev) => [
       ...prev,
@@ -57,21 +55,43 @@ const CreateRoomPopup = ({
     onFinishRoom?.(stations);
   };
 
-  if (!isOpen) return null; // hidden when closed
+  // ✅ REPLACE WITH THIS ↓↓↓
+  const handleCancelRoom = () => {
+    // 🧹 Reset all station data when cancel
+    setStations([{ name: "Trạm 1", patients: [] }]);
+    setCurrentStationIndex(0);
+    onCancelRoom?.(); // will close popup from parent
+  };
+
+  if (!isOpen) return null;
 
   return (
     <div className="createRoomPopup__overlay">
       <div className="createRoomPopup">
-        {/* ---- HEADER ---- */}
-        <div className="createRoomPopup__header">
-          <h2>Đang tạo {stations[currentStationIndex].name}</h2>
-          <div className="createRoomPopup__controls">
-            <button className="icon-btn" onClick={onClose}>❌</button>
-            <button className="cancel-btn" onClick={onCancelRoom}>Hủy tạo phòng</button>
+        {/* =========================================================
+           🆕 HEADER SECTION 
+        ========================================================= */}
+        <div className="createRoomPopup-header-container">
+                      <button className="toggle-btn"  onClick={onClose} title="Đóng tạm thời" >
+                <X />
+            </button>   
+          <div className="createRoomPopup-header-main" >       
+
+            <h2 >Đang tạo {stations[currentStationIndex].name}</h2>
+
+            <div className="createRoomPopup__controls">
+              <button className="cancel-btn" onClick={handleCancelRoom}>
+                🗑️ Hủy tạo phòng
+              </button>
+            </div>
           </div>
+
+         
         </div>
 
-        {/* ---- DROP ZONE ---- */}
+        {/* =========================================================
+           🧩 DROPZONE SECTION
+        ========================================================= */}
         <div
           className="createRoomPopup__dropzone"
           onDrop={handleDrop}
@@ -88,16 +108,45 @@ const CreateRoomPopup = ({
           </div>
         </div>
 
-        {/* ---- FOOTER ---- */}
+
+        <div className="pagination-section">
+          <button
+            className="left-pagin"
+            onClick={() => handleGoToStation(currentStationIndex - 1)}
+            disabled={currentStationIndex === 0}
+            title="Trạm trước đó"
+          >
+            <ArrowBigLeft className="pagin-arrow" />
+          </button>
+
+          <h3 className="current-station">
+            Đang ở trạm {currentStationIndex + 1} / Tổng {stations.length}
+          </h3>
+
+          <button
+            className="right-pagin"
+            onClick={() => handleGoToStation(currentStationIndex + 1)}
+            disabled={currentStationIndex === stations.length - 1}
+            title="Trạm kế tiếp"
+          >
+            <ArrowBigRight className="pagin-arrow" />
+          </button>
+        </div>
+
+
+        {/* =========================================================
+           🦶 FOOTER SECTION
+        ========================================================= */}
         <div className="createRoomPopup__footer">
           <button className="finish-btn" onClick={handleFinish}>
-            Hoàn thành phòng
+            ✅ Hoàn thành phòng
           </button>
           <button className="next-btn" onClick={handleNextStation}>
-            Tạo trạm tiếp theo ➕
+            ➕ Tạo trạm tiếp theo
           </button>
         </div>
       </div>
+
     </div>
   );
 };

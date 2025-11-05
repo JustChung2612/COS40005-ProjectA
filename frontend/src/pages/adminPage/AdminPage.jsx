@@ -1,4 +1,3 @@
-// pages/adminPage/AdminPage.jsx
 import './adminPage.scss';
 import { useState, useMemo } from 'react';
 import Sidebar from '../../components/sidebar/Sidebar';
@@ -22,12 +21,17 @@ const AdminPage = () => {
   const handleStartRoom = () => setIsPopupOpen(true);
   const handleClosePopup = () => setIsPopupOpen(false);
   const handleCancelRoom = () => {
+    console.log("🗑️ Room creation cancelled");
     setIsPopupOpen(false);
-    // optional: reset temporary data
+    setSelectionMode(false);
+    setSelectedIds([]);
+    setRooms([]); // remove temporary room data
   };
   const handleFinishRoom = (stations) => {
     console.log("✅ ROOM CREATED:", stations);
     setIsPopupOpen(false);
+    setRooms([{ id: `room_${Date.now()}`, stationIds: stations.map((s) => s.name) }]);
+    setActiveSection("roomStation");
     // TODO: send stations to backend / move to RoomStationList
   };
 
@@ -95,9 +99,12 @@ const AdminPage = () => {
       {/* 🆕 UPDATED: render the CreateRoomPopup overlay */}
       <CreateRoomPopup
         isOpen={isPopupOpen}
-        onClose={handleClosePopup}
-        onCancelRoom={handleCancelRoom}
+        onClose={() => setIsPopupOpen(false)}   // 👁️ toggle close (temporary)
+        onCancelRoom={handleCancelRoom}         // 🗑️ full cancel + reset
         onFinishRoom={handleFinishRoom}
+        onAddPatientToStation={(patient, index) => {
+          console.log(`➕ Added patient to station ${index + 1}`, patient);
+        }}
       />
     </>
   )

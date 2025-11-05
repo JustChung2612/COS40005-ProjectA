@@ -10,7 +10,12 @@ import stationRoutes from './routes/station.route.js';
 const app = express();
 const PORT = 5000;
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",  // ✅ must match your frontend URL exactly
+    credentials: true,                // ✅ allow cookies / session sharing
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 
