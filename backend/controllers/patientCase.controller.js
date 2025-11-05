@@ -1,32 +1,31 @@
-import Station from '../models/station.model.js';
+import PatientCase from "../models/patientCase.model.js";
 
-export const createStation = async (req, res) => {
+export const createPatientCase = async (req, res) => {
   try {
-    const {       
-      metadata,
-      ten_tram,
-      benh_an_tinh_huong,
-      cau_hoi, 
-    } = req.body;
+    const { metadata, ten_benh_an, benh_an_tinh_huong, cau_hoi } = req.body;
 
+    if (!metadata || !benh_an_tinh_huong || !cau_hoi) {
+      return res.status(400).json({ message: "Thiếu dữ liệu bắt buộc, không thể tạo bệnh án trống." });
+    }
 
-    const station = await Station.create(
+    const patientCase = await PatientCase.create(
       {
         metadata,
-        ten_tram,
+        ten_benh_an,
         benh_an_tinh_huong,
         cau_hoi,
       }
     );
-    return res.status(201).json({ message: 'Station created', data: station });
+    
+    return res.status(201).json({ message: 'Patient Case created', data: patientCase });
   } catch (error) {
-    console.log("Error in Log In controller", error.message);
+    console.log("Error in Create Patient Case controller", error.message);
     res.status(500).json({ message: error.message });
   }
 };
 
 
-export const getStations = async (req, res) => {
+export const getPatientCases = async (req, res) => {
   try {
     const {
       chuan_doan,
@@ -53,11 +52,11 @@ export const getStations = async (req, res) => {
       query['benh_an_tinh_huong.thong_tin_benh_nhan.tuoi'] = { $gte: min, $lte: max };
     }
 
-    const stations = await Station.find(query);
-    res.status(200).json({ message: 'Fetched stations', count: stations.length, data: stations });
+    const patientCases = await PatientCase.find(query);
+    res.status(200).json({ message: 'Fetched Patient Cases', count: patientCases.length, data: patientCases });
   } catch (error) {
-    console.error('Error fetching stations:', error.message);
-    res.status(500).json({ message: 'Server error while fetching stations' });
+    console.error('Error in getPatientCases controller', error.message);
+    res.status(500).json({ message: error.message });
   }
 };
 

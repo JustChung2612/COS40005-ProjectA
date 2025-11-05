@@ -1,16 +1,6 @@
-import { Link } from "react-router-dom";
-import {
-  Search,
-  Stethoscope,
-  ClipboardCheck,
-  BarChart3,
-  Award,
-  CheckCircle2,
-  TrendingUp,
-  Microscope,
-  LibraryBig 
-} from "lucide-react";
 import "./HomePage.scss";
+import { Link } from "react-router-dom";
+import { Search, Stethoscope, CheckCircle2, Microscope, LibraryBig  } from "lucide-react";
 import ExamRoomCard from "../../components/examRoomCard/ExamRoomCard";
 
 const HomePage = () => {
@@ -96,20 +86,11 @@ const HomePage = () => {
             roomLabel="Phòng 302 · RM-302"
             status="Chuẩn bị"
             title="OSCE Nội tổng hợp – Ca 2"
+            terminology="Y học Cổ truyền"
             timeRange="14:00–15:30"
           />
-          <ExamRoomCard
-            roomLabel="Phòng 205 · RM-205"
-            status="Đang thi"
-            title="OSCE Ngoại khoa – Ca 1"
-            timeRange="13:00–14:30"
-          />
-          <ExamRoomCard
-            roomLabel="Phòng 118 · RM-118"
-            status="Sắp mở"
-            title="OSCE Nhi khoa – Ca 3"
-            timeRange="16:00–17:30"
-          />
+          <ExamRoomCard />
+          <ExamRoomCard />
                     
         </div>
 

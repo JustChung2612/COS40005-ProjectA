@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import StationCard from "../../../../components/stationCard/StationCard.jsx";
+import PatientCaseCard from "../../../../components/patientCaseCard/PatientCaseCard.jsx";
 import axios from "axios";
 
-const StationList = () => {
+const PatientCaseList = () => {
   const [examCases, setExamCases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -22,21 +22,21 @@ const StationList = () => {
   const difficultyOptions = ["Cơ bản", "Trung bình", "Nâng cao"];
   const targetGroupOptions = ["Người lớn", "Người già", "Trẻ em", "Thai phụ"];
 
-  // -------------------- Fetch Stations --------------------
+  // -------------------- Fetch Patient Cases --------------------
   useEffect(() => {
-    const fetchStations = async () => {
+    const fetchPatientCases = async () => {
       try {
         setLoading(true);
-        const res = await axios.get("http://localhost:5000/api/stations");
+        const res = await axios.get("http://localhost:5000/api/patient-cases");
         setExamCases(res.data?.data || []);
       } catch (err) {
-        console.error("Failed to fetch stations:", err);
-        setError("Không thể tải danh sách trạm thi");
+        console.error("Failed to fetch Patient Cases:", err);
+        setError("Không thể tải danh sách Bệnh Án");
       } finally {
         setLoading(false);
       }
     };
-    fetchStations();
+    fetchPatientCases();
   }, []);
 
   // -------------------- Filter Logic --------------------
@@ -65,7 +65,7 @@ const StationList = () => {
       });
 
       const res = await axios.get(
-        `http://localhost:5000/api/stations?${queryParams.toString()}`
+        `http://localhost:5000/api/patient-cases?${queryParams.toString()}`
       );
       setExamCases(res.data?.data || []);
     } catch (err) {
@@ -76,14 +76,14 @@ const StationList = () => {
   };
 
   // -------------------- UI --------------------
-  if (loading) return <div>Đang tải danh sách trạm thi...</div>;
+  if (loading) return <div>Đang tải danh sách Bệnh Án...</div>;
   if (error) return <div style={{ color: "red" }}>{error}</div>;
 
   return (
     <div className="examContainer">
       {/* ---------- FILTER SECTION ---------- */}
       <div className="filterExam">
-        <h3>Bộ lọc trạm thi</h3>
+        <h3>Bộ lọc bệnh án</h3>
 
         <div className="filterGroup">
           {/* Chuẩn đoán */}
@@ -184,20 +184,36 @@ const StationList = () => {
 
       {/* ---------- EXAM LIST SECTION ---------- */}
       <div className="examListContainer">
-        <h3 className="listTitle">Danh sách trạm thi</h3>
+        <h3 className="listTitle">Danh sách Bệnh Án</h3>
         <div className="examList">
-          {examCases.map((caseData, i) => (
-            <StationCard
-              key={caseData._id || i}
-              data={caseData}
-              onEdit={(d) => console.log("Edit", d)}
-              onDelete={(d) => console.log("Delete", d)}
-            />
-          ))}
+          { examCases.length === 0 ? (
+            <div
+              style={{
+                textAlign: "center",
+                marginTop: "3rem",
+                fontSize: "1.2rem",
+                color: "#555",
+                fontWeight: "500",
+              }}
+            >
+              Không có bệnh án nào, hãy <strong>tải bệnh án ngay!</strong>
+            </div>
+          ) : (
+            <div className="examList">
+              {examCases.map((caseData, i) => (
+                <PatientCaseCard
+                  key={caseData._id || i}
+                  data={caseData}
+                  onEdit={(d) => console.log("Edit", d)}
+                  onDelete={(d) => console.log("Delete", d)}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-export default StationList;
+export default PatientCaseList;

@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useEffect } from "react";
-import toast , { Toaster } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 import './App.css'
 import Header from './components/header/Header.jsx'
 import Footer from './components/footer/Footer.jsx';
@@ -19,7 +19,8 @@ const App = () => {
   const { user, checkAuth, checkingAuth } = useUserStore();
 
   const location = useLocation();
-  const hideHeader = location.pathname === '/quan-tri';
+  const hideHeader = location.pathname === '/quan-tri' ||
+                     location.pathname.startsWith('/osce/tram/'); ;
 
   useEffect(() => {
 		checkAuth();

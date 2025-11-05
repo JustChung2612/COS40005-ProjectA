@@ -2,8 +2,8 @@ import mongoose from 'mongoose';
 
 const { Schema } = mongoose;
 
-// 🩺 Station Schema (Trạm Thi)
-const StationSchema = new Schema(
+// 🩺 PatientCase Schema (Trạm Thi)
+const PatientCaseSchema = new Schema(
   {
 
     metadata: {
@@ -14,7 +14,7 @@ const StationSchema = new Schema(
       doi_tuong: { type: String }     // Target group
     },
 
-    ten_tram: { type: String }, // Station name
+    ten_benh_an: { type: String }, // PatientCase name
 
     benh_an_tinh_huong: {
       thong_tin_benh_nhan: {
@@ -53,5 +53,5 @@ const StationSchema = new Schema(
 );
 
 
-const Station = mongoose.model('Station', StationSchema);
-export default Station;
+const PatientCase  = mongoose.model('PatientCase', PatientCaseSchema);
+export default PatientCase ;

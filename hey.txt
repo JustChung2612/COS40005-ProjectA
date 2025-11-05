@@ -1,0 +1,25 @@
+backend
+ ┣ controllers
+ ┃ ┣ auth.controller.js
+ ┃ ┣ examRoom.controller.js
+ ┃ ┣ examStation.controller.js
+ ┃ ┗ patientCase.controller.js
+ ┣ lib
+ ┃ ┣ db.js
+ ┃ ┗ redis.js
+ ┣ middleware
+ ┃ ┗ auth.middleware.js
+ ┣ models
+ ┃ ┣ examRoom.model.js
+ ┃ ┣ examStation.model.js
+ ┃ ┣ patientCase.model.js
+ ┃ ┗ user.model.js
+ ┣ node_modules
+ ┣ routes
+ ┃ ┣ auth.route.js
+ ┃ ┗ patientCase.route.js
+ ┣ .env
+ ┣ .gitignore
+ ┣ package-lock.json
+ ┣ package.json
+ ┗ server.js

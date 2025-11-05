@@ -64,7 +64,7 @@ const OsceStationPage = () => {
         setLoading(true);
 
         // ✅ UPDATED: query by _id instead of stationID
-        const res = await axios.get(`http://localhost:5000/api/stations?_id=${tramId}`);
+        const res = await axios.get(`http://localhost:5000/api/patient-cases?_id=${tramId}`);
         const station = res.data?.data?.[0];
         if (!station) throw new Error("Không tìm thấy trạm thi");
         setExamData(station);
@@ -152,7 +152,7 @@ const isAnswered = (n) => {
 
 const submit = () => {
   console.log("BÀI LÀM:", answers);
-  alert("Đã nộp bài! (Bạn có thể nối API chấm điểm sau)");
+  
 };
 
 // ✅ Now safe conditional rendering

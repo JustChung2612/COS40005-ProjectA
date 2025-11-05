@@ -2,112 +2,98 @@ import './adminPage.scss';
 import { useState, useMemo } from 'react';
 import Sidebar from '../../components/sidebar/Sidebar';
 import AdminNavbar from '../../components/adminNavbar/AdminNavbar';
-import StationList from './adminComp/stationList/StationList.jsx';
-import RoomStationlist from './adminComp/roomStationList/RoomStationList.jsx';
-import CreateRoomPopup from './adminComp/createRoomPopup/CreateRoomPopup.jsx';
+import PatientCaseList from './adminComp/patientCaseList/PatientCaseList.jsx';
+import CreateRoomPopup from './adminComp/roomPopup/RoomPopup.jsx';
 
 const AdminPage = () => {
-  const [activeSection , setActiveSection ] = useState('station');
-
-  // ---- selection state for creating a room
+  const [activeSection, setActiveSection] = useState('patientCase');
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
 
-  // ---- rooms (simple: one room for now)
-  const [rooms, setRooms] = useState([]); // each room: { id, stationIds: string[] }
-
-  //🆕 UPDATE -- Handle PopUp Open section
+  // 🆕 Popup control
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const handleStartRoom = () => setIsPopupOpen(true);
   const handleClosePopup = () => setIsPopupOpen(false);
+
   const handleCancelRoom = () => {
-    console.log("🗑️ Room creation cancelled");
+    console.log('🗑️ Room creation cancelled');
     setIsPopupOpen(false);
     setSelectionMode(false);
     setSelectedIds([]);
-    setRooms([]); // remove temporary room data
-  };
-  const handleFinishRoom = (stations) => {
-    console.log("✅ ROOM CREATED:", stations);
-    setIsPopupOpen(false);
-    setRooms([{ id: `room_${Date.now()}`, stationIds: stations.map((s) => s.name) }]);
-    setActiveSection("roomStation");
-    // TODO: send stations to backend / move to RoomStationList
   };
 
+  const handleFinishRoom = (stations) => {
+    // ✅ Simplified: only close popup and reset selection
+    console.log('✅ Room creation finished (UI only). Stations draft:', stations);
+    setIsPopupOpen(false);
+    setSelectionMode(false);
+    setSelectedIds([]);
+    // TODO: later integrate backend save logic
+  };
+
+  // Toggle selection logic
   const toggleSelect = (id) => {
-    setSelectedIds(prev =>
-      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
   };
 
   const handleStartSelection = () => {
-    setActiveSection('station');
+    setActiveSection('patientCase');
     setSelectionMode(true);
     setSelectedIds([]);
   };
 
   const handleCompleteSelection = () => {
     if (selectedIds.length === 0) return;
-
-    const newRoom = {
-      id: `room_${Date.now()}`,
-      stationIds: selectedIds,
-    };
-    setRooms([newRoom]);     // simple single-room example
+    console.log('✅ Completed selection:', selectedIds);
     setSelectionMode(false);
     setSelectedIds([]);
-    setActiveSection('roomStation'); // go to room list after done
   };
 
-  const sectionComponents = useMemo(() => ({
-    station: (
-      <StationList
-        selectionMode={selectionMode}
-        selectedIds={selectedIds}
-        onToggleSelect={toggleSelect}
-      />
-    ),
-    roomStation: (
-      <RoomStationlist
-        rooms={rooms}
-      />
-    )
-  }), [selectionMode, selectedIds, rooms]);
+  // 🧩 Section map — only PatientCaseList now
+  const sectionComponents = useMemo(
+    () => ({
+      patientCase: (
+        <PatientCaseList
+          selectionMode={selectionMode}
+          selectedIds={selectedIds}
+          onToggleSelect={toggleSelect}
+        />
+      ),
+    }),
+    [selectionMode, selectedIds]
+  );
 
   return (
     <>
-      <div className="AdminPageHome" >
+      <div className="AdminPageHome">
         <Sidebar active={activeSection} onSelect={setActiveSection} />
 
-        {/* ✅ UPDATED: add popup-open class when popup is open */}
-        <div className={`homeContainer ${isPopupOpen ? "popup-open" : ""}`}>
-
+        <div className={`homeContainer ${isPopupOpen ? 'popup-open' : ''}`}>
           <AdminNavbar
             selectionMode={selectionMode}
             selectedCount={selectedIds.length}
             onStartSelection={handleStartSelection}
             onCompleteSelection={handleCompleteSelection}
-            //🆕 UPDATE -- Modify AdminNavbar trigger button
-            onStartRoom={handleStartRoom} // 
+            onStartRoom={handleStartRoom}
           />
 
-          {sectionComponents[activeSection] || sectionComponents.station}
+          {sectionComponents[activeSection] || sectionComponents.patientCase}
         </div>
       </div>
 
-      {/* 🆕 UPDATED: render the CreateRoomPopup overlay */}
       <CreateRoomPopup
         isOpen={isPopupOpen}
-        onClose={() => setIsPopupOpen(false)}   // 👁️ toggle close (temporary)
-        onCancelRoom={handleCancelRoom}         // 🗑️ full cancel + reset
+        onClose={handleClosePopup}
+        onCancelRoom={handleCancelRoom}
         onFinishRoom={handleFinishRoom}
         onAddPatientToStation={(patient, index) => {
           console.log(`➕ Added patient to station ${index + 1}`, patient);
         }}
       />
     </>
-  )
-}
+  );
+};
 
-export default AdminPage
+export default AdminPage;

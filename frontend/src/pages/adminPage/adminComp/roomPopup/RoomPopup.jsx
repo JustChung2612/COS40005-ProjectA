@@ -1,7 +1,8 @@
 
-import "./createRoomPopup.scss";
+import "./roomPopup.scss";
 import { useState } from "react";
 import { X, ArrowBigLeft, ArrowBigRight } from 'lucide-react';
+import { toast } from "react-hot-toast";
 
 const CreateRoomPopup = ({
   isOpen,
@@ -43,7 +44,18 @@ const CreateRoomPopup = ({
   };
 
   // ---------------------- ✅ BUTTON LOGIC ----------------------
+
+  // 🔄 UPDATED — Block creating the next station if current one is empty
   const handleNextStation = () => {
+    // 🛑 If the current station has no patients, show error and stop
+    const current = stations[currentStationIndex];
+    if (!current || current.patients.length === 0) {
+      // ❗ Annotation: Show toast error when no patient in the current station
+      toast.error("Hãy thêm bệnh án vào trạm");
+      return;
+    }
+
+    // ✅ Otherwise, proceed to create a new empty station and move to it
     setStations((prev) => [
       ...prev,
       { name: `Trạm ${prev.length + 1}`, patients: [] },
@@ -51,9 +63,30 @@ const CreateRoomPopup = ({
     setCurrentStationIndex((prev) => prev + 1);
   };
 
+  // 🔄 UPDATED — Validate before finishing the room
   const handleFinish = () => {
+    // Total patients across all stations
+    const totalPatients = stations.reduce((sum, s) => sum + s.patients.length, 0);
+
+    // 🛑 If no patient at all in the whole room
+    if (totalPatients === 0) {
+      // ❗ Annotation: Show error when user tries to finish without adding any case
+      toast.error("Hãy thêm bệnh án vào trạm");
+      return;
+    }
+
+    // 🔍 If any specific station is empty, block and focus that station
+    const emptyIndex = stations.findIndex((s) => s.patients.length === 0);
+    if (emptyIndex !== -1) {
+      toast.error(`Trạm ${emptyIndex + 1} chưa có bệnh án`);
+      setCurrentStationIndex(emptyIndex);
+      return;
+    }
+
+    // ✅ All good — finish
     onFinishRoom?.(stations);
   };
+
 
   // ✅ REPLACE WITH THIS ↓↓↓
   const handleCancelRoom = () => {
@@ -68,9 +101,7 @@ const CreateRoomPopup = ({
   return (
     <div className="createRoomPopup__overlay">
       <div className="createRoomPopup">
-        {/* =========================================================
-           🆕 HEADER SECTION 
-        ========================================================= */}
+        {/* ========== 🆕 HEADER SECTION ========== */}
         <div className="createRoomPopup-header-container">
                       <button className="toggle-btn"  onClick={onClose} title="Đóng tạm thời" >
                 <X />
@@ -89,15 +120,13 @@ const CreateRoomPopup = ({
          
         </div>
 
-        {/* =========================================================
-           🧩 DROPZONE SECTION
-        ========================================================= */}
+        {/* ========== 🧩 DROPZONE SECTION ========== */}
         <div
           className="createRoomPopup__dropzone"
           onDrop={handleDrop}
           onDragOver={handleDragOver}
         >
-          <p>Kéo thả bệnh án (StationCard) vào đây 👇</p>
+          <p>Kéo thả bệnh án vào đây 👇</p>
           <div className="added-patients">
             {stations[currentStationIndex].patients.map((p, i) => (
               <div key={i} className="added-patient">
@@ -134,9 +163,7 @@ const CreateRoomPopup = ({
         </div>
 
 
-        {/* =========================================================
-           🦶 FOOTER SECTION
-        ========================================================= */}
+        {/* ========== 🦶 FOOTER SECTION  ========== */}
         <div className="createRoomPopup__footer">
           <button className="finish-btn" onClick={handleFinish}>
             ✅ Hoàn thành phòng
