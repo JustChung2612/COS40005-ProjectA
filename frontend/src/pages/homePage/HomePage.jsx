@@ -1,9 +1,60 @@
 import "./HomePage.scss";
+import { useEffect, useState } from "react";
+import axios from "axios";     
 import { Link } from "react-router-dom";
 import { Search, Stethoscope, CheckCircle2, Microscope, LibraryBig  } from "lucide-react";
 import ExamRoomCard from "../../components/examRoomCard/ExamRoomCard";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
 const HomePage = () => {
+
+  const [code, setCode] = useState("");
+  const navigate = useNavigate();
+
+  const handleJoin = async () => {
+    try {
+      const res = await axios.post("http://localhost:5000/api/exam-rooms/join", {
+        code,
+      });
+      if (res.status === 200) {
+        toast.success("🎓 Tham gia phòng thi thành công!");
+        const room = res.data.data;
+        const firstStationId = room?.stations?.[0]?._id;
+
+        if (!firstStationId) {
+          return toast.error("Phòng thi chưa có trạm. Vui lòng liên hệ giảng viên.");
+        }
+
+        // 👉 go directly to station page
+        navigate(`/osce/tram/${firstStationId}`);
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Không thể tham gia phòng thi.");
+    }
+  };
+
+  const [rooms, setRooms] = useState([]);             // 🆕
+  const [loadingRooms, setLoadingRooms] = useState(true); // 🆕
+
+  useEffect(() => {                                   // 🆕
+    const fetchRooms = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/exam-rooms");
+        // Prefer published rooms if status exists; fall back to all
+        const list = Array.isArray(res.data?.data) ? res.data.data : [];
+        const published = list.filter((r) => r.status === "Đã phát hành");
+        setRooms(published.length ? published : list);
+      } catch (err) {
+        console.error("❌ Lỗi tải phòng thi:", err);
+      } finally {
+        setLoadingRooms(false);
+      }
+    };
+    fetchRooms();
+  }, []);
+
+
   return (
     <div className="home">
       {/* Section 1 - Giới thiệu nền tảng (nền trắng) */}
@@ -28,11 +79,18 @@ const HomePage = () => {
                   <div className='intro-search-con' >
                     <div className="intro-search">
                       <Search className='icon' />
-                      <input type="text" id="intro-search-input" 
-                            placeholder="Nhập mã phòng trạm tại đây..." 
+                      <input 
+                          type="text" 
+                          id="intro-search-input" 
+                          placeholder="Nhập mã phòng trạm tại đây..." 
+                          value={code}
+                          onChange={(e) => setCode(e.target.value)}
                       />
                     </div>
-                    <button className=' btn-section btn-vaoTram ' >
+                    <button 
+                          className=' btn-section btn-vaoTram ' 
+                          onClick={handleJoin}
+                    >
                       Vào Trạm 
                     </button>
                   </div>
@@ -80,24 +138,21 @@ const HomePage = () => {
       <section className="section--examRoom">
         <h2>Danh Sách Các Phòng Đang Thi</h2>
 
-        <div className="examRoom-container">
-          {/* Demo room cards — replace with your real data/map() later */}
-          <ExamRoomCard
-            roomLabel="Phòng 302 · RM-302"
-            status="Chuẩn bị"
-            title="OSCE Nội tổng hợp – Ca 2"
-            terminology="Y học Cổ truyền"
-            timeRange="14:00–15:30"
-          />
-          <ExamRoomCard />
-          <ExamRoomCard />
-                    
-        </div>
+        {loadingRooms ? (
+          <p>Đang tải phòng thi...</p>
+        ) : rooms.length === 0 ? (
+          <p>Hiện chưa có phòng nào.</p>
+        ) : (
+          <div className="examRoom-container">
+            {rooms.map((room) => (
+              <ExamRoomCard key={room._id} data={room} />
+            ))}
+          </div>
+        )}
 
-        <button className='  btn-section btn-findRoom' >
+        <button className="btn-section btn-findRoom">
           Tìm Phòng Thi
         </button>
-        
       </section>
 
       {/* Section 3 - Hiện mục Luyện Tập - Thư Viện */}

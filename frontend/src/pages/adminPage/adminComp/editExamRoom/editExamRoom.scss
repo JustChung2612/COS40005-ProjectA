@@ -1,0 +1,227 @@
+/* ===========================
+   🧩 Edit Exam Room Page
+   =========================== */
+.editRoomContainer {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  .back-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 10rem;
+    margin-bottom: 12px;
+    padding: 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: #f8fafc;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.5s ease;
+  }
+  .back-btn:hover { background-color: #cacdd1; }
+
+  h2 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    font-size: 1rem;
+    color: #333;
+  }
+
+  /* ===========================
+     ⚙️ Station Configuration Section
+     =========================== */
+  .stationListSection {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+
+    h3 {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      color: #111827;
+    }
+
+    /* ===== Workflow Layout (Left + Right Boxes) ===== */
+    .stationWorkflowContainer {
+      display: flex;
+      gap: 2rem;
+      margin-top: 1rem;
+
+      /* ===== Left Box ===== */
+      .stationLeftBox {
+        flex: 1;
+        background: #f9fafb;
+        border-radius: 10px;
+        padding: 1rem;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+        overflow-y: auto;
+        max-height: 80vh;
+
+        .stationCard {
+          background: #fff;
+          border: 1px solid #e5e7eb;
+          border-radius: 10px;
+          padding: 1rem;
+          margin-bottom: 1rem;
+          transition: all 0.2s ease;
+
+          &:hover {
+            border-color: #14b8a6;
+            box-shadow: 0 0 4px rgba(20, 184, 166, 0.4);
+          }
+
+          h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+          }
+
+          label {
+            display: block;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            color: #374151;
+          }
+
+          input {
+            width: 100%;
+            margin-top: 0.3rem;
+            padding: 0.4rem 0.6rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.95rem;
+
+            &:focus {
+              outline: none;
+              border-color: #14b8a6;
+              box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.2);
+            }
+          }
+
+          .station-button-section{
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.6rem;
+
+            .stationSaveBtn , .viewCasesBtn , .deleteBtn {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              gap: 5px;
+              padding: 0.5rem ;
+              border: none;
+              border-radius: 8px;
+              cursor: pointer;
+              font-weight: 500;
+              font-size: 0.9rem;
+              transition: 0.2s all ease;
+            }
+
+            .stationSaveBtn {
+              background-color: #14b8a6;
+              color: white;
+
+              &:hover {
+                background-color: #0d9488;
+              }
+            }
+
+            .viewCasesBtn {
+              background-color: #e5e7eb;
+              color: #111827;
+
+              &:hover {
+                background-color: #d1d5db;
+              }
+            }
+
+            .deleteBtn {
+              
+              background: #ED3F27;
+              color: #ffff   ;
+            }
+
+          }
+
+        }
+      }
+
+      /* ===== Right Box ===== */
+      .stationRightBox {
+        flex: 1;
+        background: #f9fafb;
+        border-radius: 10px;
+        padding: 1rem;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+        overflow-y: auto;
+        max-height: 80vh;
+
+        h4 {
+          font-size: 1.1rem;
+          margin-bottom: 0.8rem;
+        }
+
+        .no-case {
+          color: #6b7280;
+          font-style: italic;
+        }
+
+        .patientCaseItem {
+          background: #fff;
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+          padding: 0.8rem;
+          margin-bottom: 0.8rem;
+
+          p {
+            margin: 0;
+            font-size: 0.95rem;
+          }
+
+          .viewBtn {
+            background-color: #14b8a6;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            margin-top: 0.5rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: 0.2s ease;
+
+            &:hover {
+              background-color: #0d9488;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /* ===========================
+     🚀 Publish Button
+     =========================== */
+  .publish-btn {
+    background-color: #14b8a6;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.7rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    align-self: flex-start;
+    transition: 0.2s ease;
+
+    &:hover {
+      background-color: #0d9488;
+    }
+  }
+}

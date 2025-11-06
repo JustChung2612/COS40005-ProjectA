@@ -4,6 +4,7 @@ import Sidebar from '../../components/sidebar/Sidebar';
 import AdminNavbar from '../../components/adminNavbar/AdminNavbar';
 import PatientCaseList from './adminComp/patientCaseList/PatientCaseList.jsx';
 import CreateRoomPopup from './adminComp/roomPopup/RoomPopup.jsx';
+import ExamRoomList from './adminComp/examRoomList/ExamRoomList.jsx';
 
 const AdminPage = () => {
   const [activeSection, setActiveSection] = useState('patientCase');
@@ -61,6 +62,7 @@ const AdminPage = () => {
           onToggleSelect={toggleSelect}
         />
       ),
+      examRoom: <ExamRoomList/>, // 🆕 shows “Danh sách phòng thi”
     }),
     [selectionMode, selectedIds]
   );
@@ -91,6 +93,7 @@ const AdminPage = () => {
         onAddPatientToStation={(patient, index) => {
           console.log(`➕ Added patient to station ${index + 1}`, patient);
         }}
+        setActiveSection={setActiveSection} // move to ExamRoomList after create exam room
       />
     </>
   );

@@ -80,11 +80,36 @@
   background: #f9fafb;
 }
 
-.added-patient {
-  background: #e0f7f4;
+.added-patient-container{
+  margin-top: 20px;
+  background: #d8f9f5;
   border-radius: 8px;
-  padding: 0.5rem 0.75rem;
-  margin: 0.25rem 0;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+
+  .added-patient {
+    background: #d8f9f5;
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    margin: 0.25rem 0;
+    width: 100%;
+  }
+
+  .delete-icon-btn{
+    margin-right: 5px;
+    background: #ffff ;
+    color: #ED3F27  ;
+    border: none;
+    border-radius: 5px;
+    padding: 2px;
+    transition: all 0.5s ease;
+    
+  }
+   .delete-icon-btn:hover {
+     background: #ED3F27;
+     color: #ffff   ;
+   }
 }
 
 .finish-btn,

@@ -1,9 +1,8 @@
-// ✅ UPDATED PART — dynamic station fetching by ID
+import "./osceStationPage.scss";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { Clock, FileText, AlertCircle, CheckCircle2, ArrowBigRight } from "lucide-react";
-import "./osceStationPage.scss";
 
 /* ========= UI PRIMITIVES (same as before) ========= */
 const Button = ({ children, variant = "primary", size = "md", className = "", ...props }) => {
@@ -53,37 +52,58 @@ const OsceStationPage = () => {
   const [examData, setExamData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [patientCase, setPatientCase] = useState(null);
 
-  // 🆕 Fetch station by ID from backend
+  // ✅ UPDATED: fetch station + assigned case together & respect OSCE rules
   useEffect(() => {
-    const fetchStation = async () => {
+    if (!tramId) return;
+
+    let isMounted = true;
+
+    (async () => {
       try {
-        // 🧹 Clear old data right away when switching stations
-        setExamData(null);
-        setError(null);
         setLoading(true);
+        setError(null);
 
-        // ✅ UPDATED: query by _id instead of stationID
-        const res = await axios.get(`http://localhost:5000/api/patient-cases?_id=${tramId}`);
-        const station = res.data?.data?.[0];
+        // Get station & the assigned case simultaneously
+        const [stationRes, assignRes] = await Promise.all([
+          axios.get(`http://localhost:5000/api/exam-stations/${tramId}`),
+          axios.get(`http://localhost:5000/api/exam-stations/${tramId}/assign`),
+        ]);
+
+        const station = stationRes.data?.data;
         if (!station) throw new Error("Không tìm thấy trạm thi");
-        setExamData(station);
-      } catch (err) {
-        console.error(err);
-        setError("Không thể tải dữ liệu trạm thi này");
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    if (tramId) fetchStation(); // ✅ only run if param exists
+        // Backend already applies the rule:
+        // - 1 case  -> returns that case
+        // - 2+ cases -> returns a random case
+        const assigned = assignRes.data?.data || null;
+
+        if (isMounted) {
+          setExamData(station);
+          setPatientCase(assigned || station.patientCaseIds?.[0] || null);
+        }
+      } catch (err) {
+        console.error("❌ Lỗi khi tải trạm/case:", err);
+        if (isMounted) setError("Không thể tải dữ liệu trạm thi này");
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    })();
+
+    return () => {
+      isMounted = false;
+    };
   }, [tramId]);
 
 
-  // ✅ Now use dynamic backend data instead of TramThi1
-  const caseData = examData?.benh_an_tinh_huong || {};
-  const questions = examData?.cau_hoi || [];
+
+  // ✅ NEW — always render from the assigned patient case
+  const caseSource = patientCase || {};
+  const caseData = caseSource?.benh_an_tinh_huong || {};
+  const questions = caseSource?.cau_hoi || [];
   const totalQuestions = questions.length;
+
 
   // ✅ Safe hook order — all hooks before any return
 
@@ -158,8 +178,9 @@ const submit = () => {
 // ✅ Now safe conditional rendering
 if (loading) return <div className="loading">Đang tải dữ liệu trạm thi...</div>;
 if (error) return <div className="error">{error}</div>;
-if (!examData) return null;
-
+if (!examData || !patientCase) {
+   return <div className="loading">Đang tải bệnh án...</div>;
+}
   
 
   return (

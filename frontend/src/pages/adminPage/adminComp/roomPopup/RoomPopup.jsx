@@ -1,16 +1,23 @@
 
 import "./roomPopup.scss";
 import { useState } from "react";
-import { X, ArrowBigLeft, ArrowBigRight } from 'lucide-react';
+import { X, ArrowBigLeft, ArrowBigRight, Trash } from 'lucide-react';
 import { toast } from "react-hot-toast";
+import axios from "axios";
+import { useNavigate } from 'react-router-dom';
+import { useUserStore } from "../../../../stores/useUserStore.js";
 
 const CreateRoomPopup = ({
   isOpen,
   onClose,
   onCancelRoom,
   onFinishRoom,
-  onAddPatientToStation
+  onAddPatientToStation,
+  setActiveSection, // move to ExamRoomList after create exam room
 }) => {
+
+  const { user } = useUserStore();
+  const navigate = useNavigate();
   // ---------------------- STATE ----------------------
   const [currentStationIndex, setCurrentStationIndex] = useState(0);
   const [stations, setStations] = useState([{ name: "Trạm 1", patients: [] }]);
@@ -44,6 +51,18 @@ const CreateRoomPopup = ({
   };
 
   // ---------------------- ✅ BUTTON LOGIC ----------------------
+
+  // 🗑️ Delete patient from current station
+  const handleDeletePatient = (stationIndex, patientIndex) => {
+    setStations((prev) =>
+      prev.map((station, i) => {
+        if (i !== stationIndex) return station;
+        const updatedPatients = station.patients.filter((_, idx) => idx !== patientIndex);
+        return { ...station, patients: updatedPatients };
+      })
+    );
+  };
+
 
   // 🔄 UPDATED — Block creating the next station if current one is empty
   const handleNextStation = () => {
@@ -85,6 +104,63 @@ const CreateRoomPopup = ({
 
     // ✅ All good — finish
     onFinishRoom?.(stations);
+  };
+
+  const [isCreating, setIsCreating] = useState(false);
+  // ✅ Gửi dữ liệu phòng thi đến backend (prevent duplication + unique code + auto reset)
+  const handleCreateExamRoom = async () => {
+    try {
+      if (isCreating) return; // 🧱 Prevent duplicate clicks
+      setIsCreating(true);
+
+      if (!user?._id) {
+        toast.error("Bạn cần đăng nhập tài khoản giáo viên để tạo phòng.");
+        setIsCreating(false);
+        return;
+      }
+
+      // 🆕 Generate unique room code (RM + 5 random chars)
+      const randomCode = "RM" + Math.random().toString(36).substring(2, 7).toUpperCase();
+
+      // 🧱 Chuẩn bị payload từ state
+      const payload = {
+        exam_room_code: randomCode,
+        exam_room_name: "Phòng mới",
+        terminology: "Đang cập nhật",
+        createdBy: user._id,
+        exam_room_settings: { defaultStationDuration: 15 },
+        stations: stations.map((s, i) => ({
+          stationIndex: i + 1,
+          stationName: s.name,
+          durationMinutes: 15,
+          patientCaseIds: s.patients.map((p) => p._id),
+        })),
+      };
+
+      const res = await axios.post("http://localhost:5000/api/exam-rooms", payload);
+
+      if (res.status === 201) {
+        toast.success("🎉 Phòng thi đã được tạo thành công!");
+
+        // ✅ 1. Clear all station data (reset dropzone)
+        setStations([{ name: "Trạm 1", patients: [] }]);
+        setCurrentStationIndex(0);
+
+        // ✅ 2. Switch sidebar section to "Danh sách phòng thi"
+        if (setActiveSection) {
+          setTimeout(() => setActiveSection("examRoom"), 500);
+        }
+
+        // ✅ 3. Close popup after short delay
+        setTimeout(() => onClose?.(), 700);
+      }
+  
+    } catch (error) {
+      console.error("❌ Lỗi khi tạo phòng:", error);
+      toast.error("Không thể tạo phòng thi.");
+    } finally {
+      setIsCreating(false); // ✅ Re-enable button after request finishes
+    }
   };
 
 
@@ -129,11 +205,23 @@ const CreateRoomPopup = ({
           <p>Kéo thả bệnh án vào đây 👇</p>
           <div className="added-patients">
             {stations[currentStationIndex].patients.map((p, i) => (
-              <div key={i} className="added-patient">
-                <strong>{p.metadata?.chuan_doan}</strong>
-                <span> – {p.metadata?.co_quan}</span>
+              <div key={i} className="added-patient-container">
+                <div className="added-patient">
+                  <strong>{p.metadata?.chuan_doan}</strong>
+                  <span> – {p.metadata?.co_quan}</span>
+                </div>
+
+                {/* 🗑️ Delete specific patient from this station */}
+                <button
+                  className="delete-icon-btn"
+                  title="Xóa bệnh án này"
+                  onClick={() => handleDeletePatient(currentStationIndex, i)}
+                >
+                  <Trash size={16} />
+                </button>
               </div>
             ))}
+
           </div>
         </div>
 
@@ -165,9 +253,14 @@ const CreateRoomPopup = ({
 
         {/* ========== 🦶 FOOTER SECTION  ========== */}
         <div className="createRoomPopup__footer">
-          <button className="finish-btn" onClick={handleFinish}>
-            ✅ Hoàn thành phòng
+          <button 
+            className="finish-btn" 
+            onClick={handleCreateExamRoom} 
+            disabled={isCreating}
+          >
+            {isCreating ? "⏳ Đang tạo phòng..." : "✅ Hoàn thành phòng"}
           </button>
+
           <button className="next-btn" onClick={handleNextStation}>
             ➕ Tạo trạm tiếp theo
           </button>

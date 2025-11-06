@@ -11,6 +11,7 @@ import SignupPage from './pages/signUpPage/SignUpPage.jsx';
 import AdminPage from './pages/adminPage/AdminPage.jsx';
 import Library from './pages/libraryPage/Library.jsx';
 import OscePrepRoomPage from './pages/OscePrepRoomPage/OscePrepRoomPage.jsx';
+import EditExamRoom from './pages/adminPage/adminComp/editExamRoom/EditExamRoom.jsx';
 
 import { useUserStore } from './stores/useUserStore.js';
 
@@ -52,6 +53,8 @@ const App = () => {
               path='/quan-tri' 
               element = {user?.role === "admin" ? <AdminPage/> : <Navigate to="/dang-nhap" /> } 
             />
+            <Route path="/quan-tri/sua-phong/:id" element={<EditExamRoom />} />
+
             <Route path='/thu-vien' element = {user ? <Library/> : <Navigate to="/dang-nhap" /> } />
 
           
