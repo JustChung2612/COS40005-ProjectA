@@ -7,15 +7,37 @@ import ExamRoom from "../models/examRoom.model.js";
 export const getExamStationById = async (req, res) => {
   try {
     const { id } = req.params;
-    const station = await ExamStation.findById(id)
-      .populate("patientCaseIds");
 
+    // 🩺 1️⃣ Find the station and its patient cases
+    const station = await ExamStation.findById(id).populate("patientCaseIds");
     if (!station)
       return res.status(404).json({ message: "Không tìm thấy trạm thi." });
 
+    // 🧩 2️⃣ Find parent room and its stations (ordered)
+    const parentRoom = await ExamRoom.findById(station.exam_room_Id)
+      .populate({
+        path: "stations",
+        select: "_id stationIndex",
+        options: { sort: { stationIndex: 1 } },
+      })
+      .select("_id exam_room_name stations");
+
+    // 🧠 3️⃣ Combine station + parentRoom info
+    const result = {
+      ...station.toObject(),
+      parentRoom: parentRoom
+        ? {
+            _id: parentRoom._id,
+            exam_room_name: parentRoom.exam_room_name,
+            stations: parentRoom.stations,
+          }
+        : null,
+    };
+
+    // ✅ 4️⃣ Send combined response
     res.status(200).json({
       message: "Thông tin trạm thi đã được tải thành công.",
-      data: station,
+      data: result,
     });
   } catch (error) {
     console.error("❌ Lỗi trong getExamStationById:", error);
@@ -25,6 +47,7 @@ export const getExamStationById = async (req, res) => {
     });
   }
 };
+
 
 
 /**

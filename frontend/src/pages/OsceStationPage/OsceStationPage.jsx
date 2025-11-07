@@ -53,6 +53,7 @@ const OsceStationPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [patientCase, setPatientCase] = useState(null);
+  const [nextStationId, setNextStationId] = useState(null);
 
   // ✅ UPDATED: fetch station + assigned case together & respect OSCE rules
   useEffect(() => {
@@ -74,6 +75,16 @@ const OsceStationPage = () => {
         const station = stationRes.data?.data;
         if (!station) throw new Error("Không tìm thấy trạm thi");
 
+        // 🔁 Compute next station from parentRoom info
+        let nextId = null;
+        if (station.parentRoom && Array.isArray(station.parentRoom.stations)) {
+          const list = station.parentRoom.stations;
+          const currentIndex = list.findIndex((s) => s._id === tramId);
+          if (currentIndex !== -1 && currentIndex < list.length - 1) {
+            nextId = list[currentIndex + 1]._id;
+          }
+        }
+
         // Backend already applies the rule:
         // - 1 case  -> returns that case
         // - 2+ cases -> returns a random case
@@ -82,6 +93,7 @@ const OsceStationPage = () => {
         if (isMounted) {
           setExamData(station);
           setPatientCase(assigned || station.patientCaseIds?.[0] || null);
+          setNextStationId(nextId);
         }
       } catch (err) {
         console.error("❌ Lỗi khi tải trạm/case:", err);
@@ -366,9 +378,19 @@ if (!examData || !patientCase) {
         </section>
       </div>
 
-      <button className="next-Btn-con" >
-        <Link to="/" className="next-Btn" > Trạm Kế Tiếp <ArrowBigRight /> </Link>
-      </button>
+      {/* ========== 🧭 Navigation Buttons ========== */}
+      <div className="station-nav-btns">
+        {nextStationId ? (
+          <Link to={`/osce/tram/${nextStationId}`} className="next-Btn">
+            Trạm Kế Tiếp <ArrowBigRight />
+          </Link>
+        ) : (
+          <Link to="/" className="finish-Btn">
+            Kết thúc
+          </Link>
+        )}
+      </div>
+
     </div>
   );
 };

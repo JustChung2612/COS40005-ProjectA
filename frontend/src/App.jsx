@@ -12,8 +12,11 @@ import AdminPage from './pages/adminPage/AdminPage.jsx';
 import Library from './pages/libraryPage/Library.jsx';
 import OscePrepRoomPage from './pages/OscePrepRoomPage/OscePrepRoomPage.jsx';
 import EditExamRoom from './pages/adminPage/adminComp/editExamRoom/EditExamRoom.jsx';
+import PatientCaseDetail from './pages/patientCaseDetail/PatientCaseDetail.jsx';
 
 import { useUserStore } from './stores/useUserStore.js';
+
+
 
 const App = () => {
 
@@ -56,6 +59,8 @@ const App = () => {
             <Route path="/quan-tri/sua-phong/:id" element={<EditExamRoom />} />
 
             <Route path='/thu-vien' element = {user ? <Library/> : <Navigate to="/dang-nhap" /> } />
+
+            <Route path="/benh-an/:id" element={<PatientCaseDetail />} />
 
           
         </Routes>

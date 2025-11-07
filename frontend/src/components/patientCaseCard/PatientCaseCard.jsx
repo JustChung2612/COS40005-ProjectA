@@ -55,11 +55,12 @@ const PatientCaseCard = ({ data, onEdit, onDelete }) => {
 
       {/* Card Footer */}
       <div className="cardFooter">
-        <Link to={`/osce/tram/${data._id}`} className='examLink' >
+        <Link to={`/benh-an/${data._id}`} className='examLink'>
           <button className="btn view">
             <Eye size={16} /> Xem
           </button>
         </Link>
+
 
         <Link className='examLink' >
           <button className="btn edit" onClick={() => onEdit?.(data)}>

@@ -60,3 +60,28 @@ export const getPatientCases = async (req, res) => {
   }
 };
 
+
+// ==================== 🩺 GET SINGLE PATIENT CASE BY ID ====================
+export const getPatientCaseById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const patientCase = await PatientCase.findById(id);
+
+    if (!patientCase) {
+      return res.status(404).json({ message: "Không tìm thấy bệnh án." });
+    }
+
+    res.status(200).json({
+      message: "Thông tin bệnh án đã được tải thành công.",
+      data: patientCase,
+    });
+  } catch (error) {
+    console.error("❌ Lỗi trong getPatientCaseById:", error);
+    res.status(500).json({
+      message: "Không thể tải dữ liệu bệnh án.",
+      error: error.message,
+    });
+  }
+};
+
+
