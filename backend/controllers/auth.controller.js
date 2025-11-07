@@ -37,7 +37,7 @@ const setCookies = (res, accessToken, refreshToken) => {
 };
 
 export const signup = async ( req, res ) => {
-    const { email, password, username } = req.body;
+    const { email, password, username, department, lop, maSinhVien } = req.body;
 
     try {
         const userExists = await User.findOne({ email });
@@ -46,13 +46,21 @@ export const signup = async ( req, res ) => {
             return res.status(400).json({message: "User already exists!"});
         }
 
+        // 🔍 Validate mã sinh viên (6 digits)
+        if (!/^\d{6}$/.test(maSinhVien)) {
+        return res.status(400).json({ message: "Mã sinh viên phải gồm đúng 6 chữ số!" });
+        }
+
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hashSync(password , salt);
 
         const user= await User.create({ 
             email,
             password: hashedPassword,
-            username 
+            username,
+            department,
+            lop, 
+            maSinhVien
         });
 
         // ---- AUTHENTICATION ----
@@ -68,7 +76,10 @@ export const signup = async ( req, res ) => {
                 _id: user._id,
                 username: user.username,
                 email: user.email,
-                role: user.role
+                role: user.role,
+                department: user.department,
+                lop: user.lop,
+                maSinhVien: user.maSinhVien,
             }
         });
 
@@ -86,42 +97,56 @@ export const signup = async ( req, res ) => {
     }
 }
 
-export const login = async ( req, res ) => {
+export const login = async (req, res) => {
+  const { email, password, department, lop, maSinhVien } = req.body;
 
-    const { email, password } = req.body;
-    try {
-        const user = await User.findOne({ email });
-        const isPasswordValid = await bcrypt.compare(password, user.password );
-
-        if( user && isPasswordValid ) {
-            const { accessToken, refreshToken } = generateTokens(user._id);
-            await storeRefreshToken(user._id , refreshToken );
-            setCookies(res, accessToken, refreshToken);
-
-        res.status(201).json({
-            message: 'Welcome Back User!',
-            userData : {
-                _id: user._id,
-                username: user.username,
-                email: user.email,
-                role: user.role
-            }
-        });
-
-        console.log({
-            message:'Welcome Back User!', 
-            userData: user 
-        })
-
-        } else {
-            res.status(400).json({message: "Invalid email or password"});
-        }
-
-    } catch(error) {
-        console.log("Error in Log In controller", error.message);
-        res.status(500).json({ message: error.message });
+  try {
+    // 🧩 Find user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "Email hoặc Mật Khẩu không hợp lệ!" });
     }
-}
+
+    // 🔐 Check password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: "Email hoặc Mật Khẩu không hợp lệ!" });
+    }
+
+    // 🧠 Check department match
+    if ( user.department !== department ) {
+      return res.status(400).json({ message: "Khoa/Ngành không hợp lệ" });
+    } 
+
+    // 🪪 Generate tokens and set cookies
+    const { accessToken, refreshToken } = generateTokens(user._id);
+    await storeRefreshToken(user._id, refreshToken);
+    setCookies(res, accessToken, refreshToken);
+
+    // ✅ Respond
+    res.status(200).json({
+      message: "Welcome Back User!",
+      userData: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        department: user.department,
+        lop: user.lop,
+        maSinhVien: user.maSinhVien,
+      },
+    });
+
+    console.log({
+      message: "Welcome Back User!",
+      userData: user,
+    });
+  } catch (error) {
+    console.log("Error in Log In controller", error.message);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 
 export const logout = async ( req, res ) => {
     try {

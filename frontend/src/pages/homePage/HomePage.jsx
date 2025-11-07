@@ -9,11 +9,18 @@ import { toast } from "react-hot-toast";
 
 const HomePage = () => {
 
-  const [code, setCode] = useState("");
   const navigate = useNavigate();
+  const [code, setCode] = useState("");
+  const [isJoining, setIsJoining] = useState(false);
 
   const handleJoin = async () => {
+
+    if (!code.trim()) {
+      toast.error("Vui lòng nhập mã phòng thi!");
+      return;
+    }
     try {
+      setIsJoining(true); 
       const res = await axios.post("http://localhost:5000/api/exam-rooms/join", {
         code,
       });
@@ -30,7 +37,11 @@ const HomePage = () => {
         navigate(`/osce/tram/${firstStationId}`);
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || "Không thể tham gia phòng thi.");
+        toast.error(err.response?.data?.message || "Không thể tham gia phòng thi.");
+
+    } finally {
+
+        setIsJoining(false); // 🛑 stop loading no matter what
     }
   };
 
@@ -87,12 +98,20 @@ const HomePage = () => {
                           onChange={(e) => setCode(e.target.value)}
                       />
                     </div>
-                    <button 
-                          className=' btn-section btn-vaoTram ' 
-                          onClick={handleJoin}
+                    <button
+                      className="btn-section btn-vaoTram"
+                      onClick={handleJoin}
+                      disabled={isJoining} // 🛑 disable when loading
                     >
-                      Vào Trạm 
+                      {isJoining ? (
+                        <>
+                          ⏳ Đang vào trạm...
+                        </>
+                      ) : (
+                        "Vào Trạm"
+                      )}
                     </button>
+
                   </div>
 
                   <div className="visual-card">
