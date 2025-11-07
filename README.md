@@ -22,10 +22,6 @@ Teachers can build exam rooms with patient cases, and students can take virtual 
 
 ## 🚀 Getting Started
 
-### 1️⃣ Clone the Repository
-```bash
-git clone https://github.com/COS40005-SUVHN/capstone-project-a-hn1-1.git
-cd medic6
 
 🧭 Project Workflow Overview
 🧩 Teacher Workflow (Admin Panel)
@@ -56,3 +52,4 @@ Views patient information, clinical history, and questions →
 Completes the station within a timed session ⏱ →
 Moves forward with “Trạm Kế Tiếp” →
 When the final station is finished, the button changes to “Kết thúc” 🏁, returning the student to the homepage (or later, a results page).
+
