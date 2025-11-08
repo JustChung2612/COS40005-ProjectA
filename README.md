@@ -53,3 +53,41 @@ Completes the station within a timed session ⏱ →
 Moves forward with “Trạm Kế Tiếp” →
 When the final station is finished, the button changes to “Kết thúc” 🏁, returning the student to the homepage (or later, a results page).
 
+# Hướng dẫn chạy project
+
+## 0. Clone Project
+``` 
+git clone + link 
+```
+
+## 1. Install/Run Project
+
+### 1.1 Frontend
+```
+1. cd frontend 
+```
+```
+2. npm install
+```
+```
+3. npm run dev
+```
+### 1.2 Backend
+```
+1. cd backend
+```
+```
+2. npm install
+```
+```
+3. npm start
+```
+
+## 2. Import data in database
+1. Make sure laptop have MongoDB Compass or download it.
+2. Open MongoDB Compass , hover ** localhost:27017 ** and click ** Connect **.
+3. Select "Medic-OSCE" database.
+4. Select "patientcases" collection.
+5. Click ** Add Data ** button and choose ** Import JSON or CSV file **.
+6. Open ** COS40005-ProjectA/Data ** folder in the project that just cloned and then select ** PatientCases.json ** file
+
