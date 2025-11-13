@@ -9,8 +9,8 @@ const Button = ({ children, variant = "primary", size = "md", className = "", ..
   const cls = ["btn", `btn--${variant}`, `btn--${size}`, className].join(" ");
   return <button className={cls} {...props}>{children}</button>;
 };
-const Card = ({ className = "", children, ...p }) => <div className={["card", className].join(" ")} {...p}>{children}</div>;
-const CardContent = ({ className = "", children, ...p }) => <div className={["card__content", className].join(" ")} {...p}>{children}</div>;
+export const Card = ({ className = "", children, ...p }) => <div className={["card", className].join(" ")} {...p}>{children}</div>;
+export const CardContent = ({ className = "", children, ...p }) => <div className={["card__content", className].join(" ")} {...p}>{children}</div>;
 const Progress = ({ value = 0, className = "" }) => (
   <div className={["ui-progress", className].join(" ")}>
     <div className="ui-progress__bar" style={{ width: `${Math.max(0, Math.min(100, value))}%` }} />

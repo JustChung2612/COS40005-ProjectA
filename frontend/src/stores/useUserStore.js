@@ -11,9 +11,9 @@ export const useUserStore = create((set, get) => ({
         set({ loading: true });
 
         try {
-            const { username, email, password, department, lop, maSinhVien } = signUpData;
+            const { username, email, password, maSinhVien } = signUpData;
             const res = await axios.post("/auth/signup", 
-                                         { username, email, password, department, lop, maSinhVien });
+                                         { username, email, password, maSinhVien });
 
             set({ user: res.data.userData, loading: false });
 
@@ -34,8 +34,8 @@ export const useUserStore = create((set, get) => ({
         set({ loading: true });
 
         try {
-            const { email, password, department, lop, maSinhVien } = loginData;
-            const res = await axios.post("/auth/login", { email, password, department, lop, maSinhVien });
+            const { email, password, maSinhVien } = loginData;
+            const res = await axios.post("/auth/login", { email, password, maSinhVien });
 
             set({ user: res.data.userData, loading: false });
 

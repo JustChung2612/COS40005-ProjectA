@@ -20,17 +20,8 @@ const userSchema = new mongoose.Schema(
             enum: ["user" , "admin"],
             default: "user",
         },
-        department: {
-            type: String,
-            required: [true, "Department is required"],
-        },
-        lop: { 
-            type: String, 
-            default: ""
-        },
         maSinhVien: { 
-            type: String,  
-            required: [true, "maSinhVien is required"], 
+            type: String,   
         },
 
     },

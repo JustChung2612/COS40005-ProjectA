@@ -13,8 +13,7 @@ export default function LoginPage() {
 
   const [showPassword, setShowPassword] = useState(false); // Bật/tắt hiển thị mật khẩu
   const [touched, setTouched] = useState({ 
-    email: false, password: false, department:false,
-    lop: false, maSinhVien: false,
+    email: false, password: false, maSinhVien: false,
   }); // Đã “chạm” vào input hay chưa
   
 
@@ -22,18 +21,10 @@ export default function LoginPage() {
   const [logInData, setLogInData] = useState({
     email: "",
     password: "",
-    department: "",
-    lop: "",
     maSinhVien: "",
   });
 
-  const departments_option = [ 
-      "Y khoa/Y sĩ đa khoa", "Răng Hàm Mặt ", 
-      "Y tế công cộng", "Y học Cổ truyền", 
-      "Y học dự phòng", "Điều dưỡng", "Phục hồi chức năng"
-  ];
-
-  const { email, password, department, lop, maSinhVien } = logInData;
+  const { email, password, maSinhVien } = logInData;
 
   // Kiểm tra lỗi email
   const emailError = useMemo(() => {
@@ -50,11 +41,6 @@ export default function LoginPage() {
   return [];
   }, [password, touched.password]);
 
-  const departmentError = useMemo(() => {
-    if (!touched.department) return "";
-    if (!department) return "Vui lòng chọn khoa / ngành.";
-    return "";
-  }, [department, touched.department]);
 
   //  // ✅ NEW — validate Mã Sinh Viên (6 digits)
   const maSinhVienError = useMemo(() => {
@@ -64,17 +50,10 @@ export default function LoginPage() {
     return "";
   }, [maSinhVien, touched.maSinhVien]);
 
-  
-  const lopError = useMemo(() => {
-    if (!lop) return "Vui lòng nhập tên lớp.";
-  }) ;
-
-
   const allValid =
     emailRegex.test(email) && 
     passErrors.length === 0 && 
     password.length > 0 &&
-    !departmentError &&
     !maSinhVienError;
 
   // ✅ UPDATED add handleChange
@@ -90,8 +69,8 @@ export default function LoginPage() {
   //  Gửi form đăng nhập
   const handleSubmit = async (e) => {
     e.preventDefault(); // Chặn reload trang
-    setTouched({ email: true, password: true, department: true, lop: true, maSinhVien: true }); // Đánh dấu đã chạm vào cả hai input
-    if (!allValid) return; // Nếu chưa hợp lệ thì ngừng
+    setTouched({ email: true, password: true, maSinhVien: true }); 
+    if (!allValid) return; 
    
     try {
       await login(logInData);   
@@ -155,25 +134,6 @@ export default function LoginPage() {
                 {emailError && <p className="error-text">{emailError}</p>}
               </div>
 
-              {/* 🏫 Lớp */}
-              <div className="form-group">
-                <label htmlFor="lop">Lớp</label>
-                <div className="input-wrapper">
-                  <input
-                    id="lop"
-                    name="lop"
-                    type="text"
-                    value={lop}
-                    onChange={handleChange}
-                    onBlur={() => setTouched((t) => ({ ...t, lop: true }))}
-                    placeholder="Nhập tên lớp (VD: YD23A)"
-                    className={lopError ? "error" : ""}
-                  />
-                  <StatusDot ok={!!lop} />
-                </div>
-                {lopError && <p className="error-text">{lopError}</p>}
-              </div>
-
               {/* 🎓 Mã Sinh Viên */}
               <div className="form-group">
                 <label htmlFor="maSinhVien">Mã Sinh Viên</label>
@@ -194,32 +154,6 @@ export default function LoginPage() {
                   />
                 </div>
                 {maSinhVienError && <p className="error-text">{maSinhVienError}</p>}
-              </div>
-
-
-              {/* 🧠 Khoa / Ngành */}
-              <div className="form-group">
-                <label htmlFor="department">Khoa / Ngành</label>
-                <div className="input-wrapper">
-                  <select
-                    id="department"
-                    name="department"
-                    value={department}
-                    onChange={handleChange}
-                    onBlur={() => setTouched((t) => ({ ...t, department: true }))}
-                    className={departmentError ? "error" : ""}
-                  >
-                    <option value="">-- Chọn khoa / ngành --</option>
-                    {departments_option.map((dep, i) => (
-                      <option key={i} value={dep}>
-                        {dep}
-                      </option>
-                    ))}
-                  </select>
-                  <StatusDot ok={!departmentError && !!department} bad={!!departmentError} />
-
-                </div>
-                {departmentError && <p className="error-text">{departmentError}</p>}
               </div>
 
               <div className="form-group">

@@ -12,7 +12,11 @@ import AdminPage from './pages/adminPage/AdminPage.jsx';
 import Library from './pages/libraryPage/Library.jsx';
 import OscePrepRoomPage from './pages/OscePrepRoomPage/OscePrepRoomPage.jsx';
 import EditExamRoom from './pages/adminPage/adminComp/editExamRoom/EditExamRoom.jsx';
-import PatientCaseDetail from './pages/patientCaseDetail/PatientCaseDetail.jsx';
+
+{/* New File */}
+import PatientCaseDetailPage from './pages/patientCaseDetailPage/PatientCaseDetailPage.jsx'
+import InstructorStudents from './pages/instructorStudents/InstructorStudents.jsx';
+import Demo from './pages/aaaaa/Demo.jsx';
 
 import { useUserStore } from './stores/useUserStore.js';
 
@@ -60,8 +64,10 @@ const App = () => {
 
             <Route path='/thu-vien' element = {user ? <Library/> : <Navigate to="/dang-nhap" /> } />
 
-            <Route path="/benh-an/:id" element={<PatientCaseDetail />} />
-
+            {/* New Route */}
+            <Route path="/benh-an/:id" element={<PatientCaseDetailPage />} />
+            <Route path='InstructorStudents' element={ <InstructorStudents/> } /> 
+            <Route path='Demo' element={ <Demo/> } />
           
         </Routes>
         <Footer/>

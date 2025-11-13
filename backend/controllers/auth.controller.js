@@ -37,7 +37,7 @@ const setCookies = (res, accessToken, refreshToken) => {
 };
 
 export const signup = async ( req, res ) => {
-    const { email, password, username, department, lop, maSinhVien } = req.body;
+    const { email, password, username, maSinhVien } = req.body;
 
     try {
         const userExists = await User.findOne({ email });
@@ -58,8 +58,6 @@ export const signup = async ( req, res ) => {
             email,
             password: hashedPassword,
             username,
-            department,
-            lop, 
             maSinhVien
         });
 
@@ -77,8 +75,6 @@ export const signup = async ( req, res ) => {
                 username: user.username,
                 email: user.email,
                 role: user.role,
-                department: user.department,
-                lop: user.lop,
                 maSinhVien: user.maSinhVien,
             }
         });
@@ -98,7 +94,7 @@ export const signup = async ( req, res ) => {
 }
 
 export const login = async (req, res) => {
-  const { email, password, department, lop, maSinhVien } = req.body;
+  const { email, password, maSinhVien } = req.body;
 
   try {
     // 🧩 Find user by email
@@ -113,10 +109,10 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Email hoặc Mật Khẩu không hợp lệ!" });
     }
 
-    // 🧠 Check department match
-    if ( user.department !== department ) {
-      return res.status(400).json({ message: "Khoa/Ngành không hợp lệ" });
-    } 
+    if (user.maSinhVien !== maSinhVien) {
+        return res.status(400).json({ message: "Mã sinh viên không đúng!" });
+    }
+
 
     // 🪪 Generate tokens and set cookies
     const { accessToken, refreshToken } = generateTokens(user._id);
@@ -131,8 +127,6 @@ export const login = async (req, res) => {
         username: user.username,
         email: user.email,
         role: user.role,
-        department: user.department,
-        lop: user.lop,
         maSinhVien: user.maSinhVien,
       },
     });
