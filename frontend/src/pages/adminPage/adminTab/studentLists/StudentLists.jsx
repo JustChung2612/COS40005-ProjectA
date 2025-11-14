@@ -1,19 +1,10 @@
 /* eslint-disable */
-import {
-  Upload,
-  UserPlus,
-  Trash2,
-  Download,
-  CheckCircle2,
-  XCircle,
-  AlertCircle,
-  ArrowLeft,
-} from "lucide-react";
+import { Upload, UserPlus, Trash2, Download, CheckCircle2, XCircle, AlertCircle,ArrowLeft, } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
-import "./InstructorStudents.scss";
+import "./studentlists.scss";
 
-export default function InstructorStudents() {
+export default function StudentLists() {
   const navigate = useNavigate();
   const { roomId } = useParams();
 
@@ -25,7 +16,6 @@ export default function InstructorStudents() {
     { email: "lethic@student.edu.vn", status: "invited" },
   ]);
 
-  const [toasts, setToasts] = useState([]);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedEmail, setSelectedEmail] = useState(null);
 
@@ -36,93 +26,11 @@ export default function InstructorStudents() {
     name: "OSCE Nội tổng hợp – Ca 2",
   };
 
-  // ====== toast (thay use-toast) ======
-  const toast = ({ title, description, variant }) => {
-    setToasts((prev) => [...prev, { title, description, variant }]);
-    setTimeout(() => setToasts((prev) => prev.slice(1)), 3000);
-  };
-
-  // ====== handlers ======
-  const handleAddEmails = () => {
-    if (!emailInput.trim()) {
-      toast({
-        title: "Lỗi",
-        description: "Vui lòng nhập ít nhất một địa chỉ email.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const emailList = emailInput
-      .split(/[,;\n]/)
-      .map((e) => e.trim())
-      .filter(Boolean);
-
-    const next = [...students];
-    let ok = 0, dup = 0, err = 0;
-
-    emailList.forEach((email) => {
-      if (next.some((s) => s.email === email)) {
-        dup++;
-        return;
-      }
-      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!re.test(email)) {
-        err++;
-        next.push({ email, status: "error", errorMessage: "Định dạng email không hợp lệ" });
-        return;
-      }
-      ok++;
-      next.push({ email, status: "invited" });
-    });
-
-    setStudents(next);
-    setEmailInput("");
-    toast({
-      title: "Đã thêm học sinh",
-      description: `Thành công: ${ok} | Trùng: ${dup} | Lỗi: ${err}`,
-    });
-  };
-
-  const handleImportCSV = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const text = String(ev.target?.result || "");
-      const lines = text.split("\n").slice(1);
-      const imported = lines
-        .map((line) => {
-          const [email, name] = line.split(",");
-          return email?.trim()
-            ? { email: email.trim(), name: (name || "").trim(), status: "invited" }
-            : null;
-        })
-        .filter(Boolean);
-      setStudents((prev) => [...prev, ...imported]);
-      toast({ title: "Đã nhập", description: `Đã thêm ${imported.length} học sinh từ CSV.` });
-    };
-    reader.readAsText(file);
-    e.target.value = "";
-  };
-
-  const handleExportCSV = () => {
-    const csv = [
-      ["Email", "Tên", "Trạng thái"],
-      ...students.map((s) => [s.email, s.name || "", s.status]),
-    ].map((r) => r.join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = `${roomData.code}_students.csv`; a.click();
-    URL.revokeObjectURL(url);
-    toast({ title: "Đã xuất", description: "Danh sách học sinh đã được tải về." });
-  };
-
   const handleDeleteStudent = (email) => {
     setSelectedEmail(email);
     setShowDeleteDialog(true);
   };
+
   const confirmDelete = () => {
     if (selectedEmail) {
       setStudents((prev) => prev.filter((s) => s.email !== selectedEmail));
@@ -131,30 +39,11 @@ export default function InstructorStudents() {
     setSelectedEmail(null);
     setShowDeleteDialog(false);
   };
-
-  // ====== helpers ======
-  const StatusIcon = ({ status }) => {
-    if (status === "assigned") return <CheckCircle2 className="tw h4 w4 text-success" />;
-    if (status === "invited") return <AlertCircle className="tw h4 w4 text-warning" />;
-    if (status === "error") return <XCircle className="tw h4 w4 text-destructive" />;
-    return null;
-  };
-  const StatusBadge = ({ status }) => {
-    // mapping từ badge.tsx (default/outline/destructive)
-    if (status === "assigned")
-      return <div className="badge base badge-default">Đã gán</div>;
-    if (status === "invited")
-      return <div className="badge base badge-outline">Đã mời</div>;
-    if (status === "error")
-      return <div className="badge base badge-destructive">Lỗi</div>;
-    return null;
-  };
-
   const validCount = students.filter((s) => s.status !== "error").length;
   const errorCount = students.filter((s) => s.status === "error").length;
 
   return (
-    <div className="page bg-background text-foreground">
+    <div className=" student-lists-page ">
       {/* Header */}
       <div className="container">
         <div className="header">
@@ -183,7 +72,7 @@ export default function InstructorStudents() {
                 placeholder={"student1@edu.vn\nstudent2@edu.vn, student3@edu.vn\n..."}
               />
               <div className="row gap2">
-                <button className="btn base btn-default grow" onClick={handleAddEmails}>
+                <button className="btn base btn-default grow" >
                   <UserPlus className="tw h4 w4 mr2" />
                   Thêm Email
                 </button>
@@ -194,7 +83,7 @@ export default function InstructorStudents() {
                     Nhập CSV
                   </span>
                 </label>
-                <input id="csv-upload" type="file" accept=".csv" className="hidden" onChange={handleImportCSV} />
+                <input id="csv-upload" type="file" accept=".csv" className="hidden" />
               </div>
 
               <div className="tips">
@@ -215,10 +104,6 @@ export default function InstructorStudents() {
                 <h3 className="h3">Danh Sách Học Sinh ({students.length})</h3>
                 <p className="muted small">Xem trước và quản lý học sinh đã gán</p>
               </div>
-              <button className="btn base btn-outline btn-sm" onClick={handleExportCSV} disabled={students.length === 0}>
-                <Download className="tw h4 w4 mr2" />
-                Xuất CSV
-              </button>
             </div>
             <div className="card-content">
               <div className="table-wrap">
@@ -227,7 +112,6 @@ export default function InstructorStudents() {
                     <tr className="trow head">
                       <th className="th">Email</th>
                       <th className="th">Tên</th>
-                      <th className="th">Trạng thái</th>
                       <th className="th w-compact"></th>
                     </tr>
                   </thead>
@@ -236,13 +120,7 @@ export default function InstructorStudents() {
                       <tr key={s.email} className="trow">
                         <td className="td mono">{s.email}</td>
                         <td className="td">{s.name || "-"}</td>
-                        <td className="td">
-                          <div className="row gap2">
-                            <StatusIcon status={s.status} />
-                            <StatusBadge status={s.status} />
-                          </div>
-                          {s.errorMessage && <p className="small text-destructive mt4">{s.errorMessage}</p>}
-                        </td>
+
                         <td className="td actions">
                           <button className="btn base btn-ghost btn-icon" onClick={() => handleDeleteStudent(s.email)}>
                             <Trash2 className="tw h4 w4 text-destructive" />
@@ -297,15 +175,7 @@ export default function InstructorStudents() {
         </>
       )}
 
-      {/* Toasts */}
-      <div className="toast">
-        {toasts.map((t, i) => (
-          <div key={i} className={"toast-item " + (t.variant === "destructive" ? "destructive" : "")}>
-            <div className="toast-title">{t.title}</div>
-            {t.description && <div className="toast-desc">{t.description}</div>}
-          </div>
-        ))}
-      </div>
+
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import './sidebar.scss'
 import { Link } from "react-router-dom";
-import { BookCopy , Boxes , SquarePen  } from 'lucide-react';
+import { BookCopy , Boxes , SquarePen , UserPlus  } from 'lucide-react';
 
 
 const Sidebar = ({ active, onSelect }) => {
@@ -9,7 +9,7 @@ const Sidebar = ({ active, onSelect }) => {
   const menuItems = [
     { key: 'patientCase', label: 'Danh sách bệnh án', icon: <BookCopy className="sidebarIcon" /> },
     { key: 'examRoom', label: 'Danh sách phòng thi', icon: <Boxes className="sidebarIcon" /> },
-    { key: 'editExamRoom', label: 'Chỉnh sửa phòng thi', icon: <SquarePen className="sidebarIcon" /> },
+    { key: 'studentLists', label: 'Danh sách học sinh', icon: <UserPlus className="sidebarIcon" /> },
   ];
 
 

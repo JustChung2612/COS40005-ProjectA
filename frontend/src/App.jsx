@@ -9,23 +9,19 @@ import OSCESPage from './pages/OsceStationPage/OsceStationPage.jsx';
 import LoginPage from './pages/loginPage/LoginPage.jsx';
 import SignupPage from './pages/signUpPage/SignUpPage.jsx';
 import AdminPage from './pages/adminPage/AdminPage.jsx';
-import Library from './pages/libraryPage/Library.jsx';
 import OscePrepRoomPage from './pages/OscePrepRoomPage/OscePrepRoomPage.jsx';
-import EditExamRoom from './pages/adminPage/adminComp/editExamRoom/EditExamRoom.jsx';
+import EditExamRoom from './pages/adminPage/adminTab/editExamRoom/EditExamRoom.jsx'
+import { useUserStore } from './stores/useUserStore.js';
+
 
 {/* New File */}
 import PatientCaseDetailPage from './pages/patientCaseDetailPage/PatientCaseDetailPage.jsx'
-import InstructorStudents from './pages/instructorStudents/InstructorStudents.jsx';
-import Demo from './pages/aaaaa/Demo.jsx';
-
-import { useUserStore } from './stores/useUserStore.js';
-
+import Library from './pages/libraryPage/Library.jsx';
 
 
 const App = () => {
 
   const { user, checkAuth, checkingAuth } = useUserStore();
-
   const location = useLocation();
   const hideHeader = location.pathname === '/quan-tri' ||
                      location.pathname.startsWith('/osce/tram/'); ;
@@ -36,10 +32,8 @@ const App = () => {
 
   if (checkingAuth) return <div className="route-loading">Đang kiểm tra phiên đăng nhập…</div>
 
-
   return (
     <>
-
       <div className="gradient-wrapper">
         <div className="gradient-inner">
           <div className="gradient-bg"></div>
@@ -66,8 +60,8 @@ const App = () => {
 
             {/* New Route */}
             <Route path="/benh-an/:id" element={<PatientCaseDetailPage />} />
-            <Route path='InstructorStudents' element={ <InstructorStudents/> } /> 
-            <Route path='Demo' element={ <Demo/> } />
+            
+            
           
         </Routes>
         <Footer/>

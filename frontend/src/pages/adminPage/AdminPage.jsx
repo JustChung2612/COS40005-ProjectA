@@ -2,9 +2,12 @@ import './adminPage.scss';
 import { useState, useMemo } from 'react';
 import Sidebar from '../../components/sidebar/Sidebar';
 import AdminNavbar from '../../components/adminNavbar/AdminNavbar';
-import PatientCaseList from './adminComp/patientCaseList/PatientCaseList.jsx';
-import CreateRoomPopup from './adminComp/roomPopup/RoomPopup.jsx';
-import ExamRoomList from './adminComp/examRoomList/ExamRoomList.jsx';
+
+// ADMIN TAB //
+import PatientCaseList from './adminTab/patientCaseList/PatientCaseList.jsx';
+import CreateRoomPopup from './adminTab/roomPopup/RoomPopup.jsx';
+import ExamRoomList from './adminTab/examRoomList/ExamRoomList.jsx';
+import StudentLists from './adminTab/studentLists/StudentLists.jsx';
 
 const AdminPage = () => {
   const [activeSection, setActiveSection] = useState('patientCase');
@@ -63,6 +66,7 @@ const AdminPage = () => {
         />
       ),
       examRoom: <ExamRoomList/>, // 🆕 shows “Danh sách phòng thi”
+      studentLists: <StudentLists />,   // ✅ NEW: show student list
     }),
     [selectionMode, selectedIds]
   );

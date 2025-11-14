@@ -1,10 +1,5 @@
-/* ============================================
-   InstructorStudents.scss — SCSS nested style
-   ============================================ */
 
-/* 1) TOKENS */
 :root {
-  --bg: #f6f8fb;
   --fg: #0f172a;
   --muted: #64748b;
 
@@ -24,7 +19,6 @@
   --input-bg: #ffffff;
 
   --ring: #06b6d4;
-  --ring-offset: var(--bg);
 
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
@@ -39,21 +33,10 @@
   --radius: 14px;
 }
 
-/* 2) BASE */
-* { box-sizing: border-box; }
-html, body, #root { height: 100%; }
-
-body {
-  margin: 0;
-  background: var(--bg);
+.student-lists-page{
+  min-height: 100vh;
   color: var(--fg);
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
-  line-height: 1.45;
 }
-
-.page { min-height: 100vh; }
-.bg-background { background: var(--bg); }
-.text-foreground { color: var(--fg); }
 
 .container {
   max-width: var(--container-max);
