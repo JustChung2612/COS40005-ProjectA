@@ -215,6 +215,18 @@ export const joinExamRoom = async (req, res) => {
       return res.status(403).json({ message: "Phòng thi chưa được phát hành." });
     }
 
+    // ✅ If a student is logged in and is allowed → direct access, no code needed
+    const studentEmail = req.body?.email || req.query?.email;
+
+    if (studentEmail && room.allowedStudents?.includes(studentEmail.toLowerCase())) {
+      return res.status(200).json({
+        message: "Welcome! You are on the allowed list.",
+        data: room,
+        directAccess: true,
+      });
+    }
+
+
     // 🩺 No stations in room
     if (!room.stations || room.stations.length === 0) {
       return res.status(400).json({ message: "Phòng thi chưa có trạm nào." });
@@ -234,3 +246,85 @@ export const joinExamRoom = async (req, res) => {
   }
 };
 
+// 📥 Get list of assigned students for an exam room
+export const getRoomStudents = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const room = await ExamRoom.findById(id);
+
+    if (!room) {
+      return res.status(404).json({ message: "Không tìm thấy phòng thi." });
+    }
+
+    res.status(200).json({
+      message: "Fetched room students",
+      students: room.allowedStudents || [],
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi khi tải danh sách học sinh." });
+  }
+};
+
+// 📤 Save assigned students list to exam room
+export const saveRoomStudents = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { students } = req.body;  // array of emails
+
+    const room = await ExamRoom.findById(id);
+    if (!room) {
+      return res.status(404).json({ message: "Không tìm thấy phòng thi." });
+    }
+
+    room.allowedStudents = students || [];
+    await room.save();
+
+    res.status(200).json({
+      message: "Danh sách học sinh đã được lưu thành công.",
+      students: room.allowedStudents,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi khi lưu danh sách học sinh." });
+  }
+};
+
+// 🆕 Check if a student is allowed to enter the room directly
+export const checkAllowedStudent = async (req, res) => {
+  try {
+    const { roomId } = req.params;
+    const { email } = req.query;
+
+    // Email validation
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Thiếu email để kiểm tra quyền truy cập.",
+      });
+    }
+
+    // Find room
+    const room = await ExamRoom.findById(roomId);
+
+    if (!room) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy phòng thi.",
+      });
+    }
+
+    // Check allowed list
+    const isAllowed = room.allowedStudents.includes(email.toLowerCase());
+
+    return res.status(200).json({
+      success: true,
+      directAccess: isAllowed,
+    });
+
+  } catch (error) {
+    console.error("❌ Error in checkAllowedStudent:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Lỗi kiểm tra quyền truy cập.",
+    });
+  }
+};

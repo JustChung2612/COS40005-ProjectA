@@ -5,6 +5,7 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { ArrowLeft, Loader2 ,Clock, FileText, AlertCircle, CheckCircle2, ArrowBigRight } from "lucide-react";
 
+import EditPatientCaseSection from "../HuyAnh1/EditPatientCaseSection";
 
 export const Card = ({ className = "", children, ...p }) => <div className={["card", className].join(" ")} {...p}>{children}</div>;
 export const CardContent = ({ className = "", children, ...p }) => <div className={["card__content", className].join(" ")} {...p}>{children}</div>;
@@ -76,77 +77,11 @@ const scrollToSection = (ref, key) => {
           </p>
       </div>
 
-      <div className="caseDetail-main"  >
-          {/* Bên trái: Bệnh án + TOC */}
-          <aside className="left">
-            <nav className="toc">
-              <div className="toc__title">Bệnh Án</div>
-              <button className={["toc__item", activeSection==="thong_tin" ? "is-active" : ""].join(" ")} onClick={() => scrollToSection(thongTinRef,"thong_tin")}>Thông tin bệnh nhân</button>
-              <button className={["toc__item", activeSection==="benh_su" ? "is-active" : ""].join(" ")} onClick={() => scrollToSection(benhSuRef,"benh_su")}>Bệnh sử</button>
-              <button className={["toc__item", activeSection==="tien_can" ? "is-active" : ""].join(" ")} onClick={() => scrollToSection(tienCanRef,"tien_can")}>Tiền căn</button>
-              <button className={["toc__item", activeSection==="luoc_qua" ? "is-active" : ""].join(" ")} onClick={() => scrollToSection(luocQuaRef,"luoc_qua")}>Lược qua các cơ quan</button>
-              <button className={["toc__item", activeSection==="kham" ? "is-active" : ""].join(" ")} onClick={() => scrollToSection(khamLSRef,"kham")}>Khám lâm sàng</button>
-            </nav>
-
-            <div className="case">
-              <Card className="mb">
-                <CardContent>
-                  <section ref={thongTinRef} className="section">
-                    <h2 className="section__title">Thông tin bệnh nhân</h2>
-                    <ul className="list">
-                      <li><b>Họ tên:</b> {patient.ho_ten}</li>
-                      <li><b>Tuổi:</b> {patient.tuoi}</li>
-                      <li><b>Giới tính:</b> {patient.gioi_tinh}</li>
-                      <li><b>Nghề nghiệp:</b> {patient.nghe_nghiep}</li>
-                      <li><b>Lý do nhập viện:</b> {patient.ly_do_nhap_vien}</li>
-                    </ul>
-                  </section>
-
-                  <section ref={benhSuRef} className="section">
-                    <h3 className="section__title">Bệnh sử</h3>
-                    <div className="paras">
-                      <p>{benh_an_tinh_huong?.benh_su?.mo_ta1}</p>
-                      <p>{benh_an_tinh_huong?.benh_su?.mo_ta2}</p>
-                      <p>{benh_an_tinh_huong?.benh_su?.mo_ta3}</p>
-                    </div>
-                  </section>
-
-                  <section ref={tienCanRef} className="section">
-                    <h3 className="section__title">Tiền căn</h3>
-                    <ul className="list">
-                      {(benh_an_tinh_huong?.tien_can || []).map((t,i)=><li key={i}> {t}</li>)}
-                    </ul>
-                  </section>
-
-                  <section ref={luocQuaRef} className="section">
-                    <h3 className="section__title">Lược qua các cơ quan</h3>
-                    <ul className="list">
-                      {(benh_an_tinh_huong?.luoc_qua_cac_co_quan || []).map((t,i)=><li key={i}> {t}</li>)}
-                    </ul>
-                  </section>
-
-                  <section ref={khamLSRef} className="section">
-                    <h3 className="section__title">Khám lâm sàng</h3>
-                    <ul className="list">
-                      {(benh_an_tinh_huong?.kham_lam_sang || []).map((t,i)=><li key={i}> {t}</li>)}
-                    </ul>
-                  </section>
-                </CardContent>
-              </Card>
-
-              <div className="note">
-                <div className="note__head"><AlertCircle className="ico primary" /><span>Ghi chú</span></div>
-                <p>Đọc kỹ bệnh án trước khi trả lời câu hỏi. Trả lời ngắn gọn, chính xác.</p>
-              </div>
-            </div>
-          </aside>
-
-          {/* Bên phải: Câu hỏi + thanh CÂU */}
-          <section className="right">
-            a
-          </section>
-
-      </div>
+      <EditPatientCaseSection
+        caseData={caseData}
+        // questions={questions}
+        // onQuestionsChange={setQuestions}
+      /> 
 
 
       

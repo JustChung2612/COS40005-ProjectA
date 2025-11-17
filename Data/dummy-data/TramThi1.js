@@ -3,7 +3,7 @@
 // Môn thi: NỘI HÔ HẤP – HO RA MÁU (LAO PHỔI CŨ TÁI PHÁT)
 // ===========================
 
-const Tram_Thi_1 = {
+const TramThi1 = {
   "tram_thi_ID": "tramthiid1",
 
   "metadata": {
@@ -202,4 +202,4 @@ const Tram_Thi_1 = {
   ]
 };
 
-export default Tram_Thi_1 ;
+export default TramThi1 ;

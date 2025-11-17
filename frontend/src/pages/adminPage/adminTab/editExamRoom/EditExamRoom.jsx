@@ -132,7 +132,7 @@ const EditExamRoom = () => {
         )}
       </h2>
 
-    <div className="editRoomContainer">
+    <div className="editRoomInfo">
       <h2>Thông tin phòng thi</h2>
 
       <div className="editRoomForm">

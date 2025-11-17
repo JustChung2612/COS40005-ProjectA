@@ -4,7 +4,10 @@ import { createExamRoom,
          getExamRoomById, 
          updateExamRoom,
          publishExamRoom,
-         joinExamRoom } from "../controllers/examRoom.controller.js";
+         getRoomStudents,          // 🆕 add this
+         saveRoomStudents,          // 🆕 add this
+         joinExamRoom,
+        checkAllowedStudent, } from "../controllers/examRoom.controller.js";
 
 const router = express.Router();
 
@@ -30,5 +33,13 @@ router.post("/:id/publish", publishExamRoom);
 
 // 🎓 Sinh viên tham gia phòng thi
 router.post("/join", joinExamRoom);
+
+// 🆕 Get assigned students for a room
+router.get("/:id/students", getRoomStudents);
+
+// 🆕 Save assigned students to a room
+router.post("/:id/students", saveRoomStudents);
+
+router.get("/:roomId/check-allowed", checkAllowedStudent);
 
 export default router;

@@ -60,6 +60,16 @@ const ExamRoomSchema = new Schema(
             },
         },
 
+        // 🎓 Danh sách sinh viên được phép vào trực tiếp (theo email)
+        //    Sẽ được dùng khi giáo viên thêm danh sách trong StudentLists.jsx
+        allowedStudents: [
+            {
+                type: String,
+                trim: true,
+                lowercase: true,
+            },
+        ],
+
     },
     {
         timestamps: true,
