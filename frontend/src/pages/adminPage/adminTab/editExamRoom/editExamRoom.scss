@@ -34,7 +34,7 @@
     color: #333;
   }
 
-  /* ==================== Exam Room Information ==================== */
+  /* ===== Exam Room Information ===== */
   .editRoomInfo {
     width: 100%;
     display: flex;
@@ -136,12 +136,44 @@
     }
   }
 
-  /* ====================  ==================== */
+  /* ===== Station Name List ===== */
+  .stationNameList {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    
+    .stationNameContainer{
+      margin-top: 10px;
+      display: flex;
+      gap: 1rem;
+      
+      .stationNameItem {   
+        padding: 8px 12px;
+        margin-bottom: 6px;
+        border-radius: 6px;
+        background: white;
+        border: 1px solid #cbd5e1;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      .stationNameItem:hover {
+        background: #f1f5f9;
+      }
+
+      .stationNameItem.active {
+        border-color: #0ea5e9;
+        background-color: #e0f2fe;
+        font-weight: 600;
+      }
+    }
+
+  }
 
 
-  /* ===========================
-     ⚙️ Station Configuration Section
-     =========================== */
+  /* ===== ⚙️ Station Configuration Section ===== */
   .stationListSection {
     background: #ffffff;
     border-radius: 12px;
@@ -330,3 +362,4 @@
     }
   }
 }
+

@@ -84,4 +84,38 @@ export const getPatientCaseById = async (req, res) => {
   }
 };
 
+// ==================== 🩹 UPDATE PATIENT CASE (PATCH) ====================
+export const updatePatientCase = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { cau_hoi } = req.body;
 
+    // Validate
+    if (!Array.isArray(cau_hoi)) {
+      return res.status(400).json({ message: "Dữ liệu câu hỏi không hợp lệ." });
+    }
+
+    // Force update only cau_hoi (safe)
+    const updated = await PatientCase.findByIdAndUpdate(
+      id,
+      { $set: { cau_hoi } },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: "Không tìm thấy bệnh án để cập nhật." });
+    }
+
+    res.status(200).json({
+      message: "Bệnh án đã được cập nhật thành công.",
+      data: updated,
+    });
+
+  } catch (error) {
+    console.error("❌ Lỗi trong updatePatientCase:", error);
+    res.status(500).json({
+      message: "Không thể cập nhật bệnh án.",
+      error: error.message,
+    });
+  }
+};

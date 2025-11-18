@@ -14,6 +14,15 @@ const EditExamRoom = () => {
   const [room, setRoom] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentStationCases, setCurrentStationCases] = useState([]);
+  // NEW: Track which station is selected
+  const [selectedStationIndex, setSelectedStationIndex] = useState(0);
+
+  // NEW: Helper to switch displayed station
+  const handleSelectStation = (index) => {
+    setSelectedStationIndex(index);
+    setCurrentStationCases(room.stations[index]?.patientCaseIds || []);
+  };
+
   const [form, setForm] = useState({
     exam_room_name: "",
     exam_room_code: "",
@@ -179,6 +188,26 @@ const EditExamRoom = () => {
       </div>
     </div>
 
+    {/* NEW: Compact list of station names */}
+    <div className="stationNameList">
+      <h3>Danh sách trạm thi</h3>
+
+    <div className="stationNameContainer" >
+          {(room?.stations || []).map((st, index) => (
+            <div
+              key={st._id}
+              className={`stationNameItem ${
+                selectedStationIndex === index ? "active" : ""
+              }`}
+              onClick={() => handleSelectStation(index)}
+            >
+              {st.stationName || `Trạm ${index + 1}`}
+            </div>
+
+          ))}
+    </div>
+    </div>
+
       {/* ==================== STATION LIST ==================== */}
       <div className="stationListSection">
         <h3>⚙️ Cấu hình trạm thi</h3>
@@ -189,77 +218,80 @@ const EditExamRoom = () => {
             {room?.stations?.length === 0 ? (
               <p>Chưa có trạm nào trong phòng này.</p>
             ) : (
-              room.stations.map((st, index) => (
-                <div key={st._id} className="stationCard">
-                  <h4>
-                    {st.stationName || `Trạm ${index + 1}`}{" "}
-                    <span style={{ color: "#888" }}>
-                      (ID: {st._id.substring(0, 6)}…)
-                    </span>
-                  </h4>
-                  <p>Bệnh án trong trạm: {st.patientCaseIds?.length || 0}</p>
+              (() => {
+                const st = room.stations[selectedStationIndex];
 
-                  <label>Tên trạm</label>
-                  <input
-                    type="text"
-                    value={st.stationName}
-                    onChange={(e) => {
-                      const newStations = [...room.stations];
-                      newStations[index].stationName = e.target.value;
-                      setRoom({ ...room, stations: newStations });
-                    }}
-                  />
+                return (
+                  <div key={st._id} className="stationCard">
+                    <h4>
+                      {st.stationName || `Trạm ${selectedStationIndex + 1}`}{" "}
+                      <span style={{ color: "#888" }}>
+                        (ID: {st._id.substring(0, 6)}…)
+                      </span>
+                    </h4>
 
-                  <label>Thời lượng (phút)</label>
-                  <input
-                    type="number"
-                    value={st.durationMinutes}
-                    onChange={(e) => {
-                      const newStations = [...room.stations];
-                      newStations[index].durationMinutes = Number(e.target.value);
-                      setRoom({ ...room, stations: newStations });
-                    }}
-                  />
+                    <p>Bệnh án trong trạm: {st.patientCaseIds?.length || 0}</p>
 
-                  <div className="station-button-section" >
-                    <button
-                      className="stationSaveBtn"
-                      onClick={async () => {
-                        try {
-                          await axios.patch(
-                            `http://localhost:5000/api/exam-stations/${st._id}`,
-                            {
-                              stationName: st.stationName,
-                              durationMinutes: st.durationMinutes,
-                            }
-                          );
-                          toast.success(`✅ Đã lưu Trạm ${index + 1}`);
-                        } catch (err) {
-                          console.error(err);
-                          toast.error(`❌ Lỗi khi lưu Trạm ${index + 1}`);
-                        }
+                    <label>Tên trạm</label>
+                    <input
+                      type="text"
+                      value={st.stationName}
+                      onChange={(e) => {
+                        const updated = [...room.stations];
+                        updated[selectedStationIndex].stationName = e.target.value;
+                        setRoom({ ...room, stations: updated });
                       }}
-                    >
-                      💾 Lưu trạm
-                    </button>
+                    />
 
-                    <button
-                      className="viewCasesBtn"
-                      onClick={() => setCurrentStationCases(st.patientCaseIds || [])}
-                    >
-                      📋 Xem Chi Tiết Bệnh Án Trong Trạm
-                    </button>
-                    
-                    <button 
-                        className="deleteBtn" 
-                        onClick={() => handleDeleteStation(st._id, index)} >
-                      <Trash size={16} /> Xóa Trạm
-                    </button>
+                    <label>Thời lượng (phút)</label>
+                    <input
+                      type="number"
+                      value={st.durationMinutes}
+                      onChange={(e) => {
+                        const updated = [...room.stations];
+                        updated[selectedStationIndex].durationMinutes = Number(e.target.value);
+                        setRoom({ ...room, stations: updated });
+                      }}
+                    />
+
+                    <div className="station-button-section">
+                      <button className="stationSaveBtn"
+                        onClick={async () => {
+                          try {
+                            await axios.patch(
+                              `http://localhost:5000/api/exam-stations/${st._id}`,
+                              {
+                                stationName: st.stationName,
+                                durationMinutes: st.durationMinutes,
+                              }
+                            );
+                            toast.success("Đã lưu thông tin trạm.");
+                          } catch (err) {
+                            toast.error("Không thể lưu thông tin trạm.");
+                          }
+                        }}
+                      > 💾 Lưu trạm
+                      </button>
+
+                      <button className="viewCasesBtn"
+                        onClick={() =>
+                          setCurrentStationCases(st.patientCaseIds || [])
+                        }
+                      >  📋 Xem Chi Tiết Bệnh Án Trong Trạm
+                      </button>
+
+                      <button className="deleteBtn"
+                        onClick={() =>
+                          handleDeleteStation(st._id, selectedStationIndex)
+                        }
+                      >  🗑️ Xóa Trạm
+                      </button>
+                    </div>
                   </div>
-
-                </div>
-              ))
+                );
+              })()
             )}
+
           </div>
 
           {/* RIGHT BOX — PATIENT CASE LIST */}
@@ -274,7 +306,9 @@ const EditExamRoom = () => {
                     <strong>🩺 {pc.metadata?.chuan_doan || "Không rõ"}</strong>{" "}
                     — {pc.metadata?.co_quan || "Không rõ cơ quan"}
                   </p>
-                  <button className="viewBtn">
+                  <button 
+                    className="viewBtn" 
+                    onClick={() => navigate(`/benh-an/${pc._id}`)} >
                     🔍 Xem chi tiết
                   </button>
                 </div>

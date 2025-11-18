@@ -15,9 +15,9 @@ import { useUserStore } from './stores/useUserStore.js';
 
 
 {/* New File */}
-//import PatientCaseDetailPage from './pages/patientCaseDetailPage/PatientCaseDetailPage.jsx'
+
+import PatientCaseDetailPage from './pages/patientCaseDetailPage/PatientCaseDetailPage.jsx';
 import Library from './pages/libraryPage/Library.jsx';
-import PatientCaseDetailPage from './pages/HuyAnh/PatientCaseDetailPage.jsx';
 
 
 const App = () => {
@@ -60,11 +60,8 @@ const App = () => {
             <Route path='/thu-vien' element = {user ? <Library/> : <Navigate to="/dang-nhap" /> } />
 
             {/* New Route */}
-            {/* <Route path="/benh-an/:id" element={<PatientCaseDetailPage />} /> */}
+            <Route path="/benh-an/:id" element={<PatientCaseDetailPage />} />
 
-            <Route path='/PatientCaseDetailPage' element={<PatientCaseDetailPage/>} />
-           
-            
             
           
         </Routes>
