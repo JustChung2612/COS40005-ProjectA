@@ -1,18 +1,15 @@
 /* eslint-disable */
 import "./studentlists.scss";
 import { Upload, UserPlus, Trash2, Download, CheckCircle2, XCircle, AlertCircle, ArrowLeft } from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import * as XLSX from "xlsx";
 
 export default function StudentLists() {
-  const navigate = useNavigate();
-  const { roomId } = useParams();
 
   // ====== STATE ======
-  
+
   const [emailInput, setEmailInput] = useState("");
 
   // 🆕 Students assigned to the currently-selected room
@@ -243,27 +240,26 @@ export default function StudentLists() {
             <div className="card-content">
               {/* --- SWITCH --- */}
               <div className="switch-student-option">
-                <input
-                  type="radio"
-                  name="switch"
-                  id="manual"
-                  checked={inputMode === "manual"}
-                  onChange={() => setInputMode("manual")}
-                />
-                <label htmlFor="manual" className="switch login">
-                  Nhập Email
-                </label>
+                <div>
+                  <input type="radio" name="switch" id="manual"
+                    checked={inputMode === "manual"}
+                    onChange={() => setInputMode("manual")}
+                  />
+                  <label htmlFor="manual" className="switch login">
+                    Nhập Email
+                  </label>
+                </div>
 
-                <input
-                  type="radio"
-                  name="switch"
-                  id="upload"
-                  checked={inputMode === "upload"}
-                  onChange={() => setInputMode("upload")}
-                />
-                <label htmlFor="upload" className="switch signup">
-                  Tải File Excel
-                </label>
+                <div>
+                  <input type="radio" name="switch" id="upload"
+                    checked={inputMode === "upload"}
+                    onChange={() => setInputMode("upload")}
+                  />
+                  <label htmlFor="upload" className="switch signup">
+                    Tải File Excel
+                  </label>
+                </div>
+
               </div>
 
               {/* --- OPTION 1: MANUAL EMAIL INPUT --- */}
@@ -276,7 +272,7 @@ export default function StudentLists() {
                     onChange={(e) => setEmailInput(e.target.value)}
                     placeholder={"student1@edu.vn\nstudent2@edu.vn, student3@edu.vn\n..."}
                   />
-                  <button className="btn-card-top" onClick={handleAddEmails} >
+                  <button className="add-email-btn" onClick={handleAddEmails} >
                     <UserPlus />
                     Thêm Email
                   </button>
@@ -379,12 +375,12 @@ export default function StudentLists() {
 
         {/* --- BOTTOM SECTION --- */}
         <div className="sl-bottom">
-          <div className="row">
-            <button className="btn" onClick={handleSaveToBackend} disabled={saving} >
-              {saving ? <div className="loader small"></div> : <CheckCircle2 />}
+          
+            <button className="publish-btn" onClick={handleSaveToBackend} disabled={saving} >
+              {saving ? <div className="loader small"></div> : ''}
               Thêm danh sách vào phòng thi
             </button>
-          </div>
+          
         </div>
       </div>
 

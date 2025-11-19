@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import PatientCaseCard from "../../../../components/patientCaseCard/PatientCaseCard.jsx";
 import axios from "axios";
+import './patientCaseList.scss';
 
 const PatientCaseList = () => {
   const [examCases, setExamCases] = useState([]);
@@ -185,7 +186,7 @@ const PatientCaseList = () => {
       {/* ---------- EXAM LIST SECTION ---------- */}
       <div className="examListContainer">
         <h3 className="listTitle">Danh sách Bệnh Án</h3>
-        <div className="examList">
+        <div className="examListMain">
           { examCases.length === 0 ? (
             <div
               style={{
@@ -204,8 +205,6 @@ const PatientCaseList = () => {
                 <PatientCaseCard
                   key={caseData._id || i}
                   data={caseData}
-                  onEdit={(d) => console.log("Edit", d)}
-                  onDelete={(d) => console.log("Delete", d)}
                 />
               ))}
             </div>

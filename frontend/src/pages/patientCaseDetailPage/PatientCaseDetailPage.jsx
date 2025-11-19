@@ -338,7 +338,7 @@ const PatientCaseDetailPage = () => {
     <div className="patientCaseDetail-page">
       {/* Case Detail TOP */}
       <div className="caseDetail-top">
-        <button className="backBtn" onClick={() => navigate(-1)}>
+        <button className="back-btn" onClick={() => navigate(-1)}>
           <ArrowLeft /> Quay lại
         </button>
 

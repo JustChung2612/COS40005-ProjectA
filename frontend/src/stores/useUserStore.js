@@ -28,8 +28,6 @@ export const useUserStore = create((set, get) => ({
         }
     },
 
-
-
     login: async (loginData) => {
         set({ loading: true });
 
@@ -47,6 +45,22 @@ export const useUserStore = create((set, get) => ({
             set({ loading: false });
             toast.error(error?.response?.data?.message || "An error occurred");
             console.error("❌ Login error:", error);
+        }
+    },
+
+    loginWithGoogle: async (access_token) => {
+        set({ loading: true });
+
+        try {
+            const res = await axios.post("/auth/google", { access_token });
+
+            set({ user: res.data.userData, loading: false });
+            toast.success(res.data.message || "Google login successful!");
+
+        } catch (error) {
+            console.error("❌ Google login error:", error);
+            toast.error(error?.response?.data?.message || "Google login failed");
+            set({ loading: false });
         }
     },
 

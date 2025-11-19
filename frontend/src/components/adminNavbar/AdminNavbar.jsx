@@ -6,7 +6,6 @@ import { useUserStore } from '../../stores/useUserStore';
 const AdminNavbar = ({
   selectionMode = false,
   selectedCount = 0,
-  onStartSelection = () => {},
   onCompleteSelection = () => {},
   onStartRoom = () => {},  // ✅ UPDATED: add onStartRoom for the Create Room popup
 }) => {

@@ -90,13 +90,17 @@
     }
 
     .btn-admin{
-        background: #FF8040 ;
+        background-color: #FF8040 ;
         padding: 0.5rem;
         font-size: 16px;
         display: flex;
         justify-content: center;
         align-items: center;
         gap: 10px;
+        transition: 0.2s ease;
+    }
+    .btn-admin:hover{
+       background-color: rgb(194, 89, 37) ;
     }
 
     /* Spacing helpers */

@@ -2,7 +2,8 @@ import "./patientCaseCard.scss";
 import { Eye, Edit, Trash2 } from "lucide-react"; 
 import { Link } from "react-router-dom"
 
-const PatientCaseCard = ({ data, onEdit, onDelete }) => {
+// import destructuring data from PatientCaseList.jsx
+const PatientCaseCard = ({ data }) => {
 
   const { metadata, benh_an_tinh_huong } = data;
   const patient = benh_an_tinh_huong.thong_tin_benh_nhan;
@@ -14,11 +15,8 @@ const PatientCaseCard = ({ data, onEdit, onDelete }) => {
       : "advanced";
 
   return (
-    <div 
-      className="patientCaseCard"
-      draggable
+    <div  className="patientCaseCard" draggable
       onDragStart={ (e) => {
-          // ✅ Ensure we only use _id for backend and drag data
           const { _id, ...rest } = data;
           e.dataTransfer.setData("application/json", JSON.stringify({ _id, ...rest }));
         }
@@ -26,54 +24,60 @@ const PatientCaseCard = ({ data, onEdit, onDelete }) => {
     >
 
       {/* Card Header */}
-      <div className="cardHeader">
-        <p>Chuẩn Đoán: </p>
-        <div className="cardHeader_Inner" >
-          <h2 className="subject">{metadata.chuan_doan}</h2>
-          <span className={`difficultyBadge ${diffClass}`}>
-            {metadata.do_kho}
-          </span>
+        <div className="cardHeader" >
+          <div className="cardHeader_Title">
+            
+            <h2 className="subject" title={metadata.chuan_doan}> 
+{metadata.chuan_doan}
+            </h2>
+          </div>
         </div>
-      </div>
 
       {/* Card Body */}
       <div className="cardBody">
-        <p>
-          <strong>👤 Bệnh nhân:</strong> {patient.ho_ten} – {patient.tuoi} tuổi –{" "}
-          {patient.gioi_tinh}
-        </p>
-        <p>
-          <strong>💬 Lý do:</strong> {patient.ly_do_nhap_vien}
-        </p>
-        <p>
-          <strong>⚙️ Cơ quan:</strong> {metadata.co_quan} 
-        </p>
-        <p>
-          <strong>🧍‍♀️ Đối tượng:</strong> {metadata.doi_tuong}
-        </p>
+        <div className="cardInfo" >
+          <p>
+            <strong> Bệnh nhân:</strong> {patient.ho_ten} – {patient.tuoi} tuổi
+          </p>
+          <p>
+            <strong> Lý do:</strong>
+              { 
+                patient.ly_do_nhap_vien.length > 10 
+                  ? patient.ly_do_nhap_vien.slice(0, 30) + "…" 
+                  : patient.ly_do_nhap_vien 
+              }
+          </p>
+          <p>
+            <strong> Cơ quan:</strong> {metadata.co_quan} 
+          </p>
+          <p>
+            <strong> Đối tượng:</strong> {metadata.doi_tuong}
+          </p>
+        </div>
+      
       </div>
 
-      {/* Card Footer */}
-      <div className="cardFooter">
-        <Link to={`/benh-an/${data._id}`} className='examLink'>
-          <button className="btn view">
-            <Eye size={16} /> Xem
-          </button>
-        </Link>
+      <div className="cardEnd">
+                {/* Card Button */}
+              <div className="cardBtn">
+                <Link to={`/benh-an/${data._id}`} className='examLink'>
+                  <button className="btn view">
+                    <Edit size={16} /> Sửa
+                  </button>
+                </Link>
 
-
-        <Link className='examLink' >
-          <button className="btn edit" onClick={() => onEdit?.(data)}>
-            <Edit size={16} /> Sửa
-          </button>
-        </Link>
-
-        <Link className='examLink' >
-          <button className="btn delete" onClick={() => onDelete?.(data)}>
-            <Trash2 size={16} /> Xóa
-          </button>
-        </Link>
+                <Link className='examLink' >
+                  <button className="btn delete" >
+                    <Trash2 size={16} /> Xóa
+                  </button>
+                </Link>
+              </div>
+                <span className={`difficultyBadge ${diffClass}`}>
+                  {metadata.do_kho}
+                </span>
       </div>
+
+
     </div>
   );
 

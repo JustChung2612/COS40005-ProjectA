@@ -31,13 +31,9 @@
   to { transform: translateX(0); }
 }
 
-
-
-
 .createRoomPopup-header-container {
   padding: 1rem;
   border-bottom: 1px solid #eee;
-  
 
   .createRoomPopup-header-main{
     display: flex;
@@ -45,20 +41,19 @@
     align-items: center;
   }
 
-  .toggle-btn {
-    margin-right: 1rem;
-    margin-bottom: 0.5rem;
+  .close-btn {
     font-size: 1.2rem;
-    background: none;
     border: none;
     cursor: pointer;
-    background-color: #14b8a6;
+    background-color: #e7e7e7;
     border-radius: 5px;
-    display: flex;
-    align-items: center;
+    display: flex; align-items: center;
+    transition: 0.2s ease;
 
+    &:hover {
+      background-color: #14b8a6;
+    }
   }
-
 }
 
 .createRoomPopup__footer {
@@ -112,19 +107,25 @@
    }
 }
 
-.finish-btn,
-.next-btn,
-.cancel-btn {
+.finish-btn, .next-btn, .cancel-btn {
   background: #14b8a6;
   color: white;
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 6px;
   cursor: pointer;
+  transition: 0.2s ease;
+
+  &:hover {
+    background-color: #0d9488;
+  }
 }
 
 .cancel-btn {
   background: #e53e3e;
+  &:hover {
+    background-color: #bc2d2d;
+  }
 }
 
 .pagination-bar {
@@ -147,11 +148,11 @@
   }
 }
 
-
 .pagination-section{
-  border: 2px solid teal;
+  //border: 2px solid teal;
   display: flex;
   justify-content: center;
   gap: 10px;
+
 
 }

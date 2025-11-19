@@ -337,7 +337,7 @@ const EditExamRoom = () => {
           }
         }}
       >
-        🚀 Phát Đề Thi
+        Phát Đề Thi
       </button>
 
     </div>

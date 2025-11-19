@@ -4,7 +4,6 @@ import { useState } from "react";
 import { X, ArrowBigLeft, ArrowBigRight, Trash } from 'lucide-react';
 import { toast } from "react-hot-toast";
 import axios from "axios";
-import { useNavigate } from 'react-router-dom';
 import { useUserStore } from "../../../../stores/useUserStore.js";
 
 const CreateRoomPopup = ({
@@ -17,7 +16,6 @@ const CreateRoomPopup = ({
 }) => {
 
   const { user } = useUserStore();
-  const navigate = useNavigate();
   // ---------------------- STATE ----------------------
   const [currentStationIndex, setCurrentStationIndex] = useState(0);
   const [stations, setStations] = useState([{ name: "Trạm 1", patients: [] }]);
@@ -179,7 +177,7 @@ const CreateRoomPopup = ({
       <div className="createRoomPopup">
         {/* ========== 🆕 HEADER SECTION ========== */}
         <div className="createRoomPopup-header-container">
-                      <button className="toggle-btn"  onClick={onClose} title="Đóng tạm thời" >
+            <button className="close-btn"  onClick={onClose} title="Đóng tạm thời" >
                 <X />
             </button>   
           <div className="createRoomPopup-header-main" >       

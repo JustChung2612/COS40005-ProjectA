@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema(
         maSinhVien: { 
             type: String,   
         },
+        googleId: {
+            type: String,
+            unique: false, // user may switch between email + google
+        }
 
     },
     {

@@ -2,6 +2,7 @@ import User from '../models/user.model.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { redis } from '../lib/redis.js';
+import { OAuth2Client } from "google-auth-library"; 
 
 const generateTokens = (userId) => {
     const accessToken = jwt.sign({userId}, process.env.ACCESS_TOKEN_SECRET, {
@@ -186,7 +187,7 @@ export const refreshToken = async ( req, res ) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
 			sameSite: "strict",
-			maxAge: 15 * 60 * 1000,
+			maxAge: 60 * 60 * 1000,
         });
 
         res.json({ message: "Token Refresh Token successfully" });
@@ -205,3 +206,61 @@ export const getProfile = async ( req, res ) => {
         res.status(500).json({ message: error.message });
     }   
 }
+
+
+// ================== GOOGLE LOGIN (ACCESS TOKEN VERSION) ==================
+export const googleAuth = async (req, res) => {
+    try {
+        const { access_token } = req.body;
+        if (!access_token) {
+            return res.status(400).json({ message: "Missing Google access token" });
+        }
+
+        // 1️⃣ Get user info from Google API (using access token)
+        const googleUser = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+            headers: {
+                Authorization: `Bearer ${access_token}`
+            }
+        }).then(res => res.json());
+
+        const { sub: googleId, email, name } = googleUser;
+
+        if (!googleId) {
+            return res.status(400).json({ message: "Invalid Google token" });
+        }
+
+        // 2️⃣ Check if existing Google user in DB
+        let user = await User.findOne({ googleId });
+
+        // 3️⃣ Create user if new
+        if (!user) {
+            user = await User.create({
+                email,
+                username: name,
+                googleId,
+                password: "GOOGLE_LOGIN", // dummy password
+                maSinhVien: "000000",
+            });
+        }
+
+        // 4️⃣ Create tokens + cookies
+        const { accessToken, refreshToken } = generateTokens(user._id);
+        await storeRefreshToken(user._id, refreshToken);
+        setCookies(res, accessToken, refreshToken);
+
+        return res.status(200).json({
+            message: "Google login successful!",
+            userData: {
+                _id: user._id,
+                username: user.username,
+                email: user.email,
+                role: user.role,
+                maSinhVien: user.maSinhVien,
+            },
+        });
+
+    } catch (error) {
+        console.error("❌ Google Auth Error:", error);
+        res.status(500).json({ message: "Google authentication failed" });
+    }
+};
