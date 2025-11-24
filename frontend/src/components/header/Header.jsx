@@ -16,7 +16,7 @@ const Header = () => {
       <div className='wrapper' >
           <div className='logo'> 
             <Link to="/" style={{ textDecoration: "none" }}>
-              <span className="logo">Logo</span>
+              <img src="./homepage/logo.png" alt="" />
             </Link>
           </div>
 

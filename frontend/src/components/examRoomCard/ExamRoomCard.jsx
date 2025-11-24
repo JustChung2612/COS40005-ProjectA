@@ -101,7 +101,8 @@ const ExamRoomCard = ({ data }) => {
         <div className="card__header">
           <div className="row">
             <h2 className="title">
-              {exam_room_name || "Phòng chưa đặt tên"} 
+              {/* {exam_room_name} */}
+              {exam_room_name.length > 10 ? exam_room_name.slice(0,10) + "..." : exam_room_name  || "Phòng chưa đặt tên"}
             </h2>
             {/* Optional badge */}
             {status && (

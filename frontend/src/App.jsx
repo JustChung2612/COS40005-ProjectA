@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useEffect } from "react";
+import { useUserStore } from './stores/useUserStore.js';
 import { Toaster } from 'react-hot-toast';
 import './App.css'
 import Header from './components/header/Header.jsx'
@@ -10,8 +11,10 @@ import LoginPage from './pages/loginPage/LoginPage.jsx';
 import SignupPage from './pages/signUpPage/SignUpPage.jsx';
 import AdminPage from './pages/adminPage/AdminPage.jsx';
 import OscePrepRoomPage from './pages/OscePrepRoomPage/OscePrepRoomPage.jsx';
-import EditExamRoom from './pages/adminPage/adminTab/editExamRoom/EditExamRoom.jsx'
-import { useUserStore } from './stores/useUserStore.js';
+import EditExamRoom from './pages/adminPage/adminTab/editExamRoom/EditExamRoom.jsx';
+import InstructorExams from './pages/Update/InstructorExams/InstructorExams.jsx';
+import InstructorAttempts from './pages/Update/InstructorAttempts/InstructorAttempts.jsx';
+
 
 
 {/* New File */}
@@ -61,6 +64,10 @@ const App = () => {
 
             {/* New Route */}
             <Route path="/benh-an/:id" element={<PatientCaseDetailPage />} />
+
+
+            <Route path="/instructor/exams" element={<InstructorExams />} />
+            <Route path="/instructor/exams/:examId/attempts" element={<InstructorAttempts />} />
 
             
           

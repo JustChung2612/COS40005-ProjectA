@@ -26,9 +26,11 @@ const Sidebar = ({ active, onSelect }) => {
       <div className="sidebar">
 
         <div className="top">
-          <Link to="/" style={{ textDecoration: "none" }}>
-            <span className="logo">Logo</span>
-          </Link>
+          <div className='logo'> 
+            <Link to="/" style={{ textDecoration: "none" }}>
+              <img src="./homepage/logo.png" alt="" />
+            </Link>
+          </div>
         </div>
         <hr />
 
