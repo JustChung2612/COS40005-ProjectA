@@ -351,7 +351,20 @@ if (!examData || !patientCase) {
               })}
 
               <div className="q-submit">
-                <Button className="w-100" size="lg" onClick={submit}>Nộp bài thi</Button>
+                <Button className="w-100" size="lg" onClick={submit}>
+                  {nextStationId ? (
+                    <Link to={`/osce/tram/${nextStationId}`} className="next-Btn">
+                      Trạm Kế Tiếp <ArrowBigRight />
+                    </Link>
+                  ) : (
+                    <Link to="/test-result" className="finish-Btn">
+                      Kết thúc
+                    </Link>
+                  )}
+
+                </Button>
+
+
               </div>
             </div>
           </ScrollArea>
@@ -379,17 +392,17 @@ if (!examData || !patientCase) {
       </div>
 
       {/* ========== 🧭 Navigation Buttons ========== */}
-      <div className="station-nav-btns">
+      {/* <div className="station-nav-btns">
         {nextStationId ? (
           <Link to={`/osce/tram/${nextStationId}`} className="next-Btn">
             Trạm Kế Tiếp <ArrowBigRight />
           </Link>
         ) : (
-          <Link to="/" className="finish-Btn">
+          <Link to="/test-result" className="finish-Btn">
             Kết thúc
           </Link>
         )}
-      </div>
+      </div> */}
 
     </div>
   );

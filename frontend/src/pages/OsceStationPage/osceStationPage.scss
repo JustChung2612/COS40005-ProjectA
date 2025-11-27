@@ -272,19 +272,17 @@
     &--ghost { background: transparent; color: var(--fg); border-color: var(--border); &:hover{ border-color: var(--primary); color: var(--primary); } }
   }
 
-  .next-Btn-con{
-    border: none;
-    .next-Btn{
+
+    .next-Btn , .finish-Btn {
       display: flex;
       align-items: center;
-      padding: 15px 32px;
       text-align: center;
       text-decoration: none;
       color: #ffff;
-      background-color: #555555;
+      
     }
   }
-}
+
 
 
 

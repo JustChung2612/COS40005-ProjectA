@@ -14,13 +14,26 @@ import OscePrepRoomPage from './pages/OscePrepRoomPage/OscePrepRoomPage.jsx';
 import EditExamRoom from './pages/adminPage/adminTab/editExamRoom/EditExamRoom.jsx';
 import InstructorExams from './pages/Update/InstructorExams/InstructorExams.jsx';
 import InstructorAttempts from './pages/Update/InstructorAttempts/InstructorAttempts.jsx';
-
+import OSCETestCompletionPage from './pages/resultPage/OSCETestCompletionPage.jsx';
 
 
 {/* New File */}
 
 import PatientCaseDetailPage from './pages/patientCaseDetailPage/PatientCaseDetailPage.jsx';
 import Library from './pages/libraryPage/Library.jsx';
+
+const studentInfo = {
+  name: "Nguyen Van A",
+  id: "SV20251234",
+  className: "OSCE Prep - Group 3",
+};
+
+const sampleStations = [
+  { name: "Station 1: Cardiology", type: "mcq", score: 87 },
+  { name: "Station 2: Neurology", type: "mcq", score: 92 },
+  { name: "Station 3: Pediatrics", type: "free-text" },
+  { name: "Station 4: Surgery", type: "mcq", score: 75 },
+];
 
 
 const App = () => {
@@ -66,9 +79,9 @@ const App = () => {
             <Route path="/benh-an/:id" element={<PatientCaseDetailPage />} />
 
 
-            <Route path="/instructor/exams" element={<InstructorExams />} />
-            <Route path="/instructor/exams/:examId/attempts" element={<InstructorAttempts />} />
-
+            <Route path="/exams" element={<InstructorExams />} />
+            <Route path="/exams/:examId/attempts" element={<InstructorAttempts />} />
+            <Route path='/test-result' element={<OSCETestCompletionPage  student={studentInfo} stations={sampleStations} />} />
             
           
         </Routes>
