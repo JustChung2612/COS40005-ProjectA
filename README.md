@@ -53,7 +53,7 @@ Completes the station within a timed session ⏱ →
 Moves forward with “Trạm Kế Tiếp” →
 When the final station is finished, the button changes to “Kết thúc” 🏁, returning the student to the homepage (or later, a results page).
 
-# Hướng dẫn chạy project
+# 🚀 Quick Guide To Run Project
 
 ## 0. Clone Project
 ``` 
@@ -83,7 +83,18 @@ git clone + link
 3. npm start
 ```
 
-## 2. Import data in database
+## 2. Create File named <ins> .env </ins>
+** Copy And Paste this into .env file: **
+```
+MONGO_URL = mongodb://127.0.0.1:27017/Medic-OSCE
+ACCESS_TOKEN_SECRET=access_token_secret
+REFRESH_TOKEN_SECRET=refresh_token_secret
+GOOGLE_CLIENT_ID= ' Your Google Client ID'
+```
+
+
+
+## 3. Import data in database
 1. Make sure laptop have MongoDB Compass or download it.
 2. Open MongoDB Compass , hover ** localhost:27017 ** and click ** Connect **.
 3. Select "Medic-OSCE" database.
