@@ -81,10 +81,12 @@ export const useUserStore = create((set, get) => ({
             set({ user: response.data, checkingAuth: false });
 
         } catch(error) {
-			if (error.response?.status !== 401)
+
             console.error("❌ CheckAuth error:", error.message);
 			set({ checkingAuth: false, user: null });
         }
     },
 
 }));
+
+

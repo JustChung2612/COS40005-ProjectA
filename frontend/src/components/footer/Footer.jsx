@@ -1,7 +1,7 @@
 // Footer.jsx
 import React, { useState } from 'react';
 import './footer.scss';
-import { Twitter , Instagram , Facebook  ,Youtube   } from 'lucide-react';
+
 
 // Footer sections configuration
 const FOOTER_SECTIONS = [

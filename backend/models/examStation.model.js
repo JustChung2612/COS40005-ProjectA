@@ -56,14 +56,3 @@ const ExamStationSchema = new Schema(
 
 const ExamStation = mongoose.model("ExamStation", ExamStationSchema);
 export default ExamStation;
-
-
-
-  // 690c68055001ba5efc12bd1d
-  // 690c6b785001ba5efc12be43
-  // 690c6b785001ba5efc12be47
-  // 690c95f3badba4c0b8a46028
-  // 690c95f3badba4c0b8a4602a
-  // 690ca66bd43a9c68fc5d323d
-  // 690ca66bd43a9c68fc5d323f
-  // 690ca66bd43a9c68fc5d3241
