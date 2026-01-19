@@ -16,6 +16,9 @@ import InstructorExams from './pages/Update/InstructorExams/InstructorExams.jsx'
 import InstructorAttempts from './pages/Update/InstructorAttempts/InstructorAttempts.jsx';
 import OSCETestCompletionPage from './pages/resultPage/OSCETestCompletionPage.jsx';
 
+// Project B
+import StudentDashBoardPage from './pages/studentDashBoardPage/StudentDashBoardPage.jsx';
+
 
 {/* New File */}
 
@@ -72,16 +75,19 @@ const App = () => {
               element = {user?.role === "admin" ? <AdminPage/> : <Navigate to="/dang-nhap" /> } 
             />
             <Route path="/quan-tri/sua-phong/:id" element={<EditExamRoom />} />
-
             <Route path='/thu-vien' element = {user ? <Library/> : <Navigate to="/dang-nhap" /> } />
-
-            {/* New Route */}
             <Route path="/benh-an/:id" element={<PatientCaseDetailPage />} />
 
-
+             {/* Demo */}
             <Route path="/exams" element={<InstructorExams />} />
             <Route path="/exams/:examId/attempts" element={<InstructorAttempts />} />
             <Route path='/test-result' element={<OSCETestCompletionPage  student={studentInfo} stations={sampleStations} />} />
+
+            {/* Project B */}
+            <Route 
+              path='/sinh-vien' 
+              element={user?.role === "user" ? <StudentDashBoardPage/> : <Navigate to="/dang-nhap" /> }
+            />
             
           
         </Routes>

@@ -45,9 +45,7 @@ const Sidebar = ({ active, onSelect }) => {
                 >
                   {item.icon}
                   <span>{item.label}</span>
-
                 </li>
-            
             ))}
           </ul>
         </div>

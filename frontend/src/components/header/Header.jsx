@@ -39,7 +39,7 @@ const Header = () => {
             <div className='item'>
               {user ? (
                 <div className="user">
-                  <Link to={isAdmin ? "/quan-tri" : "/trang-sinh-vien"} className='avatarLink' >
+                  <Link to={isAdmin ? "/quan-tri" : "/sinh-vien"} className='avatarLink' >
                     <div className='avatar' >             
                       <img
                         src={ './noAvatar.jpg' }
