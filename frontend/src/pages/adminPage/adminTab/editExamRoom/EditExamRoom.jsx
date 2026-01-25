@@ -111,6 +111,23 @@ const EditExamRoom = () => {
     }
   };
 
+    // 🗑️ Delete the whole exam room
+  const handleDeleteRoom = async () => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa PHÒNG THI này không? Hành động này không thể hoàn tác.")) return;
+
+    try {
+      const res = await axios.delete(`http://localhost:5000/api/exam-rooms/${id}`);
+      if (res.status === 200) {
+        toast.success("🗑️ Đã xóa phòng thi!");
+        navigate("/quan-tri");
+      }
+    } catch (err) {
+      console.error("❌ Lỗi khi xóa phòng thi:", err);
+      toast.error(err.response?.data?.message || "Không thể xóa phòng thi.");
+    }
+  };
+
+
 
   // ✅ Return section
   if (loading) return <div>Đang tải...</div>;
@@ -320,25 +337,37 @@ const EditExamRoom = () => {
 
 
       {/* 🚀 Publish Button */}
-      <button
-        className="publish-btn"
-        onClick={async () => {
-          try {
-            const res = await axios.post(
-              `http://localhost:5000/api/exam-rooms/${id}/publish`
-            );
-            if (res.status === 200) {
-              toast.success("✅ Phòng thi đã được phát hành!");
-              setRoom((prev) => ({ ...prev, status: "Đã phát hành" }));
+      <div style={{ display: "flex", gap: "12px", marginTop: "16px" }}>      
+        <button
+          
+          className="publish-btn"
+          onClick={async () => {
+            try {
+              const res = await axios.post(
+                `http://localhost:5000/api/exam-rooms/${id}/publish`
+              );
+              if (res.status === 200) {
+                toast.success("✅ Phòng thi đã được phát hành!");
+                setRoom((prev) => ({ ...prev, status: "Đã phát hành" }));
+              }
+            } catch (err) {
+              console.error("❌ Lỗi khi phát đề:", err);
+              toast.error(err.response?.data?.message || "Không thể phát đề thi.");
             }
-          } catch (err) {
-            console.error("❌ Lỗi khi phát đề:", err);
-            toast.error(err.response?.data?.message || "Không thể phát đề thi.");
-          }
-        }}
-      >
-        Phát Đề Thi
-      </button>
+          }}
+        >
+          Phát Đề Thi
+        </button>
+        <button
+          
+          className="delete-room-btn"
+          onClick={handleDeleteRoom}
+        >
+          🗑️ Xóa Phòng Thi
+        </button>
+      </div>
+
+      
 
     </div>
   );

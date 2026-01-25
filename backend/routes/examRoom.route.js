@@ -4,6 +4,7 @@ import { createExamRoom,
          getExamRoomById, 
          updateExamRoom,
          publishExamRoom,
+         deleteExamRoom,
          getRoomStudents,          // 🆕 add this
          saveRoomStudents,          // 🆕 add this
          joinExamRoom,
@@ -27,6 +28,9 @@ router.get("/:id", getExamRoomById);
 
 // ✏️ Cập nhật thông tin phòng thi
 router.patch("/:id", updateExamRoom);
+
+// 🗑️ Xóa phòng thi
+router.delete("/:id", deleteExamRoom);
 
 // 🚀 Phát đề thi
 router.post("/:id/publish", publishExamRoom);

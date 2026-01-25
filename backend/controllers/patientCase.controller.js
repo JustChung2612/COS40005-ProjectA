@@ -8,12 +8,26 @@ export const createPatientCase = async (req, res) => {
       return res.status(400).json({ message: "Thiếu dữ liệu bắt buộc, không thể tạo bệnh án trống." });
     }
 
+    const normalizedQuestions = Array.isArray(cau_hoi)
+      ? cau_hoi.map((q) => ({
+          ...q,
+          diem: Math.max(0, Number(q?.diem) || 0),
+          bat_buoc: Boolean(q?.bat_buoc),
+        }))
+      : [];
+
+    const totalPoints = normalizedQuestions.reduce(
+      (sum, q) => sum + (Number(q?.diem) || 0),
+      0
+    );
+
     const patientCase = await PatientCase.create(
       {
         metadata,
         ten_benh_an,
         benh_an_tinh_huong,
-        cau_hoi,
+        cau_hoi: normalizedQuestions,
+        totalPoints,
       }
     );
     
@@ -95,12 +109,24 @@ export const updatePatientCase = async (req, res) => {
       return res.status(400).json({ message: "Dữ liệu câu hỏi không hợp lệ." });
     }
 
-    // Force update only cau_hoi (safe)
+    // ✅ Normalize "diem" + "bat_buoc" so backend always stores valid values
+    const normalizedQuestions = cau_hoi.map((q) => ({
+      ...q,
+      diem: Math.max(0, Number(q?.diem) || 0),
+      bat_buoc: Boolean(q?.bat_buoc),
+    }));
+
+    const totalPoints = normalizedQuestions.reduce(
+      (sum, q) => sum + (Number(q?.diem) || 0),
+      0
+    );
+
     const updated = await PatientCase.findByIdAndUpdate(
       id,
-      { $set: { cau_hoi } },
+      { $set: { cau_hoi: normalizedQuestions, totalPoints } },
       { new: true }
     );
+
 
     if (!updated) {
       return res.status(404).json({ message: "Không tìm thấy bệnh án để cập nhật." });

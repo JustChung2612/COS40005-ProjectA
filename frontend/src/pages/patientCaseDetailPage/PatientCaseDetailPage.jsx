@@ -202,6 +202,10 @@ const PatientCaseDetailPage = () => {
     [questions]
   );
 
+  const displayTotalPoints =
+    typeof caseData?.totalPoints === "number" ? caseData.totalPoints : totalPoints;
+
+
   const updateQuestion = (index, partial) => {
     setQuestions((prev) =>
       prev.map((q, i) => (i === index ? { ...q, ...partial } : q))
@@ -440,7 +444,7 @@ const PatientCaseDetailPage = () => {
 
             <div className="qbuilder__summary">
               <span> <b>{questions.length}</b> câu hỏi </span>
-              <span> Tổng điểm: <b>{totalPoints}</b> </span>
+              <span> Tổng điểm: <b>{displayTotalPoints}</b> </span>
             </div>
 
             <div className="qbuilder__list">

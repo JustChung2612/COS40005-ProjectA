@@ -43,12 +43,28 @@ const App = () => {
 
   const { user, checkAuth, checkingAuth } = useUserStore();
   const location = useLocation();
-  const hideHeader = location.pathname === '/quan-tri' ||
-                     location.pathname.startsWith('/osce/tram/'); ;
+
+  const hideHeaderRoutes = [
+    "/quan-tri",
+    "/quan-tri/sua-phong/",  
+    "/osce/tram/",            
+  ];
+  const hideHeader = hideHeaderRoutes.some((route) =>
+    location.pathname === route || location.pathname.startsWith(route)
+  );
+
+  const hideFooterRoutes = [
+    "/osce/tram/"
+  ];
+  const hideFooter = hideFooterRoutes.some((route) => 
+    location.pathname === route || location.pathname.startsWith(route)
+  );
+
 
   useEffect(() => {
 		checkAuth();
 	}, [checkAuth]);
+
 
   if (checkingAuth) return <div className="route-loading">Đang kiểm tra phiên đăng nhập…</div>
 
@@ -91,7 +107,7 @@ const App = () => {
             
           
         </Routes>
-        <Footer/>
+        { !hideFooter && <Footer/>}
       </div>
     </>
   )

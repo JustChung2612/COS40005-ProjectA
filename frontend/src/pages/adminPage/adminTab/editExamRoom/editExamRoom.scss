@@ -345,8 +345,9 @@
   /* ===========================
      🚀 Publish Button
      =========================== */
-  .publish-btn {
-    background-color: #14b8a6;
+  .publish-btn , 
+  .delete-room-btn {
+    background-color: #37413f;
     color: #fff;
     border: none;
     border-radius: 8px;

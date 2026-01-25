@@ -2,7 +2,9 @@ import React from 'react'
 
 const AiPatient = () => {
   return (
-    <div>AiPatient</div>
+    <div>
+      Ai Patient 
+    </div>
   )
 }
 

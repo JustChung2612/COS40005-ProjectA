@@ -3,7 +3,7 @@ import ExamRoom from "../models/examRoom.model.js";
 import ExamStation from "../models/examStation.model.js";
 
 /**
- * 🧩 TẠO PHÒNG THI MỚI (POST /api/exam-rooms)
+ * TẠO PHÒNG THI MỚI (POST /api/exam-rooms)
  * Nhận dữ liệu từ frontend (popup) bao gồm:
  * - exam_room_code, exam_room_name, terminology
  * - exam_room_settings
@@ -325,6 +325,36 @@ export const checkAllowedStudent = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Lỗi kiểm tra quyền truy cập.",
+    });
+  }
+};
+
+
+// ==================== 🗑️ DELETE EXAM ROOM (DELETE /api/exam-rooms/:id) ====================
+export const deleteExamRoom = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const room = await ExamRoom.findById(id);
+    if (!room) {
+      return res.status(404).json({ message: "Không tìm thấy phòng thi để xóa." });
+    }
+
+    // ✅ Delete all stations that belong to this room (avoid orphan stations)
+    await ExamStation.deleteMany({ exam_room_Id: id });
+
+    // ✅ Delete the room itself
+    await ExamRoom.findByIdAndDelete(id);
+
+    return res.status(200).json({
+      message: "✅ Đã xóa phòng thi thành công.",
+      deletedRoomId: id,
+    });
+  } catch (error) {
+    console.error("❌ Lỗi trong deleteExamRoom:", error);
+    return res.status(500).json({
+      message: "Không thể xóa phòng thi.",
+      error: error.message,
     });
   }
 };
