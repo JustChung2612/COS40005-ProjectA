@@ -3,7 +3,6 @@
 // ===========================
 
 const Mau_Tram_Thi = {
-  "tram_thi_ID": '', // VD: tramthiid1
   // ======= METADATA (Dành cho bộ lọc tìm kiếm trong Admin) =======
   "metadata": {
     "chuan_doan": "",           // Ví dụ: "Nội tim mạch – Suy tim"
@@ -13,7 +12,10 @@ const Mau_Tram_Thi = {
     "doi_tuong": "",         // Ví dụ: "Người lớn", "Người già", "Trẻ em", "Thai phụ"
   },
 
-  "ten_tram" : "", // Ví dụ: Hô Hấp , Tim Mạch (Giống Cơ Quan)
+  "ten_benh_an" : "", // Ví dụ: Hô Hấp , Tim Mạch (Giống Cơ Quan)
+
+  // Tổng điểm tối đa của bệnh án
+  "totalPoints": 0, // min: 0, max: 10
 
   // ======= BỆNH ÁN TÌNH HUỐNG =======
   "benh_an_tinh_huong": {
@@ -73,21 +75,28 @@ const Mau_Tram_Thi = {
       "noi_dung": "Câu hỏi 1",
       "kieu": "radio",
       "lua_chon": ["Đáp án 1", "Đáp án 2", "Đáp án 3"],
-      "dap_an_dung": ""
+      "dap_an_dung": "",
+      "diem": 0, // Điểm cho câu hỏi min: 0, max: 10
+      "bat_buoc": true, // true or false
+
     },
     {
       "id": 2,
       "noi_dung": "Câu hỏi 2",
       "kieu": "checkbox",
       "lua_chon": ["Đáp án 1", "Đáp án 2", "Đáp án 3"],
-      "dap_an_dung": [""]
+      "dap_an_dung": [""],
+      "diem": 0, // Điểm cho câu hỏi min: 0, max: 10
+      "bat_buoc": true, // true or false
     },
     {
       "id": 3,
       "noi_dung": "Câu hỏi 3",
       "kieu": "text",
       "goi_y": "",
-      "dap_an_dung": ""
+      "dap_an_dung": "",
+      "diem": 0, // Điểm cho câu hỏi min: 0, max: 10
+      "bat_buoc": true, // true or false
     }
   ]
 };

@@ -2,7 +2,7 @@ import express from "express";
 import cors from 'cors';
 import 'dotenv/config';
 import cookieParser from "cookie-parser";
-import { connectDB } from './lib/db.js';
+import { connectDB_local, connectDB_atlas } from './lib/db.js';
 
 import authRoutes from './routes/auth.route.js';
 import patientCaseRoutes from './routes/patientCase.route.js';
@@ -28,5 +28,6 @@ app.use("/api/exam-stations", examStationRoutes);
 
 app.listen(PORT, () => {
     console.log(`Listening on Port ${PORT}`);
-    connectDB();
+    connectDB_local();
+    //connectDB_atlas()
 })

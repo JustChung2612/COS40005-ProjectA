@@ -5,7 +5,7 @@ import { Link } from "react-router-dom"
 // import destructuring data from PatientCaseList.jsx
 const PatientCaseCard = ({ data }) => {
 
-  const { metadata, benh_an_tinh_huong } = data;
+  const { metadata, benh_an_tinh_huong, ten_benh_an } = data;
   const patient = benh_an_tinh_huong.thong_tin_benh_nhan;
   const diffClass =
     metadata.do_kho === "Cơ bản"
@@ -27,8 +27,8 @@ const PatientCaseCard = ({ data }) => {
         <div className="cardHeader" >
           <div className="cardHeader_Title">
             
-            <h2 className="subject" title={metadata.chuan_doan}> 
-{metadata.chuan_doan}
+            <h2 className="subject" title={ten_benh_an}> 
+                  {ten_benh_an.length > 20 ? ten_benh_an.slice(0, 70) + '...' : ten_benh_an  }
             </h2>
           </div>
         </div>

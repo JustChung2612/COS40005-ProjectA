@@ -6,19 +6,6 @@ import { toast } from "react-hot-toast";
 import { ArrowLeft, Loader2, AlertCircle, PlusCircle, Trash2 } from "lucide-react";
 
 
-/* ========= UI PRIMITIVES (local, giống Stations) ========= */
-export const Card = ({ className = "", children, ...p }) => (
-  <div className={["card", className].join(" ")} {...p}>
-    {children}
-  </div>
-);
-
-export const CardContent = ({ className = "", children, ...p }) => (
-  <div className={["card__content", className].join(" ")} {...p}>
-    {children}
-  </div>
-);
-
 /* ========= Hằng số ========= */
 const QUESTION_TYPES = [
   { value: "radio", label: "Trắc nghiệm (1 đáp án đúng)" },
@@ -34,7 +21,6 @@ const createEmptyQuestion = (index) => ({
   // lưu index các đáp án đúng
   dap_an_dung: [],
   diem: 1,
-  bat_buoc: false,
 });
 
 const normalizeQuestionsFromCase = (caseData) => {
@@ -67,7 +53,7 @@ const normalizeQuestionsFromCase = (caseData) => {
       lua_chon: options,
       dap_an_dung: correctIndexes,
       diem: Number(q.diem) || 1,
-      bat_buoc: Boolean(q.bat_buoc),
+      
     };
   });
 };
@@ -134,7 +120,7 @@ const buildQuestionsPayload = (questions, caseData) => {
 
       // Extra fields (schema allows them as Mixed)
       diem: typeof q.diem === "number" ? q.diem : 1,
-      bat_buoc: Boolean(q.bat_buoc),
+      
     };
   });
 };
@@ -372,50 +358,50 @@ const PatientCaseDetailPage = () => {
           </nav>
 
           <div className="case">
-            <Card className="mb">
-              <CardContent>
-                <section ref={thongTinRef} className="section">
-                  <h2 className="section__title">Thông tin bệnh nhân</h2>
-                  <ul className="list">
-                    <li><b>Họ tên:</b> {patient.ho_ten}</li>
-                    <li><b>Tuổi:</b> {patient.tuoi}</li>
-                    <li><b>Giới tính:</b> {patient.gioi_tinh}</li>
-                    <li><b>Nghề nghiệp:</b> {patient.nghe_nghiep}</li>
-                    <li><b>Lý do nhập viện:</b> {patient.ly_do_nhap_vien}</li>
-                  </ul>
-                </section>
+            <div className="card mb">
+              <div className="card__content">
+                  <section ref={thongTinRef} className="section">
+                    <h2 className="section__title">Thông tin bệnh nhân</h2>
+                    <ul className="list">
+                      <li><b>Họ tên:</b> {patient.ho_ten}</li>
+                      <li><b>Tuổi:</b> {patient.tuoi}</li>
+                      <li><b>Giới tính:</b> {patient.gioi_tinh}</li>
+                      <li><b>Nghề nghiệp:</b> {patient.nghe_nghiep}</li>
+                      <li><b>Lý do nhập viện:</b> {patient.ly_do_nhap_vien}</li>
+                    </ul>
+                  </section>
 
-                <section ref={benhSuRef} className="section">
-                  <h3 className="section__title">Bệnh sử</h3>
-                  <div className="paras">
-                    {benhAn.benh_su?.mo_ta1 && <p>{benhAn.benh_su.mo_ta1}</p>}
-                    {benhAn.benh_su?.mo_ta2 && <p>{benhAn.benh_su.mo_ta2}</p>}
-                    {benhAn.benh_su?.mo_ta3 && <p>{benhAn.benh_su.mo_ta3}</p>}
-                  </div>
-                </section>
+                  <section ref={benhSuRef} className="section">
+                    <h3 className="section__title">Bệnh sử</h3>
+                    <div className="paras">
+                      {benhAn.benh_su?.mo_ta1 && <p>{benhAn.benh_su.mo_ta1}</p>}
+                      {benhAn.benh_su?.mo_ta2 && <p>{benhAn.benh_su.mo_ta2}</p>}
+                      {benhAn.benh_su?.mo_ta3 && <p>{benhAn.benh_su.mo_ta3}</p>}
+                    </div>
+                  </section>
 
-                <section ref={tienCanRef} className="section">
-                  <h3 className="section__title">Tiền căn</h3>
-                  <ul className="list">
-                    {(benhAn.tien_can || []).map((t, i) => (<li key={i}>{t}</li>))}
-                  </ul>
-                </section>
+                  <section ref={tienCanRef} className="section">
+                    <h3 className="section__title">Tiền căn</h3>
+                    <ul className="list">
+                      {(benhAn.tien_can || []).map((t, i) => (<li key={i}>{t}</li>))}
+                    </ul>
+                  </section>
 
-                <section ref={luocQuaRef} className="section">
-                  <h3 className="section__title">Lược qua các cơ quan</h3>
-                  <ul className="list">
-                    {(benhAn.luoc_qua_cac_co_quan || []).map((t, i) => (<li key={i}>{t}</li>))}
-                  </ul>
-                </section>
+                  <section ref={luocQuaRef} className="section">
+                    <h3 className="section__title">Lược qua các cơ quan</h3>
+                    <ul className="list">
+                      {(benhAn.luoc_qua_cac_co_quan || []).map((t, i) => (<li key={i}>{t}</li>))}
+                    </ul>
+                  </section>
 
-                <section ref={khamLSRef} className="section">
-                  <h3 className="section__title">Khám lâm sàng</h3>
-                  <ul className="list">
-                    {(benhAn.kham_lam_sang || []).map((t, i) => (<li key={i}>{t}</li>))}
-                  </ul>
-                </section>
-              </CardContent>
-            </Card>
+                  <section ref={khamLSRef} className="section">
+                    <h3 className="section__title">Khám lâm sàng</h3>
+                    <ul className="list">
+                      {(benhAn.kham_lam_sang || []).map((t, i) => (<li key={i}>{t}</li>))}
+                    </ul>
+                  </section>
+              </div>
+            </div>
 
             <div className="note">
               <div className="note__head"><AlertCircle className="ico primary" /><span>Ghi chú</span></div>
@@ -449,8 +435,8 @@ const PatientCaseDetailPage = () => {
 
             <div className="qbuilder__list">
               {questions.map((q, index) => (
-                <Card key={q.id || index} className="qbuilder__item">
-                  <CardContent>
+                <div key={q.id || index} className="card qbuilder__item">
+                  <div className="card__content">
                     <div className="qbuilder__row qbuilder__row--top">
                       <input
                         className="qbuilder__question-input"
@@ -559,16 +545,7 @@ const PatientCaseDetailPage = () => {
                         />
                       </div>
 
-                      <label className="qbuilder__required">
-                        <input
-                          type="checkbox"
-                          checked={q.bat_buoc}
-                          onChange={(e) =>
-                            updateQuestion(index, { bat_buoc: e.target.checked })
-                          }
-                        />
-                        <span>Bắt buộc</span>
-                      </label>
+                      
 
                       <div className="qbuilder__actions">
                         <button
@@ -587,8 +564,8 @@ const PatientCaseDetailPage = () => {
                         </button>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               ))}
             </div>
           </div>

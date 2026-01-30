@@ -17,7 +17,7 @@ const PatientCaseSchema = new Schema(
     ten_benh_an: { type: String }, // PatientCase name
 
     // Tổng điểm tối đa của bệnh án
-    totalPoints: { type: Number, default: 0, min: 0 },
+    totalPoints: { type: Number, default: 0, min: 0, max: 10 },
 
     benh_an_tinh_huong: {
       thong_tin_benh_nhan: {
@@ -37,7 +37,6 @@ const PatientCaseSchema = new Schema(
       kham_lam_sang: [{ type: String }]
     },
 
-    totalPoints: { type: Number, default: 0 },
 
     cau_hoi: [
       {
@@ -51,8 +50,7 @@ const PatientCaseSchema = new Schema(
         lua_chon: [{ type: String }],     // Options for radio/checkbox
         goi_y: { type: String },          // Hint for text type
         dap_an_dung: { type: Schema.Types.Mixed }, // String or Array
-        diem: { type: Number, default: 1, min: 0 }, // Điểm cho câu hỏi
-        bat_buoc: { type: Boolean, default: false }, // Câu hỏi bắt buộc hay không
+        diem: { type: Number, default: 1, min: 0, max: 10 }, // Điểm cho câu hỏi
 
       }
     ]

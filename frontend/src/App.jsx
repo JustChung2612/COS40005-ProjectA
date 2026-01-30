@@ -10,20 +10,17 @@ import OSCESPage from './pages/OsceStationPage/OsceStationPage.jsx';
 import LoginPage from './pages/loginPage/LoginPage.jsx';
 import SignupPage from './pages/signUpPage/SignUpPage.jsx';
 import AdminPage from './pages/adminPage/AdminPage.jsx';
-import OscePrepRoomPage from './pages/OscePrepRoomPage/OscePrepRoomPage.jsx';
 import EditExamRoom from './pages/adminPage/adminTab/editExamRoom/EditExamRoom.jsx';
-import InstructorExams from './pages/Update/InstructorExams/InstructorExams.jsx';
-import InstructorAttempts from './pages/Update/InstructorAttempts/InstructorAttempts.jsx';
-import OSCETestCompletionPage from './pages/resultPage/OSCETestCompletionPage.jsx';
+import PatientCaseDetailPage from './pages/patientCaseDetailPage/PatientCaseDetailPage.jsx';
 
 // Project B
 import StudentDashBoardPage from './pages/studentDashBoardPage/StudentDashBoardPage.jsx';
 
+// Project B - UI only
+import InstructorAttempts from './pages/Update/InstructorAttempts/InstructorAttempts.jsx';
+import InstructorExams from './pages/Update/InstructorExams/InstructorExams.jsx';
+import OSCETestCompletionPage from './pages/resultPage/OSCETestCompletionPage.jsx';
 
-{/* New File */}
-
-import PatientCaseDetailPage from './pages/patientCaseDetailPage/PatientCaseDetailPage.jsx';
-import Library from './pages/libraryPage/Library.jsx';
 
 const studentInfo = {
   name: "Nguyen Van A",
@@ -47,7 +44,8 @@ const App = () => {
   const hideHeaderRoutes = [
     "/quan-tri",
     "/quan-tri/sua-phong/",  
-    "/osce/tram/",            
+    "/osce/tram/",
+    "/benh-an/"            
   ];
   const hideHeader = hideHeaderRoutes.some((route) =>
     location.pathname === route || location.pathname.startsWith(route)
@@ -84,26 +82,24 @@ const App = () => {
             <Route path='/' element = {<HomePage/>} />
             <Route path='/dang-nhap' element = { !user ? <LoginPage/> : <Navigate to='/' /> }/>
             <Route path='/dang-ky' element = { !user ? <SignupPage/> : <Navigate to='/' /> } />
-            <Route path='/osce/phong-chuan-bi' element={ <OscePrepRoomPage/> } />
             <Route path='/osce/tram/:tramId' element = {<OSCESPage/>} />
             <Route 
               path='/quan-tri' 
               element = {user?.role === "admin" ? <AdminPage/> : <Navigate to="/dang-nhap" /> } 
             />
             <Route path="/quan-tri/sua-phong/:id" element={<EditExamRoom />} />
-            <Route path='/thu-vien' element = {user ? <Library/> : <Navigate to="/dang-nhap" /> } />
             <Route path="/benh-an/:id" element={<PatientCaseDetailPage />} />
-
-             {/* Demo */}
-            <Route path="/exams" element={<InstructorExams />} />
-            <Route path="/exams/:examId/attempts" element={<InstructorAttempts />} />
-            <Route path='/test-result' element={<OSCETestCompletionPage  student={studentInfo} stations={sampleStations} />} />
 
             {/* Project B */}
             <Route 
               path='/sinh-vien' 
               element={user?.role === "user" ? <StudentDashBoardPage/> : <Navigate to="/dang-nhap" /> }
             />
+
+            {/* Project B - UI only */}
+            <Route path="/exams" element={<InstructorExams />} />
+            <Route path="/exams/:examId/attempts" element={<InstructorAttempts />} />
+            <Route path='/test-result' element={<OSCETestCompletionPage  student={studentInfo} stations={sampleStations} />} />
             
           
         </Routes>

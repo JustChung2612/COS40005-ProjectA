@@ -18,7 +18,7 @@ const PatientCaseList = () => {
   });
 
   const diagnosisOptions = ["Lao Phổi ", "Suy Tim", "Viêm Phổi", "Tràn Khí Màng", "Tăng Huyết Áp", "Lao"];
-  const organOptions = ["Tim mạch", "Hô hấp – Phổi ", "Thận – tiết niệu", "Tiêu hóa", "Thần kinh", "Gan", "Dạ dày"];
+  const organOptions = ["Tim mạch", "Phổi", "Thận", "Tiêu hóa", "Thần kinh", "Gan", "Dạ dày"];
   const symptomOptions = ["Khó thở", "Ho ra máu", "Lơ mơ", "Đau ngực", "Sốt"];
   const difficultyOptions = ["Cơ bản", "Trung bình", "Nâng cao"];
   const targetGroupOptions = ["Người lớn", "Người già", "Trẻ em", "Thai phụ"];

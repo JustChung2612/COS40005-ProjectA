@@ -2,7 +2,7 @@ import "./HomePage.scss";
 import { useEffect, useState } from "react";
 import axios from "axios";     
 import { Link } from "react-router-dom";
-import { Search, Stethoscope, CheckCircle2, Microscope, LibraryBig  } from "lucide-react";
+import { Search, Stethoscope, CheckCircle2, Bot , LibraryBig  } from "lucide-react";
 import ExamRoomCard from "../../components/examRoomCard/ExamRoomCard";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
@@ -192,8 +192,8 @@ const HomePage = () => {
                      alt="CTA Card Image 1" 
                 />
                 <div className='overlay'>
-                  <h3> Vào Luyện Tập  </h3>
-                  <Microscope className="icon" />
+                  <h3> Luyện Tập Với AI </h3>
+                  <Bot className="icon" />
                 </div>
               </div>
 

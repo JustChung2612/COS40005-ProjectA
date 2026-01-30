@@ -5,45 +5,10 @@ import axios from "axios";
 import { Clock, FileText, AlertCircle, CheckCircle2, ArrowBigRight } from "lucide-react";
 
 /* ========= UI PRIMITIVES (same as before) ========= */
-const Button = ({ children, variant = "primary", size = "md", className = "", ...props }) => {
-  const cls = ["btn", `btn--${variant}`, `btn--${size}`, className].join(" ");
-  return <button className={cls} {...props}>{children}</button>;
-};
-export const Card = ({ className = "", children, ...p }) => <div className={["card", className].join(" ")} {...p}>{children}</div>;
-export const CardContent = ({ className = "", children, ...p }) => <div className={["card__content", className].join(" ")} {...p}>{children}</div>;
 const Progress = ({ value = 0, className = "" }) => (
   <div className={["ui-progress", className].join(" ")}>
     <div className="ui-progress__bar" style={{ width: `${Math.max(0, Math.min(100, value))}%` }} />
   </div>
-);
-const Textarea = ({ className = "", ...p }) => <textarea className={["ui-textarea", className].join(" ")} {...p} />;
-const RadioGroup = ({ value, onChange, name, children }) => {
-  const kids = (Array.isArray(children) ? children : [children]).map((c, i) =>
-    c && c.type === RadioGroupItem
-      ? { ...c, props: { ...c.props, name, checked: value === c.props.value, onChange: () => onChange(c.props.value) } }
-      : c
-  );
-  return <div className="ui-radio-group">{kids}</div>;
-};
-const RadioGroupItem = ({ id, value, checked, onChange, label }) => (
-  <label className="ui-radio">
-    <input type="radio" id={id} value={value} checked={!!checked} onChange={onChange} />
-    <span className="ui-radio__control" />
-    <span className="ui-radio__label">{label ?? value}</span>
-  </label>
-);
-const Checkbox = ({ id, checked, onChange, label }) => (
-  <label className="ui-checkbox">
-    <input type="checkbox" id={id} checked={!!checked} onChange={(e) => onChange(e.target.checked)} />
-    <span className="ui-checkbox__control" />
-    <span className="ui-checkbox__label">{label}</span>
-  </label>
-);
-const Badge = ({ children, variant = "default", className = "" }) => (
-  <span className={["ui-badge", `ui-badge--${variant}`, className].join(" ")}>{children}</span>
-);
-const ScrollArea = ({ className = "", style, children, scrollRef }) => (
-  <div className={["ui-scroll", className].join(" ")} style={style} ref={scrollRef}>{children}</div>
 );
 
 /* ========= 🧩 UPDATED MAIN COMPONENT ========= */
@@ -203,10 +168,22 @@ if (!examData || !patientCase) {
           <div className="timer">
             <Clock className={["ico", timeRemaining < 60 ? "danger" : ""].join(" ")} />
             <span className="label">Thời gian còn lại:</span>
-            <Badge variant={timeRemaining < 60 ? "danger" : "muted"} className="mono">{formatTime(timeRemaining)}</Badge>
-            <Button variant="ghost" className="exit">
+            <span
+              className={
+                "ui-badge " +
+                (timeRemaining < 60
+                  ? "ui-badge--danger"
+                  : "ui-badge--muted") +
+                " mono"
+              }
+            >
+              {formatTime(timeRemaining)}
+            </span>
+
+            <button className="btn btn--ghost btn--md exit">
               <Link to="/">Thoát</Link>
-            </Button>
+            </button>
+
           </div>
           <Progress value={progress} className={timeRemaining < 60 ? "pulse" : ""} />
         </div>
@@ -226,8 +203,8 @@ if (!examData || !patientCase) {
           </nav>
 
           <div className="case">
-            <Card className="mb">
-              <CardContent>
+            <div className="card mb">
+              <div className="card__content">
                 <section ref={thongTinRef} className="section">
                   <h2 className="section__title">Thông tin bệnh nhân</h2>
                   <ul className="list">
@@ -268,8 +245,8 @@ if (!examData || !patientCase) {
                     {(caseData?.kham_lam_sang || []).map((t,i)=><li key={i}> {t}</li>)}
                   </ul>
                 </section>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             <div className="note">
               <div className="note__head"><AlertCircle className="ico primary" /><span>Ghi chú</span></div>
@@ -280,31 +257,44 @@ if (!examData || !patientCase) {
 
         {/* Bên phải: Câu hỏi + thanh CÂU */}
         <section className="right">
-          <ScrollArea className="q-scroll" scrollRef={qScrollRef}>
+          <div className="ui-scroll q-scroll" ref={qScrollRef}>
             <div className="q-wrap">
               {questions.map((q, idx) => {
                 const n = idx + 1;
                 const answered = isAnswered(n);
                 return (
                   <div key={n} ref={(el)=>questionRefs.current[n]=el} className={["q-card", activeQuestion===n?"is-current":""].join(" ")}>
-                    <Card>
-                      <CardContent>
+                    <div className="card">
+                      <div className="card__content">
                         <div className="q-head">
                           <h3 className="q-title">Câu hỏi {n}</h3>
-                          <Badge variant={answered ? "default" : "outline"}>{answered ? "Đã trả lời" : "Chưa trả lời"}</Badge>
+                          <span
+                            className={ "ui-badge " + (answered ? "ui-badge--default" : "ui-badge--outline") }
+                          >
+                            {answered ? "Đã trả lời" : "Chưa trả lời"}
+                          </span>
                         </div>
                         <p className="q-text">{q.noi_dung}</p>
 
                         {q.kieu === "radio" && (
-                          <RadioGroup
-                            name={`q${n}`}
-                            value={answers[n] || ""}
-                            onChange={(val)=>setAnswers((p)=>({ ...p, [n]: val }))}
-                          >
-                            {(q.lua_chon||[]).map((opt,i)=>(
-                              <RadioGroupItem key={i} id={`q${n}-r${i}`} value={opt} label={opt} />
+                          <div className="ui-radio-group">
+                            {(q.lua_chon || []).map((opt, i) => (
+                              <label key={i} className="ui-radio">
+                                <input
+                                  type="radio"
+                                  id={`q${n}-r${i}`}
+                                  name={`q${n}`}                 // IMPORTANT: same name per question
+                                  value={opt}
+                                  checked={answers[n] === opt}   // selected?
+                                  onChange={() =>
+                                    setAnswers((p) => ({ ...p, [n]: opt }))
+                                  }
+                                />
+                                <span className="ui-radio__control" />
+                                <span className="ui-radio__label">{opt}</span>
+                              </label>
                             ))}
-                          </RadioGroup>
+                          </div>
                         )}
 
                         {q.kieu === "checkbox" && (
@@ -313,18 +303,28 @@ if (!examData || !patientCase) {
                               const cur = Array.isArray(answers[n]) ? answers[n] : [];
                               const on = cur.includes(opt);
                               return (
-                                <Checkbox
-                                  key={i}
-                                  id={`q${n}-c${i}`}
-                                  checked={on}
-                                  onChange={(flag)=>{
-                                    setAnswers((p)=>{
-                                      const arr = Array.isArray(p[n]) ? p[n] : [];
-                                      return { ...p, [n]: flag ? [...arr, opt] : arr.filter(x=>x!==opt) };
-                                    });
-                                  }}
-                                  label={opt}
-                                />
+                                <label className="ui-checkbox">
+                                  <input
+                                    type="checkbox"
+                                    id={`q${n}-c${i}`}
+                                    checked={on}
+                                    onChange={(e) => {
+                                      const flag = e.target.checked;
+                                      setAnswers((p) => {
+                                        const arr = Array.isArray(p[n]) ? p[n] : [];
+                                        return {
+                                          ...p,
+                                          [n]: flag
+                                            ? [...arr, opt]
+                                            : arr.filter((x) => x !== opt),
+                                        };
+                                      });
+                                    }}
+                                  />
+                                  <span className="ui-checkbox__control" />
+                                  <span className="ui-checkbox__label">{opt}</span>
+                                </label>
+
                               );
                             })}
                           </div>
@@ -332,26 +332,35 @@ if (!examData || !patientCase) {
 
                         {q.kieu === "text" && (
                           <>
-                            <Textarea
+                            <textarea
+                              className="ui-textarea q-textarea"
                               placeholder={q.goi_y || "Nhập câu trả lời…"}
                               value={answers[n] || ""}
-                              onChange={(e)=>setAnswers((p)=>({ ...p, [n]: e.target.value }))}
-                              className="q-textarea"
+                              onChange={(e) =>
+                                setAnswers((p) => ({
+                                  ...p,
+                                  [n]: e.target.value,
+                                }))
+                              }
                             />
+
                             <div className="q-meta">
                               <span className="q-count">{String(answers[n] || "").length} ký tự</span>
                               {q.goi_y && <span className="q-hint">{q.goi_y}</span>}
                             </div>
                           </>
                         )}
-                      </CardContent>
-                    </Card>
+                      </div>
+                    </div>
                   </div>
                 );
               })}
 
               <div className="q-submit">
-                <Button className="w-100" size="lg" onClick={submit}>
+                <button
+                    className="btn btn--primary btn--lg w-100"
+                    onClick={submit}
+                  >
                   {nextStationId ? (
                     <Link to={`/osce/tram/${nextStationId}`} className="next-Btn">
                       Trạm Kế Tiếp <ArrowBigRight />
@@ -362,12 +371,12 @@ if (!examData || !patientCase) {
                     </Link>
                   )}
 
-                </Button>
+                </button>
 
 
               </div>
             </div>
-          </ScrollArea>
+          </div>
 
           <div className="q-rail">
             <div className="q-rail__title">Câu Hỏi</div>
@@ -391,18 +400,7 @@ if (!examData || !patientCase) {
         </section>
       </div>
 
-      {/* ========== 🧭 Navigation Buttons ========== */}
-      {/* <div className="station-nav-btns">
-        {nextStationId ? (
-          <Link to={`/osce/tram/${nextStationId}`} className="next-Btn">
-            Trạm Kế Tiếp <ArrowBigRight />
-          </Link>
-        ) : (
-          <Link to="/test-result" className="finish-Btn">
-            Kết thúc
-          </Link>
-        )}
-      </div> */}
+
 
     </div>
   );

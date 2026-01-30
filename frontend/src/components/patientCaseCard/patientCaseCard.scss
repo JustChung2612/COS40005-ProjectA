@@ -16,13 +16,17 @@
 
     .cardHeader {
       display: flex; justify-content: space-between; align-items: center;
-      flex: 1;
+      flex: 1; 
+      
+      
 
       .cardHeader_Title{
         display: flex; justify-content: space-between; align-items: center;
-        h2{
+        
+        h2.subject{
           font-size: 1.1rem;
           font-weight: 500;
+          margin-right: 10px;
         }
         span{
           align-self: flex-end;

@@ -22,19 +22,6 @@ const Header = () => {
 
           <div className='items' >
             
-            <Link to='' className='osceLink' >  
-              <div className='item'>
-                <School className="icon" />
-                Thi OSCE
-              </div>
-            </Link>
-            
-              <Link to='/thuvien' className='libraryLink' > 
-                <div className='item'>
-                <LibraryBig className="icon" />
-                  Thư Viện
-                </div>
-              </Link>
             
             <div className='item'>
               {user ? (

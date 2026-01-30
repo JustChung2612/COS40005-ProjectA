@@ -27,7 +27,7 @@
     .back-btn {
       display: flex; justify-content: center; align-items: center;
       width: 10rem;
-      margin-bottom: 12px; padding: 8px;
+      margin: 2rem 0rem 1.5rem 0rem; padding: 8px;
       border: 1px solid #e2e8f0; border-radius: 8px;
       background-color: #f8fafc;
       cursor: pointer;
@@ -46,6 +46,8 @@
       margin-bottom: 1rem;
     }
   }
+
+  .caseDetail-top__main { margin-bottom: 2rem; }
 
   .caseDetail-main {
     max-width: auto; margin: 14px auto; display: flex; align-items: stretch; gap: 16px; padding: 0 16px;

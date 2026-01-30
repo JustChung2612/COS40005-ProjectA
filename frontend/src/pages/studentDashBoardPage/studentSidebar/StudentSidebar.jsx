@@ -1,5 +1,6 @@
 import {Link} from "react-router-dom";
 
+
 const StudentSidebar = ({menu_items, activeTab, setActiveTab}) => {
   return (
     <>
@@ -10,7 +11,7 @@ const StudentSidebar = ({menu_items, activeTab, setActiveTab}) => {
               <li
                 key={index}
                 onClick={() => setActiveTab(item.key) }
-                className={`${activeTab === item ? 'chosen' : ''}`}
+                className={`${activeTab === item.key ? 'chosen' : ''}`}
               >
                 {item.icon}
                 <span>{item.label}</span>
