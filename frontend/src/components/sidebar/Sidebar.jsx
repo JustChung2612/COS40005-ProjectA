@@ -10,6 +10,8 @@ const Sidebar = ({ active, onSelect }) => {
     { key: 'patientCase', label: 'Danh sách bệnh án', icon: <BookCopy className="sidebarIcon" /> },
     { key: 'examRoom', label: 'Danh sách phòng thi', icon: <Boxes className="sidebarIcon" /> },
     { key: 'studentLists', label: 'Danh sách học sinh', icon: <UserPlus className="sidebarIcon" /> },
+    { key: 'examRoom_Taking_Place', label: 'Phòng đang thi', icon: <SquarePen className="sidebarIcon" /> },
+
   ];
 
 

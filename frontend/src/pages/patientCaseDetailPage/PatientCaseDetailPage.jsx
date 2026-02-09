@@ -433,141 +433,144 @@ const PatientCaseDetailPage = () => {
               <span> Tổng điểm: <b>{displayTotalPoints}</b> </span>
             </div>
 
-            <div className="qbuilder__list">
-              {questions.map((q, index) => (
-                <div key={q.id || index} className="card qbuilder__item">
-                  <div className="card__content">
-                    <div className="qbuilder__row qbuilder__row--top">
-                      <input
-                        className="qbuilder__question-input"
-                        type="text"
-                        placeholder={`Câu hỏi ${index + 1} (nhập nội dung câu hỏi)`}
-                        value={q.noi_dung}
-                        onChange={(e) =>
-                          updateQuestion(index, { noi_dung: e.target.value })
-                        }
-                      />
-
-                      <select
-                        className="qbuilder__type-select"
-                        value={q.kieu}
-                        onChange={(e) =>
-                          updateQuestion(index, { kieu: e.target.value })
-                        }
-                      >
-                        {QUESTION_TYPES.map((t) => (
-                          <option key={t.value} value={t.value}>
-                            {t.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* Options cho câu hỏi trắc nghiệm */}
-                    {q.kieu === "radio" || q.kieu === "checkbox" ? (
-                      <div className="qbuilder__options">
-                        {(q.lua_chon || []).map((opt, optIndex) => {
-                          const isCheckbox = q.kieu === "checkbox";
-                          const checked =
-                            Array.isArray(q.dap_an_dung) &&
-                            q.dap_an_dung.includes(optIndex);
-
-                          return (
-                            <div className="qbuilder__option-row" key={optIndex}>
-                              <input
-                                type={isCheckbox ? "checkbox" : "radio"}
-                                name={`correct-${q.id}`}
-                                className="qbuilder__option-correct"
-                                checked={checked}
-                                onChange={() =>
-                                  handleChangeCorrect(index, optIndex, isCheckbox)
-                                }
-                              />
-
-                              <input
-                                className="qbuilder__option-input"
-                                type="text"
-                                placeholder={`Tùy chọn ${optIndex + 1}`}
-                                value={opt}
-                                onChange={(e) => {
-                                  const nextOpts = [...(q.lua_chon || [])];
-                                  nextOpts[optIndex] = e.target.value;
-                                  updateQuestion(index, { lua_chon: nextOpts });
-                                }}
-                              />
-
-                              <button
-                                type="button"
-                                className="qbuilder__option-remove"
-                                onClick={() => handleRemoveOption(index, optIndex)}
-                              >
-                                <Trash2 size={16} />
-                              </button>
-                            </div>
-                          );
-                        })}
-
-                        <button
-                          type="button"
-                          className="qbuilder__add-option"
-                          onClick={() => handleAddOption(index)}
-                        >
-                          Thêm tùy chọn
-                        </button>
-                      </div>
-                    ) : null}
-
-                    {/* Câu trả lời dạng text */}
-                    {q.kieu === "text" && (
-                      <div className="qbuilder__text-preview">
+            <div className="">
+              <div className="qbuilder__list">
+                {questions.map((q, index) => (
+                  <div key={q.id || index} className="card qbuilder__item">
+                    <div className="card__content">
+                      <div className="qbuilder__row qbuilder__row--top">
                         <input
-                          className="qbuilder__text-input"
+                          className="qbuilder__question-input"
                           type="text"
-                          disabled
-                          placeholder="Ô trả lời ngắn của sinh viên (preview)"
-                        />
-                      </div>
-                    )}
-
-                    <div className="qbuilder__footer">
-                      <div className="qbuilder__score">
-                        <span>Điểm:</span>
-                        <input
-                          type="number"
-                          min={0}
-                          className="qbuilder__score-input"
-                          value={q.diem}
+                          placeholder={`Câu hỏi ${index + 1} (nhập nội dung câu hỏi)`}
+                          value={q.noi_dung}
                           onChange={(e) =>
-                            updateQuestion(index, {
-                              diem: Number(e.target.value) || 0,
-                            })
+                            updateQuestion(index, { noi_dung: e.target.value })
                           }
                         />
+
+                        <select
+                          className="qbuilder__type-select"
+                          value={q.kieu}
+                          onChange={(e) =>
+                            updateQuestion(index, { kieu: e.target.value })
+                          }
+                        >
+                          {QUESTION_TYPES.map((t) => (
+                            <option key={t.value} value={t.value}>
+                              {t.label}
+                            </option>
+                          ))}
+                        </select>
                       </div>
 
-                      
+                      {/* Options cho câu hỏi trắc nghiệm */}
+                      {q.kieu === "radio" || q.kieu === "checkbox" ? (
+                        <div className="qbuilder__options">
+                          {(q.lua_chon || []).map((opt, optIndex) => {
+                            const isCheckbox = q.kieu === "checkbox";
+                            const checked =
+                              Array.isArray(q.dap_an_dung) &&
+                              q.dap_an_dung.includes(optIndex);
 
-                      <div className="qbuilder__actions">
-                        <button
-                          type="button"
-                          className="btn btn--ghost dublicate"
-                          onClick={() => handleDuplicateQuestion(index)}
-                        >
-                          Nhân bản
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn--ghost delete"
-                          onClick={() => handleDeleteQuestion(index)}
-                        >
-                          Xóa câu hỏi
-                        </button>
+                            return (
+                              <div className="qbuilder__option-row" key={optIndex}>
+                                <input
+                                  type={isCheckbox ? "checkbox" : "radio"}
+                                  name={`correct-${q.id}`}
+                                  className="qbuilder__option-correct"
+                                  checked={checked}
+                                  onChange={() =>
+                                    handleChangeCorrect(index, optIndex, isCheckbox)
+                                  }
+                                />
+
+                                <input
+                                  className="qbuilder__option-input"
+                                  type="text"
+                                  placeholder={`Tùy chọn ${optIndex + 1}`}
+                                  value={opt}
+                                  onChange={(e) => {
+                                    const nextOpts = [...(q.lua_chon || [])];
+                                    nextOpts[optIndex] = e.target.value;
+                                    updateQuestion(index, { lua_chon: nextOpts });
+                                  }}
+                                />
+
+                                <button
+                                  type="button"
+                                  className="qbuilder__option-remove"
+                                  onClick={() => handleRemoveOption(index, optIndex)}
+                                >
+                                  <Trash2 size={16} />
+                                </button>
+                              </div>
+                            );
+                          })}
+
+                          <button
+                            type="button"
+                            className="qbuilder__add-option"
+                            onClick={() => handleAddOption(index)}
+                          >
+                            Thêm tùy chọn
+                          </button>
+                        </div>
+                      ) : null}
+
+                      {/* Câu trả lời dạng text */}
+                      {q.kieu === "text" && (
+                        <div className="qbuilder__text-preview">
+                          <input
+                            className="qbuilder__text-input"
+                            type="text"
+                            disabled
+                            placeholder="Ô trả lời ngắn của sinh viên (preview)"
+                          />
+                        </div>
+                      )}
+
+                      <div className="qbuilder__footer">
+                        <div className="qbuilder__score">
+                          <span>Điểm:</span>
+                          <input
+                            type="number"
+                            min={0}
+                            className="qbuilder__score-input"
+                            value={q.diem}
+                            onChange={(e) =>
+                              updateQuestion(index, {
+                                diem: Number(e.target.value) || 0,
+                              })
+                            }
+                          />
+                        </div>
+
+                        
+
+                        <div className="qbuilder__actions">
+                          <button
+                            type="button"
+                            className="btn btn--ghost dublicate"
+                            onClick={() => handleDuplicateQuestion(index)}
+                          >
+                            Nhân bản
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn--ghost delete"
+                            onClick={() => handleDeleteQuestion(index)}
+                          >
+                            Xóa câu hỏi
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
+
           </div>
         </section>
       </div>

@@ -186,7 +186,7 @@ const HomePage = () => {
 
         
           <div className="cta_cards_area">
-            <Link to="/library" className='link' >
+            <Link to="/sinh-vien" className='link' >
               <div className='cta_card' >
                 <img src="https://www.healthskillstraining.com/wp-content/uploads/2020/05/Classroom-pix-1.jpg" 
                      alt="CTA Card Image 1" 

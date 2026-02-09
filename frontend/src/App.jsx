@@ -17,8 +17,8 @@ import PatientCaseDetailPage from './pages/patientCaseDetailPage/PatientCaseDeta
 import StudentDashBoardPage from './pages/studentDashBoardPage/StudentDashBoardPage.jsx';
 
 // Project B - UI only
-import InstructorAttempts from './pages/Update/InstructorAttempts/InstructorAttempts.jsx';
-import InstructorExams from './pages/Update/InstructorExams/InstructorExams.jsx';
+import InstructorAttempts from './pages/adminPage/adminTab/InstructorAttempts/InstructorAttempts.jsx';
+import InstructorExams from './pages/adminPage/adminTab/InstructorExams/InstructorExams.jsx';
 import OSCETestCompletionPage from './pages/resultPage/OSCETestCompletionPage.jsx';
 
 
@@ -90,14 +90,15 @@ const App = () => {
             <Route path="/quan-tri/sua-phong/:id" element={<EditExamRoom />} />
             <Route path="/benh-an/:id" element={<PatientCaseDetailPage />} />
 
-            {/* Project B */}
+            {/* Project B - Student Dashboard Section */}
             <Route 
               path='/sinh-vien' 
               element={user?.role === "user" ? <StudentDashBoardPage/> : <Navigate to="/dang-nhap" /> }
             />
+            <Route />
 
             {/* Project B - UI only */}
-            <Route path="/exams" element={<InstructorExams />} />
+            {/* <Route path="/exams" element={<InstructorExams />} /> */}
             <Route path="/exams/:examId/attempts" element={<InstructorAttempts />} />
             <Route path='/test-result' element={<OSCETestCompletionPage  student={studentInfo} stations={sampleStations} />} />
             

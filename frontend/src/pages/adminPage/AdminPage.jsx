@@ -1,13 +1,14 @@
 import './adminPage.scss';
 import { useState, useMemo } from 'react';
-import Sidebar from '../../components/sidebar/Sidebar';
-import AdminNavbar from '../../components/adminNavbar/AdminNavbar';
+import Sidebar from '../../components/sidebar/Sidebar.jsx';
+import AdminNavbar from '../../components/adminNavbar/AdminNavbar.jsx';
 
 // ADMIN TAB //
 import PatientCaseList from './adminTab/patientCaseList/PatientCaseList.jsx';
 import CreateRoomPopup from './adminTab/roomPopup/RoomPopup.jsx';
 import ExamRoomList from './adminTab/examRoomList/ExamRoomList.jsx';
 import StudentLists from './adminTab/studentLists/StudentLists.jsx';
+import InstructorExams from './adminTab/InstructorExams/InstructorExams.jsx';
 
 const AdminPage = () => {
   const [activeSection, setActiveSection] = useState('patientCase');
@@ -55,18 +56,20 @@ const AdminPage = () => {
     setSelectedIds([]);
   };
 
-  // 🧩 Section map — only PatientCaseList now
+  
   const sectionComponents = useMemo(
     () => ({
       patientCase: (
         <PatientCaseList
-          selectionMode={selectionMode}
-          selectedIds={selectedIds}
-          onToggleSelect={toggleSelect}
+            selectionMode={selectionMode}
+            selectedIds={selectedIds}
+            onToggleSelect={toggleSelect}
         />
       ),
-      examRoom: <ExamRoomList/>, // 🆕 shows “Danh sách phòng thi”
-      studentLists: <StudentLists />,   // ✅ NEW: show student list
+      examRoom: <ExamRoomList/>, 
+      studentLists: <StudentLists />,   
+      examRoom_Taking_Place: <InstructorExams />,
+      
     }),
     [selectionMode, selectedIds]
   );

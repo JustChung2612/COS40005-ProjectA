@@ -1,17 +1,8 @@
 .instructor-page.exams {
-  --bg:#ffffff; --fg:#0b1220; --muted:#667085; --border:#e6e8ef;
+  --bg:#ffffff; --fg:#0b1220; --border:#e6e8ef;
   --card:#fff; --primary:#14b8a6; --primary-700:#059669;
 
-  background: var(--bg); color: var(--fg); min-height: 100vh;
-
   .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-
-  .header {
-    border-bottom: 1px solid var(--border);
-    background: var(--card);
-    .h1 { font-size: 28px; font-weight: 800; margin: 16px 0 4px; }
-    .muted { color: var(--muted); margin-bottom: 16px; }
-  }
 
   .card {
     margin-top: 5%;
@@ -35,14 +26,6 @@
     &--default { background: var(--primary); color:#fff; }
     &--secondary { background:#eef6f2; color:#0f766e; }
     &.on { background: var(--primary); color: #fff; }
-  }
-
-  /* Button */
-  .btn {
-    display:inline-flex; align-items:center; justify-content:center; gap:8px;
-    border-radius:10px; border:1px solid transparent; cursor:pointer; transition:.2s ease;
-    &--md { height:40px; padding:0 14px; font-weight:700; }
-    &--primary { background: var(--primary); color:#fff; &:hover{ background: var(--primary-700); } }
   }
 
   /* Table */

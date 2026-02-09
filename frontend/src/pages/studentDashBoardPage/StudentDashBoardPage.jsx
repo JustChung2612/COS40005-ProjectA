@@ -3,7 +3,7 @@ import './studentDashBoardPage.scss';
 import StudentSidebar from './studentSidebar/StudentSidebar';
 import { House, PanelsTopLeft } from 'lucide-react';
 import Overview from './studentDBTab/overview/Overview';
-import AiPatient from './studentDBTab/AiPatient/1-AiPatientListTab/AiPatientListTab';
+import AiPatientTab from './studentDBTab/AiPatient/0-AiPatientTab/AiPatientTab';
 
 const StudentDashBoardPage = () => {
 
@@ -20,7 +20,7 @@ const StudentDashBoardPage = () => {
       label: 'Bệnh Nhân AI', 
       icon: <PanelsTopLeft 
       className="sidebarIcon" />,
-      content: <AiPatient/> 
+      content: <AiPatientTab/> 
     },
  ] 
 
