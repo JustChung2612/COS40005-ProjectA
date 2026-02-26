@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const { Schema } = mongoose;
 
-// 🩺 PatientCase Schema (Trạm Thi)
+// 🩺 PatientCase Schema 
 const PatientCaseSchema = new Schema(
   {
 

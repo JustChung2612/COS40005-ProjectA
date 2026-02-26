@@ -1,8 +1,12 @@
+// /pages/OsceStationPage/OsceStationPage.jsx
 import "./osceStationPage.scss";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Clock, FileText, AlertCircle, CheckCircle2, ArrowBigRight } from "lucide-react";
+import { useUserStore } from "../../stores/useUserStore.js"; 
+import { toast } from "react-hot-toast";
+
 
 /* ========= UI PRIMITIVES (same as before) ========= */
 const Progress = ({ value = 0, className = "" }) => (
@@ -14,6 +18,26 @@ const Progress = ({ value = 0, className = "" }) => (
 /* ========= 🧩 UPDATED MAIN COMPONENT ========= */
 const OsceStationPage = () => {
   const { tramId } = useParams();
+  const navigate = useNavigate();
+  const { user } = useUserStore();
+  const studentEmail = user?.email?.toLowerCase();
+
+  // draft key to store per-room-progress (multi stations)
+  const getDraftKey = (roomId) => `osce_draft_${roomId}_${studentEmail || "guest"}`;
+
+  const loadDraft = (roomId) => {
+    try {
+      const raw = localStorage.getItem(getDraftKey(roomId));
+      return raw ? JSON.parse(raw) : { examRoomId: roomId, studentEmail, stations: [] };
+    } catch {
+      return { examRoomId: roomId, studentEmail, stations: [] };
+    }
+  };
+
+  const saveDraft = (roomId, draft) => {
+    localStorage.setItem(getDraftKey(roomId), JSON.stringify(draft));
+  };
+
   const [examData, setExamData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -80,6 +104,89 @@ const OsceStationPage = () => {
   const caseData = caseSource?.benh_an_tinh_huong || {};
   const questions = caseSource?.cau_hoi || [];
   const totalQuestions = questions.length;
+  const examRoomId = examData?.parentRoom?._id; // comes from getExamStationById response
+
+  // Save current station answers into local draft
+  const persistCurrentStationToDraft = () => {
+    if (!examRoomId) return false;
+    if (!studentEmail) {
+      toast.error("Bạn cần đăng nhập để nộp bài.");
+      return false;
+    }
+    if (!patientCase?._id) {
+      toast.error("Không tìm thấy bệnh án để lưu bài.");
+      return false;
+    }
+
+    const draft = loadDraft(examRoomId);
+
+    // convert answers state => array payload
+    const payloadAnswers = questions.map((q, idx) => {
+      const n = idx + 1;
+      return {
+        questionId: q.id,     // IMPORTANT: matches patientCase.cau_hoi.id
+        kieu: q.kieu,
+        answer: answers[n] ?? null,
+      };
+    });
+
+    const stationPayload = {
+      stationId: tramId,
+      patientCaseId: patientCase._id,
+      answers: payloadAnswers,
+    };
+
+    // replace existing station entry if student revisits station
+    const existingIndex = (draft.stations || []).findIndex(
+      (s) => String(s.stationId) === String(tramId)
+    );
+
+    if (existingIndex !== -1) {
+      draft.stations[existingIndex] = stationPayload;
+    } else {
+      draft.stations.push(stationPayload);
+    }
+
+    draft.examRoomId = examRoomId;
+    draft.studentEmail = studentEmail;
+
+    saveDraft(examRoomId, draft);
+    return true;
+  };
+
+  // Handle NEXT / FINISH
+  const handleNextOrFinish = async () => {
+    const ok = persistCurrentStationToDraft();
+    if (!ok) return;
+
+    // if there is next station => move on
+    if (nextStationId) {
+      navigate(`/osce/tram/${nextStationId}`);
+      return;
+    }
+
+    // last station => submit the whole room
+    try {
+      const draft = loadDraft(examRoomId);
+
+      const res = await axios.post("http://localhost:5000/api/exam-submissions/submit", {
+        examRoomId: draft.examRoomId,
+        studentEmail: draft.studentEmail,
+        stations: draft.stations,
+      });
+
+      const submissionId = res.data?.data?._id;
+
+      // clear draft after submit
+      localStorage.removeItem(getDraftKey(examRoomId));
+
+      toast.success("✅ Nộp bài thành công! Trắc nghiệm đã được chấm tự động.");
+      navigate("/hoan_thanh");
+    } catch (err) {
+      console.error("❌ Submit error:", err);
+      toast.error(err.response?.data?.message || "Nộp bài thất bại.");
+    }
+  };
 
 
   // ✅ Safe hook order — all hooks before any return
@@ -147,10 +254,7 @@ const isAnswered = (n) => {
   return String(v).trim().length > 0;
 };
 
-const submit = () => {
-  console.log("BÀI LÀM:", answers);
-  
-};
+
 
 // ✅ Now safe conditional rendering
 if (loading) return <div className="loading">Đang tải dữ liệu trạm thi...</div>;
@@ -358,23 +462,23 @@ if (!examData || !patientCase) {
 
               <div className="q-submit">
                 <button
-                    className="btn btn--primary btn--lg w-100"
-                    onClick={submit}
-                  >
+                  className="btn btn--primary btn--lg w-100"
+                  onClick={handleNextOrFinish}
+                >
                   {nextStationId ? (
-                    <Link to={`/osce/tram/${nextStationId}`} className="next-Btn">
+                    <span className="next-Btn">
                       Trạm Kế Tiếp <ArrowBigRight />
-                    </Link>
+                    </span>
                   ) : (
-                    <Link to="/test-result" className="finish-Btn">
+                    <span className="finish-Btn">
                       Kết thúc
-                    </Link>
+                    </span>
                   )}
-
                 </button>
-
-
               </div>
+
+
+
             </div>
           </div>
 
@@ -399,8 +503,6 @@ if (!examData || !patientCase) {
           </div>
         </section>
       </div>
-
-
 
     </div>
   );

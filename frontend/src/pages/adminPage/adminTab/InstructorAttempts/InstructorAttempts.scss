@@ -1,19 +1,26 @@
 .instructor-page.attempts {
-  --bg:#ffffff; --fg:#0b1220; --muted:#667085; --border:#e6e8ef;
+  --bg:#ffffff; --fg:#0b1220; --border:#e6e8ef;
   --card:#fff; --primary:#14b8a6; --primary-700:#059669;
 
-  background: var(--bg); color: var(--fg); min-height: 100vh;
-
-  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-
   .header {
-    border-bottom: 1px solid var(--border);
-    background: var(--card);
-    .back { margin: 12px 0 8px; }
-    .title-row { display:flex; align-items:center; justify-content:space-between; margin-bottom: 12px; }
-    .h1 { font-size: 28px; font-weight: 800; margin: 0 0 4px; }
-    .muted { color: var(--muted); }
+    padding: 2rem 0rem ;
+    display: flex;
+    flex-direction: column;
   }
+
+  .back-btn {
+    align-self: start;
+    display: flex; justify-content: center; align-items: center; 
+    width: 10rem;
+    margin: 12px;
+    padding: 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: #f8fafc;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
 
   .card {
     margin-top: 5%;
@@ -74,5 +81,5 @@
   .text-center { text-align:center; }
   .text-right { text-align:right; }
   .fw { font-weight:600; }
-  .muted { color:#667085; }
+  
 }

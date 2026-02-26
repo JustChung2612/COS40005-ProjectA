@@ -1,30 +1,59 @@
 // InstructorAttempts.jsx
-import { useState } from "react";
+import "./InstructorAttempts.scss";
+import { useState,useEffect, useMemo  } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Users, Filter } from "lucide-react";
-import "./InstructorAttempts.scss";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
-
-/* ====== MOCK DATA ====== */
-const mockAttempts = [
-  { id:"attempt-1", studentName:"Nguyễn Văn An",   studentId:"SV001", attemptNumber:"A12", gradingStatus:"ungraded",   submitTime:"2025-01-15 09:30", cohort:"K18", major: "răng hàm mặt" },
-  { id:"attempt-2", studentName:"Trần Thị Bình",   studentId:"SV002", attemptNumber:"A4", gradingStatus:"in-progress", submitTime:"2025-01-15 09:45", cohort:"K18", major: "y cổ truyền"},
-  { id:"attempt-3", studentName:"Lê Minh Cường",   studentId:"SV003", attemptNumber:"A4", gradingStatus:"graded",      submitTime:"2025-01-15 10:00", cohort:"K17", major: "y đa khoa"}, 
-  { id:"attempt-4", studentName:"Phạm Thu Dung",   studentId:"SV004", attemptNumber:"A4", gradingStatus:"ungraded",    submitTime:"2025-01-15 10:15", cohort:"K18", major: "y nội trú"}, 
-  { id:"attempt-5", studentName:"Hoàng Văn Em",    studentId:"SV005", attemptNumber:"A4", gradingStatus:"ungraded",    submitTime:"2025-01-15 10:30", cohort:"K17", major: "răng hàm mặt"},
-];
 
 const InstructorAttempts = () => {
   const navigate = useNavigate();
-  const { examId } = useParams();
-  const [cohortFilter, setCohortFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const { roomId } = useParams();
 
-  const filtered = mockAttempts.filter(a => {
-    if (cohortFilter !== "all" && a.cohort !== cohortFilter) return false;
-    if (statusFilter !== "all" && a.gradingStatus !== statusFilter) return false;
-    return true;
-  });
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [loading, setLoading] = useState(true);
+
+  const [roomName, setRoomName] = useState("");
+  const [submissions, setSubmissions] = useState([]);
+
+  useEffect(() => {
+    if (!roomId) return;
+
+    let mounted = true;
+    (async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get(
+          `http://localhost:5000/api/exam-submissions/room/${roomId}`
+        );
+        const list = res.data?.data || [];
+        if (mounted) {
+          setSubmissions(list);
+
+          // examRoomId is populated in backend
+          const firstRoom = list?.[0]?.examRoomId;
+          setRoomName(firstRoom?.exam_room_name || "Danh sách bài thi");
+        }
+      } catch (err) {
+        console.error("❌ Load room submissions error:", err);
+        toast.error("Không thể tải danh sách bài thi.");
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, [roomId]);
+
+  const filtered = useMemo(() => {
+    return submissions.filter((s) => {
+      if (statusFilter === "all") return true;
+      return s.status === statusFilter;
+    });
+  }, [submissions, statusFilter]);
 
   const renderStatusBadge = (status) => {
     if (status === "graded") {
@@ -46,20 +75,20 @@ const InstructorAttempts = () => {
     <div className="instructor-page attempts">
       {/* Header */}
       <header className="header">
-        <div className="container">
-            <button className="btn btn--ghost back"
-                    onClick={() => {}}
+        
+            <button className="back-btn"
+                onClick={() => {navigate(-1) }}
             >
-              <ArrowLeft className="ico" /> Quay lại danh sách kỳ thi
+              <ArrowLeft className="ico" /> Quay lại
             </button>
 
             <div className="title-row">
               <div>
                 <h1 className="h1">Bài thi sinh viên</h1>
-                <p className="muted">Kỳ thi Nội khoa - Đợt 1/2025</p>
+                <p className="muted">{loading ? "Đang tải..." : roomName}</p>
               </div>
             </div>
-        </div>
+   
       </header>
 
       {/* Content */}
@@ -72,24 +101,16 @@ const InstructorAttempts = () => {
                 {/* Filters */}
                 <div className="filters">
                   <Filter className="ico muted" />
-                  <select
-                    className="ui-select"
-                    value={cohortFilter}
-                    onChange={(e) => setCohortFilter(e.target.value)}
-                  >
-                    <option value="all">Tất cả khóa</option>
-                    <option value="K17">K17</option>
-                    <option value="K18">K18</option>
-                  </select>
-
                   <select className="ui-select"
                           value={statusFilter}
                           onChange={(e) => setStatusFilter(e.target.value)}
                   >
                     <option value="all">Tất cả trạng thái</option>
-                    <option value="ungraded">Chưa chấm</option>
-                    <option value="in-progress">Đang chấm</option>
+                    <option value="needs_manual_grading">Chưa chấm (tự luận)</option>
                     <option value="graded">Đã chấm</option>
+                    <option value="submitted">Đã nộp</option>
+                    <option value="in_progress">Đang làm</option>
+
                   </select>
 
                 </div>
@@ -110,34 +131,46 @@ const InstructorAttempts = () => {
                 </thead>
 
                 <tbody className="ui-table__body">
-                  {filtered.map((a) => (
-                    <tr key={a.id} className="ui-table__row hover">
-                      <td className="ui-table__cell fw">{a.studentName}</td>
-                      <td className="ui-table__cell text-center">{a.studentId}</td>
+                  {filtered.map((sub) => (
+                    <tr key={sub._id} className="ui-table__row hover">
+                      <td className="ui-table__cell fw">{sub.studentEmail || "..."}</td>
+
+                      <td className="ui-table__cell text-center">—</td>
 
                       <td className="ui-table__cell text-center">
-                        <span className="ui-badge ui-badge--outline">{a.cohort}</span>
+                        <span className="ui-badge ui-badge--outline">—</span>
                       </td>
 
-                      <td className="ui-table__cell text-center">{a.attemptNumber}</td>
+                      <td className="ui-table__cell text-center">—</td>
 
                       <td className="ui-table__cell text-center">
-                        {renderStatusBadge(a.gradingStatus)}
+                        {sub.status === "graded" ? (
+                          <span className="ui-badge ui-badge--default on">Đã chấm</span>
+                        ) : sub.status === "needs_manual_grading" ? (
+                          <span className="ui-badge ui-badge--outline">Chưa chấm</span>
+                        ) : (
+                          <span className="ui-badge ui-badge--secondary">{sub.status}</span>
+                        )}
                       </td>
 
-                      <td className="ui-table__cell text-center">{a.major}</td>
+                      <td className="ui-table__cell text-center">
+                        {sub.examRoomId?.terminology || "—"}
+                      </td>
 
-                      <td className="ui-table__cell muted">{a.submitTime}</td>
+                      <td className="ui-table__cell muted">
+                        {sub.submittedAt ? new Date(sub.submittedAt).toLocaleString() : "—"}
+                      </td>
 
                       <td className="ui-table__cell text-right">
                         <button
-                          className={`btn ${a.gradingStatus === "ungraded" ? "btn--primary" : "btn--ghost"}`}
-                          onClick={() => navigate(`/exams/${examId}/attempts/${a.id}/grade`)}
+                          className={`btn ${sub.status === "needs_manual_grading" ? "btn--primary" : "btn--ghost"}`}
+                          onClick={() => navigate(`/ket_qua/${sub._id}`)}
                         >
-                          {a.gradingStatus === "graded" ? "Xem lại" : "Chấm điểm"}
+                          {sub.status === "graded" ? "Xem lại" : "Chấm điểm"}
                         </button>
                       </td>
                     </tr>
+
                   ))}
                 </tbody>
               </table>

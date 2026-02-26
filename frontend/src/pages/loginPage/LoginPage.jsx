@@ -129,7 +129,7 @@ export default function LoginPage() {
 
               {/* 🎓 Mã Sinh Viên */}
               <div className="form-group">
-                <label htmlFor="maSinhVien">Mã Sinh Viên</label>
+                <label htmlFor="maSinhVien">Mã Sinh Viên / Giáo Viên</label>
                 <div className="input-wrapper">
                   <input
                     id="maSinhVien"

@@ -1,0 +1,41 @@
+section { border: 2px solid #BF4646;}
+
+.brief_info {
+    padding: 15px;
+    display: flex; justify-content: center; flex-wrap: wrap;
+    
+    .info_card{
+        display: flex; flex-direction: column; align-items: center; gap: 15px;
+        padding: 5px;
+        border: 2px solid #BF4646;
+        max-width: 20rem;
+        h1 { font-size: 20px; }
+        p { font-size:  3rem;}
+    }
+}
+
+.main_info {
+    .examRoomCard-container{
+        .card__header {
+            .row{
+                .r_code {font-weight: 600; font-size: 17px; }
+            }
+        }
+        .card__body {
+            .card_content {
+                
+                display: flex; align-items: center;
+                gap: 15px;
+                margin-bottom: 12px;
+                .key {
+                    font-size: 15px;
+                    color: #5c5a5a;
+                }
+                .value {
+                    font-size: 17px;
+                    font-weight: 700;
+                }
+            }
+        }
+    }
+}

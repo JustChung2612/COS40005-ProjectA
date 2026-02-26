@@ -1,3 +1,4 @@
+// Sidebar.jsx
 import './sidebar.scss'
 import { Link } from "react-router-dom";
 import { BookCopy , Boxes , SquarePen , UserPlus  } from 'lucide-react';

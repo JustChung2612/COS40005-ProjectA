@@ -1,19 +1,59 @@
 //InstructorExams.jsx
+import "./InstructorExams.scss";
 import { useNavigate } from "react-router-dom";
 import { Clock, FileText } from "lucide-react";
-import "./InstructorExams.scss";
-
-/* ====== MOCK DATA (giữ nguyên ý nghĩa gốc) ====== */
-const mockExams = [
-  { id: "exam-1", name: "Kỳ thi Nội khoa - Đợt 1/2025", stations: 20, status: "ongoing", attemptsSubmitted: 45, openTime: "2025-01-15 08:00", closeTime: "2025-01-15 12:00" },
-  { id: "exam-2", name: "Kỳ thi Ngoại khoa - Đợt 1/2025", stations: 15, status: "closed",  attemptsSubmitted: 52, openTime: "2025-01-10 08:00", closeTime: "2025-01-10 12:00" },
-  { id: "exam-3", name: "Kỳ thi Sản phụ khoa - Đợt 12/2024", stations: 18, status: "closed",  attemptsSubmitted: 48, openTime: "2024-12-20 08:00", closeTime: "2024-12-20 12:00" },
-];
+import axios from "axios";
+import { toast } from "react-hot-toast";
+import { useState,useEffect } from "react";
 
 const InstructorExams = () => {
   const navigate = useNavigate();
 
+  const [rooms, setRooms] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+
+    (async () => {
+      try {
+        setLoading(true);
+
+        // 1) load all exam rooms
+        const roomRes = await axios.get("http://localhost:5000/api/exam-rooms");
+        const list = roomRes.data?.data || [];
+
+        // 2) for each room, load submission count
+        const withCounts = await Promise.all(
+          list.map(async (r) => {
+            try {
+              const subRes = await axios.get(
+                `http://localhost:5000/api/exam-submissions/room/${r._id}`
+              );
+              const count = subRes.data?.count ?? (subRes.data?.data?.length || 0);
+              return { ...r, submissionsCount: count };
+            } catch {
+              return { ...r, submissionsCount: 0 };
+            }
+          })
+        );
+
+        if (mounted) setRooms(withCounts);
+      } catch (err) {
+        console.error("❌ Load rooms error:", err);
+        toast.error("Không thể tải danh sách phòng thi.");
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   return (
+
     <div className="instructor-page exams">
 
       {/* Content */}
@@ -27,7 +67,7 @@ const InstructorExams = () => {
             <table className="ui-table">
               <thead className="ui-table__head">
                 <tr className="ui-table__row">
-                  <th className="ui-table__cell is-head">Tên kỳ thi</th>
+                  <th className="ui-table__cell is-head">Tên Phòng thi</th> 
                   <th className="ui-table__cell is-head text-center">Số trạm</th>
                   <th className="ui-table__cell is-head text-center">Trạng thái</th>
                   <th className="ui-table__cell is-head text-center">Bài nộp</th>
@@ -37,31 +77,31 @@ const InstructorExams = () => {
               </thead>
 
               <tbody className="ui-table__body">
-                {mockExams.map((exam) => (
-                  <tr key={exam.id} className="ui-table__row hover">
-                    <td className="ui-table__cell fw">{exam.name}</td>
+                {rooms.map((room) => (
 
-                    <td className="ui-table__cell text-center">{exam.stations}</td>
+                  <tr key={room.id} className="ui-table__row hover">
+                    <td className="ui-table__cell fw">{room.exam_room_name}</td>
+
+                    <td className="ui-table__cell text-center">{room.stations?.length || 0}</td>
 
                     <td className="ui-table__cell text-center">
                       <span
-                        className={[
-                          "ui-badge",
-                          exam.status === "ongoing" ? "ui-badge--default on" : "ui-badge--secondary",
+                        className={[ "ui-badge",
+                          room.status === "Đã phát hành" ? "ui-badge--default on" : "ui-badge--secondary",
                         ].join(" ")}
                       >
-                        {exam.status === "ongoing" ? "Đang diễn ra" : "Đã kết thúc"}
+                        {room.status || "Bản nháp"}
                       </span>
+
                     </td>
 
-                    <td className="ui-table__cell text-center fw">{exam.attemptsSubmitted}</td>
+                    <td className="ui-table__cell text-center fw">{room.submissionsCount || 0}</td>
 
                     <td className="ui-table__cell">
                       <div className="time">
                         <Clock className="ico" />
                         <div>
-                          <div>Mở: {exam.openTime}</div>
-                          <div>Đóng: {exam.closeTime}</div>
+                            <div>Mở: (demo)</div> <div>Đóng: (demo)</div>
                         </div>
                       </div>
                     </td>
@@ -69,7 +109,7 @@ const InstructorExams = () => {
                     <td className="ui-table__cell text-right">
                       <button
                         className="btn"
-                        onClick={() => {}}
+                        onClick={() => navigate(`/dang_thi/${room._id}`)}
                       >
                         Chi tiết
                       </button>

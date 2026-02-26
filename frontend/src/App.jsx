@@ -1,3 +1,4 @@
+//App.jsx
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useEffect } from "react";
 import { useUserStore } from './stores/useUserStore.js';
@@ -15,12 +16,9 @@ import PatientCaseDetailPage from './pages/patientCaseDetailPage/PatientCaseDeta
 
 // Project B
 import StudentDashBoardPage from './pages/studentDashBoardPage/StudentDashBoardPage.jsx';
-
-// Project B - UI only
 import InstructorAttempts from './pages/adminPage/adminTab/InstructorAttempts/InstructorAttempts.jsx';
-import InstructorExams from './pages/adminPage/adminTab/InstructorExams/InstructorExams.jsx';
-import OSCETestCompletionPage from './pages/resultPage/OSCETestCompletionPage.jsx';
-
+import CompletePage from './pages/completePage/CompletePage.jsx';
+import ResultPage from './pages/resultPage/ResultPage.jsx';
 
 const studentInfo = {
   name: "Nguyen Van A",
@@ -45,14 +43,17 @@ const App = () => {
     "/quan-tri",
     "/quan-tri/sua-phong/",  
     "/osce/tram/",
-    "/benh-an/"            
+    "/benh-an/",
+    "/dang_thi",
+    "/ket_qua"            
   ];
   const hideHeader = hideHeaderRoutes.some((route) =>
     location.pathname === route || location.pathname.startsWith(route)
   );
 
   const hideFooterRoutes = [
-    "/osce/tram/"
+    "/osce/tram/",
+    "/dang_thi"
   ];
   const hideFooter = hideFooterRoutes.some((route) => 
     location.pathname === route || location.pathname.startsWith(route)
@@ -97,11 +98,10 @@ const App = () => {
             />
             <Route />
 
-            {/* Project B - UI only */}
-            {/* <Route path="/exams" element={<InstructorExams />} /> */}
-            <Route path="/exams/:examId/attempts" element={<InstructorAttempts />} />
-            <Route path='/test-result' element={<OSCETestCompletionPage  student={studentInfo} stations={sampleStations} />} />
-            
+          
+            <Route path='/dang_thi/:roomId' element={<InstructorAttempts />} />
+            <Route path='/hoan_thanh' element={<CompletePage  student={studentInfo} stations={sampleStations} />} />
+            <Route path='/ket_qua/:submissionId' element={<ResultPage />} />
           
         </Routes>
         { !hideFooter && <Footer/>}
