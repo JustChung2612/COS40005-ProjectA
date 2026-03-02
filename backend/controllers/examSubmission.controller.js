@@ -181,7 +181,7 @@ export const getMySubmissions = async (req, res) => {
   }
 };
 
-// ==================== ✅ GET SUBMISSIONS BY ROOM (teacher list) ====================
+// ==================== GET SUBMISSIONS BY ROOM (teacher list) ====================
 // GET /api/exam-submissions/room/:roomId
 export const getSubmissionsByRoom = async (req, res) => {
   try {

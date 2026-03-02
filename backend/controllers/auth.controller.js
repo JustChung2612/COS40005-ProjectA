@@ -95,7 +95,7 @@ export const signup = async ( req, res ) => {
 }
 
 export const login = async (req, res) => {
-  const { email, password, maSinhVien } = req.body;
+  const { email, password } = req.body;
 
   try {
     // 🧩 Find user by email
@@ -110,11 +110,6 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Email hoặc Mật Khẩu không hợp lệ!" });
     }
 
-    if (user.maSinhVien !== maSinhVien) {
-        return res.status(400).json({ message: "Mã sinh viên không đúng!" });
-    }
-
-
     // 🪪 Generate tokens and set cookies
     const { accessToken, refreshToken } = generateTokens(user._id);
     await storeRefreshToken(user._id, refreshToken);
@@ -128,7 +123,7 @@ export const login = async (req, res) => {
         username: user.username,
         email: user.email,
         role: user.role,
-        maSinhVien: user.maSinhVien,
+        
       },
     });
 

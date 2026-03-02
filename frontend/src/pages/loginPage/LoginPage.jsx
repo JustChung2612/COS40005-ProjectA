@@ -1,3 +1,4 @@
+//LoginPage.jsx
 import "./loginPage.scss"; 
 import React, { useMemo, useState } from "react";
 import { motion } from "framer-motion"; 
@@ -14,18 +15,17 @@ export default function LoginPage() {
 
   const [showPassword, setShowPassword] = useState(false); // Bật/tắt hiển thị mật khẩu
   const [touched, setTouched] = useState({ 
-    email: false, password: false, maSinhVien: false,
-  }); // Đã “chạm” vào input hay chưa
+    email: false, password: false
+  }); 
   
 
   // ✅ Unified sign-up data object
   const [logInData, setLogInData] = useState({
     email: "",
     password: "",
-    maSinhVien: "",
   });
 
-  const { email, password, maSinhVien } = logInData;
+  const { email, password } = logInData;
 
   // Kiểm tra lỗi email
   const emailError = useMemo(() => {
@@ -42,20 +42,10 @@ export default function LoginPage() {
   return [];
   }, [password, touched.password]);
 
-
-  //  // ✅ NEW — validate Mã Sinh Viên (6 digits)
-  const maSinhVienError = useMemo(() => {
-    if (!touched.maSinhVien) return "";
-    if (!maSinhVien.trim()) return "Vui lòng nhập mã sinh viên.";
-    if (!/^\d{6}$/.test(maSinhVien)) return "Mã sinh viên phải gồm đúng 6 chữ số.";
-    return "";
-  }, [maSinhVien, touched.maSinhVien]);
-
   const allValid =
     emailRegex.test(email) && 
     passErrors.length === 0 && 
-    password.length > 0 &&
-    !maSinhVienError;
+    password.length > 0 ;
 
   // ✅ UPDATED add handleChange
   const handleChange = (e) => {
@@ -70,7 +60,7 @@ export default function LoginPage() {
   //  Gửi form đăng nhập
   const handleSubmit = async (e) => {
     e.preventDefault(); // Chặn reload trang
-    setTouched({ email: true, password: true, maSinhVien: true }); 
+    setTouched({ email: true, password: true }); 
     if (!allValid) return; 
    
     try {
@@ -125,28 +115,6 @@ export default function LoginPage() {
                   />
                 </div>
                 {emailError && <p className="error-text">{emailError}</p>}
-              </div>
-
-              {/* 🎓 Mã Sinh Viên */}
-              <div className="form-group">
-                <label htmlFor="maSinhVien">Mã Sinh Viên / Giáo Viên</label>
-                <div className="input-wrapper">
-                  <input
-                    id="maSinhVien"
-                    name="maSinhVien"
-                    type="text"
-                    value={maSinhVien}
-                    onChange={handleChange}
-                    onBlur={() => setTouched((t) => ({ ...t, maSinhVien: true }))}
-                    placeholder="Nhập mã sinh viên (6 chữ số)"
-                    className={maSinhVienError ? "error" : ""}
-                  />
-                  <StatusDot
-                    ok={!maSinhVienError && logInData.maSinhVien.length === 6}
-                    bad={!!maSinhVienError}
-                  />
-                </div>
-                {maSinhVienError && <p className="error-text">{maSinhVienError}</p>}
               </div>
 
               <div className="form-group">
