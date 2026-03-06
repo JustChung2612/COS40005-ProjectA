@@ -1,6 +1,6 @@
 // ResultPage.jsx
 import "../OsceStationPage/osceStationPage.scss";
-import "./resultPage.scss"
+import "./resultPage.scss";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
@@ -8,7 +8,109 @@ import axios from "axios";
 import { useUserStore } from "../../stores/useUserStore.js";
 import { toast } from "react-hot-toast";
 
+/* ========= 🔀 SHUFFLE HELPERS (must match OsceStationPage) ========= */
+const normalizeId = (v) => {
+  if (!v) return "";
+  if (typeof v === "string" || typeof v === "number") return String(v);
+  if (v?.$oid) return String(v.$oid);
+  return String(v);
+};
 
+const hashToUint32 = (str) => {
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) {
+    h = ((h << 5) + h) ^ str.charCodeAt(i);
+  }
+  return h >>> 0;
+};
+
+const mulberry32 = (a) => {
+  return function () {
+    let t = (a += 0x6d2b79f5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+};
+
+const shuffleWithRng = (arr, rng) => {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+};
+
+const buildShufflePlan = ({ seedBase, questions }) => {
+  const seed = hashToUint32(seedBase);
+  const rng = mulberry32(seed);
+
+  const qIds = questions.map((q) => q?.id).filter((x) => x !== undefined && x !== null);
+  const questionOrder = shuffleWithRng(qIds, rng);
+
+  const optionOrderByQuestionId = {};
+  for (const q of questions) {
+    const qid = q?.id;
+    const opts = Array.isArray(q?.lua_chon) ? q.lua_chon : [];
+    if ((q?.kieu === "radio" || q?.kieu === "checkbox") && opts.length > 1) {
+      const optSeed = hashToUint32(`${seedBase}|q:${qid}|opts:${opts.length}`);
+      const optRng = mulberry32(optSeed);
+      optionOrderByQuestionId[qid] = shuffleWithRng(
+        Array.from({ length: opts.length }, (_, i) => i),
+        optRng
+      );
+    }
+  }
+
+  return {
+    v: 1,
+    seedBase,
+    questionOrder,
+    optionOrderByQuestionId,
+    createdAt: Date.now(),
+  };
+};
+
+const safeJsonParse = (raw, fallback) => {
+  try {
+    return raw ? JSON.parse(raw) : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
+const loadOrCreateShufflePlan = ({ storageKey, seedBase, questions }) => {
+  const existing = safeJsonParse(localStorage.getItem(storageKey), null);
+  if (existing?.v === 1 && existing?.seedBase === seedBase) return existing;
+
+  const created = buildShufflePlan({ seedBase, questions });
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(created));
+  } catch {
+    // ignore
+  }
+  return created;
+};
+
+const applyShuffleToQuestions = (questions, plan) => {
+  if (!plan || !Array.isArray(plan.questionOrder)) return questions;
+  const byId = new Map(questions.map((q) => [q?.id, q]));
+  const ordered = plan.questionOrder.map((id) => byId.get(id)).filter(Boolean);
+  const used = new Set(plan.questionOrder);
+  const rest = questions.filter((q) => !used.has(q?.id));
+  return [...ordered, ...rest];
+};
+
+const getShuffledOptions = (q, plan) => {
+  const opts = Array.isArray(q?.lua_chon) ? q.lua_chon : [];
+  if (!(q?.kieu === "radio" || q?.kieu === "checkbox")) return opts;
+  if (!plan) return opts;
+  const order = plan.optionOrderByQuestionId?.[q?.id];
+  if (!Array.isArray(order) || order.length !== opts.length) return opts;
+  return order.map((i) => opts[i]).filter((x) => x !== undefined);
+};
+/* ================================================================ */
 
 const ResultPage = () => {
   const { submissionId } = useParams();
@@ -16,10 +118,10 @@ const ResultPage = () => {
 
   const [submission, setSubmission] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [essayDraft, setEssayDraft] = useState({}); 
+
+  const [essayDraft, setEssayDraft] = useState({});
   const [saving, setSaving] = useState(false);
   const [selectedStationId, setSelectedStationId] = useState("");
-
 
   useEffect(() => {
     if (!submissionId) return;
@@ -57,25 +159,54 @@ const ResultPage = () => {
 
   const stationSub = useMemo(() => {
     if (!stations.length) return null;
-    const found = stations.find((s) => String(s.stationId?._id || s.stationId) === String(selectedStationId));
+    const found = stations.find(
+      (s) => String(s.stationId?._id || s.stationId) === String(selectedStationId)
+    );
     return found || stations[0];
   }, [stations, selectedStationId]);
 
   const stationKey = String(stationSub?.stationId?._id || stationSub?.stationId || "");
   const essayKey = (qid) => `${stationKey}_${Number(qid)}`;
 
+  // derived content based on selected station
+  const caseSource = stationSub?.patientCaseId || {};
+  const caseData = caseSource?.benh_an_tinh_huong || {};
+  const questions = caseSource?.cau_hoi || [];
 
-// derived content based on selected station
-const caseSource = stationSub?.patientCaseId || {};
-const caseData = caseSource?.benh_an_tinh_huong || {};
-const questions = caseSource?.cau_hoi || [];
-const totalQuestions = questions.length;
+  // ✅ choose identity to reproduce exact same shuffle as student did
+  const shuffleIdentity = useMemo(() => {
+    const fromSubmission = submission?.studentEmail || submission?.student?.email;
+    const fromUser = user?.email;
+    return String(fromSubmission || fromUser || "guest").toLowerCase();
+  }, [submission?.studentEmail, submission?.student?.email, user?.email]);
 
-// total score of whole exam (all stations)
-const examTotalScore = useMemo(() => {
-  return (stations || []).reduce((sum, s) => sum + (Number(s.totalScore) || 0), 0);
-}, [stations]);
+  const caseId = useMemo(() => normalizeId(caseSource?._id), [caseSource?._id]);
 
+  // ✅ build / load the SAME shuffle plan that was used in OsceStationPage
+  const shufflePlan = useMemo(() => {
+    if (!stationKey || !caseId || !questions.length) return null;
+
+    // Prefer plan saved by backend (best)
+    if (stationSub?.shufflePlan?.v === 1) return stationSub.shufflePlan;
+
+    // Otherwise rebuild deterministically + cache in localStorage (frontend-only)
+    const storageKey = `osce_shuffle_v1:${shuffleIdentity}:${stationKey}:${caseId}`;
+    const seedBase = `${shuffleIdentity}|station:${stationKey}|case:${caseId}`;
+    return loadOrCreateShufflePlan({ storageKey, seedBase, questions });
+  }, [stationSub?.shufflePlan, shuffleIdentity, stationKey, caseId, questions.length]);
+
+  // ✅ questions in display order (random order)
+  const displayQuestions = useMemo(
+    () => applyShuffleToQuestions(questions, shufflePlan),
+    [questions, shufflePlan]
+  );
+
+  const totalQuestions = displayQuestions.length;
+
+  // total score of whole exam (all stations)
+  const examTotalScore = useMemo(() => {
+    return (stations || []).reduce((sum, s) => sum + (Number(s.totalScore) || 0), 0);
+  }, [stations]);
 
   // Refs & UI state
   const thongTinRef = useRef(null);
@@ -89,6 +220,13 @@ const examTotalScore = useMemo(() => {
 
   const [activeSection, setActiveSection] = useState("thong_tin");
   const [activeQuestion, setActiveQuestion] = useState(1);
+
+  // Reset activeQuestion when changing station (avoid weird scroll state)
+  useEffect(() => {
+    setActiveQuestion(1);
+    if (qScrollRef.current) qScrollRef.current.scrollTop = 0;
+  }, [stationKey]);
+
   // ✅ answers now come from backend submission (no editing in ResultPage)
   const answersById = useMemo(() => {
     const map = {};
@@ -104,7 +242,6 @@ const examTotalScore = useMemo(() => {
 
     setEssayDraft((prev) => {
       const next = { ...prev };
-
       for (const a of stationSub.answers) {
         if (a.kieu === "text") {
           next[essayKey(a.questionId)] = {
@@ -115,10 +252,8 @@ const examTotalScore = useMemo(() => {
       }
       return next;
     });
-    
   }, [stationSub]);
 
-  
   const handleSaveEssay = async () => {
     if (!submissionId || !stationSub?._id) return;
 
@@ -139,7 +274,7 @@ const examTotalScore = useMemo(() => {
       const res = await axios.patch(
         `http://localhost:5000/api/exam-submissions/${submissionId}/grade-essay`,
         {
-          stationId: stationSub.stationId?._id || stationSub.stationId, // safe for populated/non-populated
+          stationId: stationSub.stationId?._id || stationSub.stationId,
           grades,
         }
       );
@@ -154,8 +289,6 @@ const examTotalScore = useMemo(() => {
     }
   };
 
-
-
   const scrollToSection = (ref, key) => {
     setActiveSection(key);
     ref?.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -166,7 +299,7 @@ const examTotalScore = useMemo(() => {
     questionRefs.current[n]?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  // Scroll handler for active question
+  // Scroll handler for active question (based on display order)
   useEffect(() => {
     const el = qScrollRef.current;
     if (!el || totalQuestions <= 0) return;
@@ -188,54 +321,54 @@ const examTotalScore = useMemo(() => {
     return () => el.removeEventListener("scroll", handler);
   }, [totalQuestions]);
 
+  // ✅ IMPORTANT: isAnswered must check by real questionId, NOT by display number
   const isAnswered = (questionId) => {
     const row = answersById[Number(questionId)];
     if (!row) return false;
-
     if (Array.isArray(row.answer)) return row.answer.length > 0;
     return String(row.answer || "").trim().length > 0;
   };
-
 
   if (loading) return <div className="loading">Đang tải kết quả...</div>;
   if (!submission || !stationSub) return <div className="error">Không tìm thấy dữ liệu bài thi.</div>;
 
   return (
-      
     <div className="stations-page">
-
       <div className="result-top">
-      <div className="result-meta">
-        <h5> Tổng điểm toàn bài: <span>{examTotalScore}</span></h5>
-        <h5> Tổng điểm trạm: <span>{stationSub?.totalScore ?? 0}</span></h5>
+        <div className="result-meta">
+          <h5>
+            Tổng điểm toàn bài: <span>{examTotalScore}</span>
+          </h5>
+          <h5>
+            Tổng điểm trạm: <span>{stationSub?.totalScore ?? 0}</span>
+          </h5>
 
-        <div className="station-picker">
-          <label className="muted">Chọn trạm:</label>
-          <select
-            className="ui-select"
-            value={String(stationSub?.stationId?._id || stationSub?.stationId || "")}
-            onChange={(e) => setSelectedStationId(e.target.value)}
-          >
-            {stations.map((s, idx) => {
-              const sid = String(s.stationId?._id || s.stationId || idx);
-              const label = s.stationId?.station_name || `Trạm ${idx + 1}`;
-              return (
-                <option key={sid} value={sid}>
-                  {label}
-                </option>
-              );
-            })}
-          </select>
+          <div className="station-picker">
+            <label className="muted">Chọn trạm:</label>
+            <select
+              className="ui-select"
+              value={String(stationSub?.stationId?._id || stationSub?.stationId || "")}
+              onChange={(e) => setSelectedStationId(e.target.value)}
+            >
+              {stations.map((s, idx) => {
+                const sid = String(s.stationId?._id || s.stationId || idx);
+                const label = s.stationId?.station_name || `Trạm ${idx + 1}`;
+                return (
+                  <option key={sid} value={sid}>
+                    {label}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
         </div>
+
+        {user?.role === "admin" && (
+          <button className="btn btn--primary" onClick={handleSaveEssay} disabled={saving}>
+            {saving ? "Đang lưu..." : "Lưu điểm & nhận xét"}
+          </button>
+        )}
       </div>
-
-      {user?.role === "admin" && (
-        <button className="btn btn--primary" onClick={handleSaveEssay} disabled={saving}>
-          {saving ? "Đang lưu..." : "Lưu điểm & nhận xét"}
-        </button>
-      )}
-</div>
-
 
       {/* Split layout */}
       <div className="split">
@@ -369,6 +502,12 @@ const examTotalScore = useMemo(() => {
               </div>
               <p>Đọc kỹ bệnh án trước khi trả lời câu hỏi. Trả lời ngắn gọn, chính xác.</p>
             </div>
+
+            <div className="mt">
+              <Link className="btn btn--ghost" to="/sinh-vien">
+                ← Quay lại
+              </Link>
+            </div>
           </div>
         </aside>
 
@@ -376,9 +515,10 @@ const examTotalScore = useMemo(() => {
         <section className="right">
           <div className="ui-scroll q-scroll" ref={qScrollRef}>
             <div className="q-wrap">
-              {questions.map((q, idx) => {
-                const n = idx + 1;
-               
+              {displayQuestions.map((q, idx) => {
+                const n = idx + 1; // ✅ display number
+                const qid = Number(q.id);
+                const options = getShuffledOptions(q, shufflePlan);
 
                 return (
                   <div
@@ -386,26 +526,25 @@ const examTotalScore = useMemo(() => {
                     ref={(el) => (questionRefs.current[n] = el)}
                     className={["q-card", activeQuestion === n ? "is-current" : ""].join(" ")}
                   >
-                    <div className="card ">
+                    <div className="card">
                       <div className="card__content">
                         <div className="q-head">
                           <h3 className="q-title">Câu hỏi {n}</h3>
                           <span className="grade-badge ui-badge ui-badge--default">
                             {(() => {
-                              const row = answersById[Number(q.id)];
+                              const row = answersById[qid];
                               const earned = (Number(row?.autoScore) || 0) + (Number(row?.manualScore) || 0);
                               return `${earned}/${Number(q.diem) || 0}`;
                             })()}
                           </span>
-
                         </div>
 
                         <p className="q-text">{q.noi_dung}</p>
 
                         {q.kieu === "radio" && (
                           <div className="ui-radio-group">
-                            {(q.lua_chon || []).map((opt, i) => {
-                              const row = answersById[Number(q.id)];
+                            {(options || []).map((opt, i) => {
+                              const row = answersById[qid];
                               const picked = row?.answer;
                               const correct = q.dap_an_dung;
 
@@ -415,11 +554,7 @@ const examTotalScore = useMemo(() => {
 
                               const cls =
                                 "ui-radio " +
-                                (isPicked
-                                  ? isCorrectOpt
-                                    ? "true_ans"
-                                    : "false_ans"
-                                  : "");
+                                (isPicked ? (isCorrectOpt ? "true_ans" : "false_ans") : "");
 
                               return (
                                 <label key={i} className={cls}>
@@ -442,24 +577,19 @@ const examTotalScore = useMemo(() => {
 
                         {q.kieu === "checkbox" && (
                           <div className="ui-checkbox-group">
-                            {(q.lua_chon || []).map((opt, i) => {
-                              const row = answersById[Number(q.id)];
+                            {(options || []).map((opt, i) => {
+                              const row = answersById[qid];
                               const pickedArr = Array.isArray(row?.answer) ? row.answer : [];
                               const correctArr = Array.isArray(q.dap_an_dung)
                                 ? q.dap_an_dung.map(String)
                                 : [];
 
                               const picked = pickedArr.includes(opt);
-                              const isCorrectPicked =
-                                picked && correctArr.includes(String(opt));
+                              const isCorrectPicked = picked && correctArr.includes(String(opt));
 
                               const cls =
                                 "ui-checkbox " +
-                                (picked
-                                  ? isCorrectPicked
-                                    ? "true_ans"
-                                    : "false_ans"
-                                  : "");
+                                (picked ? (isCorrectPicked ? "true_ans" : "false_ans") : "");
 
                               return (
                                 <label key={i} className={cls}>
@@ -478,104 +608,86 @@ const examTotalScore = useMemo(() => {
                           </div>
                         )}
 
+                        {q.kieu === "text" &&
+                          (() => {
+                            const row = answersById[qid];
+                            const studentText = row?.answer || "";
 
-                        {q.kieu === "text" && (() => {
-                          const row = answersById[Number(q.id)];
-                          const studentText = row?.answer || "";
+                            return (
+                              <>
+                                <textarea readOnly className="ui-textarea q-textarea" value={studentText} />
 
-                          return (
-                            <>
-                              <textarea
-                                readOnly
-                                className="ui-textarea q-textarea"
-                                value={studentText}
-                              />
+                                <div className="comment">
+                                  <h4>Nhận xét:</h4>
+                                  {user?.role === "admin" ? (
+                                    <div className="teacher-grade">
+                                      <div className="teacher-row">
+                                        <label className="muted">Điểm tự luận</label>
+                                        <input
+                                          type="number"
+                                          className="input base"
+                                          placeholder={`0 - ${Number(q.diem) || 0}`}
+                                          value={essayDraft[essayKey(q.id)]?.manualScore ?? ""}
+                                          onChange={(e) =>
+                                            setEssayDraft((p) => ({
+                                              ...p,
+                                              [essayKey(q.id)]: {
+                                                manualScore: e.target.value,
+                                                comment: p[essayKey(q.id)]?.comment ?? "",
+                                              },
+                                            }))
+                                          }
+                                        />
+                                      </div>
 
-                              <div className="comment">
-                                <h4>Nhận xét:</h4>
-                                {user?.role === "admin" ? (
-                                  <div className="teacher-grade">
-                                    <div className="teacher-row">
-                                      <label className="muted">Điểm tự luận</label>
-                                      <input
-                                        type="number"
-                                        className="input base"
-                                        placeholder={`0 - ${Number(q.diem) || 0}`}
-                                        value={essayDraft[essayKey(q.id)]?.manualScore ?? ""}
-                                        onChange={(e) =>
-                                          setEssayDraft((p) => ({
-                                            ...p,
-                                            [essayKey(q.id)]: {
-                                              manualScore: e.target.value,
-                                              comment: p[essayKey(q.id)]?.comment ?? "",
-                                            },
-                                          }))
-                                        }
-
-                                      />
+                                      <div className="teacher-row">
+                                        <label className="muted">Nhận xét</label>
+                                        <input
+                                          type="text"
+                                          className="input base"
+                                          placeholder="Nhập nhận xét..."
+                                          value={essayDraft[essayKey(q.id)]?.comment ?? ""}
+                                          onChange={(e) =>
+                                            setEssayDraft((p) => ({
+                                              ...p,
+                                              [essayKey(q.id)]: {
+                                                manualScore: p[essayKey(q.id)]?.manualScore ?? "",
+                                                comment: e.target.value,
+                                              },
+                                            }))
+                                          }
+                                        />
+                                      </div>
                                     </div>
-
-                                    <div className="teacher-row">
-                                      <label className="muted">Nhận xét</label>
-                                      <input
-                                        type="text"
-                                        className="input base"
-                                        placeholder="Nhập nhận xét..."
-                                        value={essayDraft[essayKey(q.id)]?.comment ?? ""}
-                                        onChange={(e) =>
-                                          setEssayDraft((p) => ({
-                                            ...p,
-                                            [essayKey(q.id)]: {
-                                              manualScore: p[essayKey(q.id)]?.manualScore ?? "",
-                                              comment: e.target.value,
-                                            },
-                                          }))
-                                        }
-
-                                      />
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <p>{row?.comment || "Chưa có nhận xét."}</p>
-                                )}
-
-                              </div>
-                            </>
-                          );
-                        })()}
-
+                                  ) : (
+                                    <p>{row?.comment || "Chưa có nhận xét."}</p>
+                                  )}
+                                </div>
+                              </>
+                            );
+                          })()}
                       </div>
                     </div>
                   </div>
                 );
               })}
 
-              {/* Submit (UI-only) */}
-              <div className="q-submit">
-                  {/* {nextStationId ? (
-                    <Link to={``} className="next-Btn">
-                      Trạm Kế Tiếp <ArrowBigRight />
-                    </Link>
-                  ) : (
-                    <Link to="/sinh-vien" className="finish-Btn">
-                      Kết thúc
-                    </Link>
-                  )} */}
-
-              </div>
+              <div className="q-submit">{/* UI only */}</div>
             </div>
           </div>
 
-          <div className="q-rail" >
+          <div className="q-rail">
             <div className="q-rail__title">Câu Hỏi</div>
             <div className="q-rail__list">
-              {Array.from({ length: totalQuestions }, (_, i) => i + 1).map((n) => {
-                const answered = isAnswered(n);
+              {displayQuestions.map((q, idx) => {
+                const n = idx + 1;
+                const qid = Number(q.id);
+                const answered = isAnswered(qid);
                 const current = activeQuestion === n;
 
                 return (
                   <button
-                    key={n}
+                    key={qid || n}
                     onClick={() => scrollToQuestion(n)}
                     className={[
                       "q-rail__btn",

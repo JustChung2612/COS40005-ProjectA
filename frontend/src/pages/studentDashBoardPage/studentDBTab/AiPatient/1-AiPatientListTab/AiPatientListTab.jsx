@@ -1,32 +1,20 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./AiPatientListTab.scss";
 
-const mockStations = [
-  // History
-  { id: "1", title: "Abdominal pain 01", category: "History", thumbnail: "pink", diagnosis: "Gastritis", createdAt: "2025-01-10" },
-  { id: "2", title: "Abdominal pain 09", category: "History", thumbnail: "dark", diagnosis: "Appendicitis", createdAt: "2025-03-02" },
-  { id: "3", title: "Abdominal pain 10", category: "History", thumbnail: "dark", diagnosis: "Peptic ulcer", createdAt: "2025-02-12" },
-  { id: "4", title: "Chest pain 01", category: "History", thumbnail: "pink", diagnosis: "Angina", createdAt: "2024-12-21" },
-  { id: "5", title: "Headache 02", category: "History", thumbnail: "dark", diagnosis: "Migraine", createdAt: "2025-04-18" },
-  { id: "6", title: "Back pain 03", category: "History", thumbnail: "pink", diagnosis: "Sciatica", createdAt: "2025-05-01" },
-
-  // Counselling
-  { id: "7", title: "Smoking cessation 01", category: "Counselling", thumbnail: "pink", diagnosis: "—", createdAt: "2025-01-28" },
-  { id: "8", title: "Diabetes lifestyle 02", category: "Counselling", thumbnail: "dark", diagnosis: "—", createdAt: "2025-02-20" },
-
-  // Examination
-  { id: "9", title: "Abdominal exam 01", category: "Examination", thumbnail: "dark", diagnosis: "—", createdAt: "2025-03-25" },
-  { id: "10", title: "Cardiovascular exam 02", category: "Examination", thumbnail: "pink", diagnosis: "—", createdAt: "2025-04-05" },
-];
-
-const filterCategories = ["History", "Counselling", "Examination"];
+const filterCategories = ["Bệnh sử", "Counselling"];
 
 function compareBySort(a, b, sortOrder) {
-  if (sortOrder === "A–Z") return a.title.localeCompare(b.title);
-  if (sortOrder === "Z–A") return b.title.localeCompare(a.title);
-  // Newest
-  return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  const aTitle = String(a.title || "");
+  const bTitle = String(b.title || "");
+
+  if (sortOrder === "A–Z") return aTitle.localeCompare(bTitle);
+  if (sortOrder === "Z–A") return bTitle.localeCompare(aTitle);
+
+  // Newest (fallback if createdAt missing)
+  const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+  const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+  return bTime - aTime;
 }
 
 function pickRandomFrom(list) {
@@ -35,39 +23,109 @@ function pickRandomFrom(list) {
   return list[idx];
 }
 
-export default function AiPatientListTab({ onOpenStation }) {
+// Make thumbnail style stable based on id
+function stableThumb(id) {
+  const s = String(id || "");
+  let hash = 0;
+  for (let i = 0; i < s.length; i++) hash = (hash * 31 + s.charCodeAt(i)) >>> 0;
+  return hash % 2 === 0 ? "pink" : "dark";
+}
 
+// Convert backend topic -> your category UI
+function normalizeCategory(apiCase) {
+  const raw =
+    apiCase?.ai_patient_script_model?.brief_info?.topic ||
+    apiCase?.ai_patient_script_model?.brief_info?.Topic ||
+    "";
+
+  const t = String(raw).toLowerCase();
+  if (t.includes("counsel")) return "Counselling";
+  return "Bệnh sử";
+}
+
+export default function AiPatientListTab({ onOpenStation }) {
   const navigate = useNavigate();
 
+  const [stations, setStations] = useState([]);
+
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("History");
+  const [selectedCategory, setSelectedCategory] = useState("Bệnh sử");
   const [diagnosisEnabled, setDiagnosisEnabled] = useState(false);
   const [sortOrder, setSortOrder] = useState("A–Z");
-  const [bookmarkedIds, setBookmarkedIds] = useState([]);
 
-  const toggleBookmark = (id) => {
-    setBookmarkedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-  };
+  const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  // ✅ Fetch from DB
+  useEffect(() => {
+    let alive = true;
+
+    const fetchAiCases = async () => {
+      try {
+        setLoading(true);
+        setErrorMsg("");
+
+        const res = await fetch("http://localhost:5000/api/ai-cases", {
+          method: "GET",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        const json = await res.json();
+
+        if (!res.ok) {
+          throw new Error(json?.message || "Không thể tải danh sách AI Patient Cases.");
+        }
+
+        const data = Array.isArray(json?.data) ? json.data : [];
+
+        // map backend -> UI station object
+        const mapped = data.map((c) => ({
+          id: c._id,
+          title:
+            c.title ||
+            c?.ai_patient_script_model?.brief_info?.name_symptom ||
+            "Untitled",
+          category: normalizeCategory(c),
+          thumbnail: stableThumb(c._id),
+          diagnosis: c?.ai_patient_script_model?.diagnosis || "—",
+          createdAt: c.createdAt || null,
+        }));
+
+        if (alive) setStations(mapped);
+      } catch (err) {
+        if (alive) setErrorMsg(err?.message || "Lỗi khi tải dữ liệu.");
+      } finally {
+        if (alive) setLoading(false);
+      }
+    };
+
+    fetchAiCases();
+
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const filteredStations = useMemo(() => {
     const q = searchTerm.trim().toLowerCase();
 
-    const base = mockStations.filter((s) => {
+    const base = stations.filter((s) => {
       const matchesCategory = s.category === selectedCategory;
-      const matchesSearch = !q || s.title.toLowerCase().includes(q);
+      const matchesSearch = !q || String(s.title || "").toLowerCase().includes(q);
       return matchesCategory && matchesSearch;
     });
 
     return [...base].sort((a, b) => compareBySort(a, b, sortOrder));
-  }, [searchTerm, selectedCategory, sortOrder]);
+  }, [stations, searchTerm, selectedCategory, sortOrder]);
 
   const stationsInSelectedCategory = useMemo(
-    () => mockStations.filter((s) => s.category === selectedCategory),
-    [selectedCategory],
+    () => stations.filter((s) => s.category === selectedCategory),
+    [stations, selectedCategory]
   );
 
   const handleRandom = (scope) => {
-    const list = scope === "all" ? mockStations : stationsInSelectedCategory;
+    const list = scope === "all" ? stations : stationsInSelectedCategory;
     const chosen = pickRandomFrom(list);
     if (!chosen) return;
 
@@ -109,8 +167,6 @@ export default function AiPatientListTab({ onOpenStation }) {
               );
             })}
           </div>
-
-
         </div>
 
         {/* Options row */}
@@ -137,7 +193,11 @@ export default function AiPatientListTab({ onOpenStation }) {
               <button type="button" className="dropdown__item" onClick={() => handleRandom("all")}>
                 Random from all
               </button>
-              <button type="button" className="dropdown__item" onClick={() => handleRandom("category")}>
+              <button
+                type="button"
+                className="dropdown__item"
+                onClick={() => handleRandom("category")}
+              >
                 Random from {selectedCategory}
               </button>
             </div>
@@ -160,11 +220,24 @@ export default function AiPatientListTab({ onOpenStation }) {
               <button type="button" className="dropdown__item" onClick={() => setSortOrder("Z–A")}>
                 Z–A
               </button>
-              <button type="button" className="dropdown__item" onClick={() => setSortOrder("Newest")}>
+              <button
+                type="button"
+                className="dropdown__item"
+                onClick={() => setSortOrder("Newest")}
+              >
                 Newest
               </button>
             </div>
           </details>
+
+          <div className="search">
+            <input
+              className="search__input"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search stations..."
+            />
+          </div>
 
           <label className="toggle">
             <input
@@ -184,60 +257,50 @@ export default function AiPatientListTab({ onOpenStation }) {
 
         <h2 className="sectionTitle">{selectedCategory}</h2>
 
-        <div className="cardGrid">
-          {filteredStations.map((station) => {
-            const isBookmarked = bookmarkedIds.includes(station.id);
+        {/* ✅ Loading / Error */}
+        {loading && <div className="empty">Loading AI cases...</div>}
+        {!loading && errorMsg && <div className="empty">{errorMsg}</div>}
 
-            return (
-              <div
-                key={station.id}
-                className="card"
-                role="button"
-                tabIndex={0}
-                onClick={() => handleOpenStation(station)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") handleOpenStation(station);
-                }}
-              >
-                <div className={`card__thumb ${station.thumbnail === "pink" ? "card__thumb--pink" : "card__thumb--dark"}`}>
-                  <span className="card__tag">{station.category}</span>
-
-                  <button
-                    type="button"
-                    className={`card__bookmark ${isBookmarked ? "card__bookmark--active" : ""}`}
-                    aria-pressed={isBookmarked}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleBookmark(station.id);
+        {!loading && !errorMsg && (
+          <>
+            <div className="cardGrid">
+              {filteredStations.map((station) => {
+                return (
+                  <div
+                    key={station.id}
+                    className="card"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => handleOpenStation(station)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") handleOpenStation(station);
                     }}
-                    title={isBookmarked ? "Remove bookmark" : "Bookmark"}
                   >
-                    <svg viewBox="0 0 24 24" width="16" height="16">
-                      <path
-                        d="M7 4.5A2.5 2.5 0 0 1 9.5 2h5A2.5 2.5 0 0 1 17 4.5V22l-5-3-5 3V4.5Z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                  </button>
-                </div>
-
-                <div className="card__body">
-                  <div className="card__title">{station.title}</div>
-                  {diagnosisEnabled && (
-                    <div className="card__meta">
-                      <span className="card__metaLabel">Diagnosis:</span> {station.diagnosis}
+                    <div
+                      className={`card__thumb ${
+                        station.thumbnail === "pink" ? "card__thumb--pink" : "card__thumb--dark"
+                      }`}
+                    >
+                      <span className="card__tag">{station.category}</span>
                     </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
 
-        {filteredStations.length === 0 && (
-          <div className="empty">
-            No stations found matching your criteria
-          </div>
+                    <div className="card__body">
+                      <div className="card__title">{station.title}</div>
+                      {diagnosisEnabled && (
+                        <div className="card__meta">
+                          <span className="card__metaLabel">Diagnosis:</span> {station.diagnosis}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {filteredStations.length === 0 && (
+              <div className="empty">No stations found matching your criteria</div>
+            )}
+          </>
         )}
       </div>
     </div>

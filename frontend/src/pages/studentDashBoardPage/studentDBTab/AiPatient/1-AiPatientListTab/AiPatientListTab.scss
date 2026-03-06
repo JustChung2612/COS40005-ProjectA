@@ -373,37 +373,6 @@
     backdrop-filter: blur(6px);
   }
 
-  &__bookmark {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 32px;
-    height: 32px;
-    border-radius: 12px;
-    border: 1px solid rgba(226, 232, 240, 0.9);
-    background: rgba(255, 255, 255, 0.75);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: #0f172a;
-    backdrop-filter: blur(6px);
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.9);
-    }
-
-    &:focus {
-      outline: none;
-      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
-    }
-
-    &--active {
-      color: #4f46e5;
-      border-color: rgba(79, 70, 229, 0.35);
-    }
-  }
-
   &__icon {
     opacity: 0.9;
   }

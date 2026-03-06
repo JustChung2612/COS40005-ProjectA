@@ -1,13 +1,19 @@
-import { Link, useParams } from "react-router-dom";
-import { candidate_instruction, Ai_patient_script_model } from "../../../../../../../Data/AiPatient/Ai-patient1";
 import "./AiPatientDetailTab.scss";
+import React, { useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
 
-// Optional: meta used for preview
-const stationMetaById = {
-    "1": { title: "Abdominal pain 01", category: "History", thumbnail: "pink" },
-    "2": { title: "Abdominal pain 09", category: "History", thumbnail: "dark" },
-    "3": { title: "Abdominal pain 10", category: "History", thumbnail: "dark" },
-};
+function stableThumb(id) {
+    const s = String(id || "");
+    let hash = 0;
+    for (let i = 0; i < s.length; i++) hash = (hash * 31 + s.charCodeAt(i)) >>> 0;
+    return hash % 2 === 0 ? "pink" : "dark";
+}
+
+function normalizeCategoryFromTopic(topicRaw) {
+    const t = String(topicRaw || "").toLowerCase();
+    if (t.includes("counsel")) return "Counselling";
+    return "Bệnh sử";
+}
 
 function toLines(value) {
     if (!value) return [];
@@ -129,16 +135,66 @@ function renderBulletList(value, marker = "•", subMarker = "○") {
 export default function AiPatientDetailTab({ stationId: stationIdProp, onBack, onStartPractice  }) {
      const { stationId: stationIdFromParams } = useParams();
      const stationId = stationIdProp || stationIdFromParams;
+     
+     const [caseData, setCaseData] = useState(null);
+     const [loading, setLoading] = useState(true);
+     const [errorMsg, setErrorMsg] = useState("");
 
-    const meta = stationMetaById[stationId] || stationMetaById["1"];
-    const script = Ai_patient_script_model;
+     useEffect(() => {
+        let alive = true;
 
-    const pageTitle = meta?.title || script?.brief_info?.name_symptom || "Station";
+        const fetchDetail = async () => {
+            try {
+                setLoading(true);
+                setErrorMsg("");
+
+                if (!stationId) {
+                    throw new Error("Missing station id.");
+                }
+
+                const res = await fetch(`http://localhost:5000/api/ai-cases/${stationId}`, {
+                    method: "GET",
+                    credentials: "include",
+                    headers: { "Content-Type": "application/json" },
+                });
+
+                const json = await res.json();
+                if (!res.ok) throw new Error(json?.message || "Không thể tải AI Patient Case.");
+
+                if (alive) setCaseData(json?.data || null);
+            } catch (err) {
+                if (alive) setErrorMsg(err?.message || "Lỗi khi tải dữ liệu.");
+            } finally {
+                if (alive) setLoading(false);
+            }
+        };
+
+        fetchDetail();
+        return () => {
+            alive = false;
+        };
+    }, [stationId]);
+
+    const script = caseData?.ai_patient_script_model || {};
+    const candidateInstruction = caseData?.candidate_instruction || [];
+
+    const pageTitle =  caseData?.title ||  script?.brief_info?.name_symptom || "Station";
+
     const pageDesc = script?.brief_info?.desc || "";
+
+    const meta = useMemo(() => {
+        const topic = script?.brief_info?.topic || "";
+        return {
+            category: normalizeCategoryFromTopic(topic),
+            thumbnail: stableThumb(stationId),
+        };
+    }, [script?.brief_info?.topic, stationId]);
 
     return (
         <div className="AiPatientDetail">
             <div className="AiPatientDetail__container">
+                {loading && <div className="empty">Loading case detail...</div>}
+                {!loading && errorMsg && <div className="empty">{errorMsg}</div>}
                 {/* Header */}
                 <div className="AiPatientDetail__header">
                     <div className="AiPatientDetail__headerLeft">
@@ -172,122 +228,115 @@ export default function AiPatientDetailTab({ stationId: stationIdProp, onBack, o
                 </div>
 
                 {/* Two-column layout */}
-                <div className="AiPatientDetail__layout">
-                    {/* Left: long scroll content */}
-                    <div className="AiPatientDetail__main">
-                        <section className="AiPatientDetail__section">
-                            <h2 className="AiPatientDetail__sectionTitle">
-                                Candidate instructions
-                                <span className="AiPatientDetail__sectionSubtitle"> | {pageTitle}</span>
-                            </h2>
+                {!loading && !errorMsg && (
+                    <div className="AiPatientDetail__layout">
+                        {/* Left: long scroll content */}
+                        <div className="AiPatientDetail__main">
+                            <section className="AiPatientDetail__section">
+                                <h2 className="AiPatientDetail__sectionTitle">
+                                    Hướng dẫn thí sinh
+                                    <span className="AiPatientDetail__sectionSubtitle"> | {pageTitle}</span>
+                                </h2>
 
-                            {renderBulletList(candidate_instruction)}
-                        </section>
+                                {renderBulletList(candidateInstruction)}
+                            </section>
 
-                        <section className="AiPatientDetail__section">
-                            <h2 className="AiPatientDetail__sectionTitle">
-                                Patient script
-                                <span className="AiPatientDetail__sectionSubtitle"> | {pageTitle}</span>
-                            </h2>
+                            <section className="AiPatientDetail__section">
+                                <h2 className="AiPatientDetail__sectionTitle">
+                                    Hồ sơ bệnh nhân
+                                    <span className="AiPatientDetail__sectionSubtitle"> | {pageTitle}</span>
+                                </h2>
 
-                            <div className="stationBlock">
-                                <div className="stationBlock__label">Key details</div>
-                                <div className="stationBlock__body">{renderBulletList(script?.key_details)}</div>
-                            </div>
+                                <div className="stationBlock">
+                                    <div className="stationBlock__label">Thông tin cá nhân</div>
+                                    <div className="stationBlock__body">{renderBulletList(script?.key_details)}</div>
+                                </div>
 
-                            <div className="stationBlock">
-                                <div className="stationBlock__label">Presenting complaint</div>
-                                <div className="stationBlock__body">{renderBulletList(script?.presenting_complaint)}</div>
-                            </div>
+                                <div className="stationBlock">
+                                    <div className="stationBlock__label">Lý do vào viện</div>
+                                    <div className="stationBlock__body">{renderBulletList(script?.presenting_complaint)}</div>
+                                </div>
 
-                            <div className="stationBlock">
-                                <div className="stationBlock__label">History of presenting complaint</div>
-                                <div className="stationBlock__body">{renderBulletList(script?.history_of_presenting_complaint)}</div>
-                            </div>
+                                <div className="stationBlock">
+                                    <div className="stationBlock__label">Bệnh sử của triệu chứng</div>
+                                    <div className="stationBlock__body">{renderBulletList(script?.history_of_presenting_complaint)}</div>
+                                </div>
 
-                            <div className="stationBlock">
-                                <div className="stationBlock__label">ICE</div>
-                                <div className="stationBlock__body">{renderBulletList(script?.ice)}</div>
-                            </div>
+                                <div className="stationBlock">
+                                    <div className="stationBlock__label">ICE (Quan điểm – Lo lắng – Mong đợi của bệnh nhân) </div>
+                                    <div className="stationBlock__body">{renderBulletList(script?.ice)}</div>
+                                </div>
 
-                            <div className="stationBlock">
-                                <div className="stationBlock__label">Past medical &amp; surgical history</div>
-                                <div className="stationBlock__body">{renderBulletList(script?.past_medical_and_surgical_history)}</div>
-                            </div>
+                                <div className="stationBlock">
+                                    <div className="stationBlock__label">Tiền sử bệnh lý &amp; phẫu thuật</div>
+                                    <div className="stationBlock__body">{renderBulletList(script?.past_medical_and_surgical_history)}</div>
+                                </div>
 
-                            <div className="stationBlock">
-                                <div className="stationBlock__label">Drug history</div>
-                                <div className="stationBlock__body">{renderBulletList(script?.drug_history)}</div>
-                            </div>
+                                <div className="stationBlock">
+                                    <div className="stationBlock__label"> Tiền sử dùng thuốc </div>
+                                    <div className="stationBlock__body">{renderBulletList(script?.drug_history)}</div>
+                                </div>
 
-                            <div className="stationBlock">
-                                <div className="stationBlock__label">Family history</div>
-                                <div className="stationBlock__body">{renderBulletList(script?.family_history)}</div>
-                            </div>
+                                <div className="stationBlock">
+                                    <div className="stationBlock__label"> Tiền sử gia đình </div>
+                                    <div className="stationBlock__body">{renderBulletList(script?.family_history)}</div>
+                                </div>
 
-                            <div className="stationBlock">
-                                <div className="stationBlock__label">Social history</div>
-                                <div className="stationBlock__body">{renderBulletList(script?.social_history)}</div>
-                            </div>
+                            </section>
+                        </div>
 
-                            <div className="stationBlock">
-                                <div className="stationBlock__label">Diagnosis</div>
-                                <div className="stationBlock__body">{renderBulletList(script?.diagnosis)}</div>
-                            </div>
-                        </section>
-                    </div>
+                        {/* Right: sticky sidebar */}
+                        <aside className="AiPatientDetail__sidebar">
+                            <div className="AiPatientDetail__sticky">
+                                <div className="previewCard">
+                                    <div className={`previewCard__thumb ${meta.thumbnail === "pink" ? "previewCard__thumb--pink" : "previewCard__thumb--dark"}`}>
+                                        <span className="previewCard__tag">
+                                            {meta.category}
+                                            <span className="previewCard__dot" />
+                                        </span>
 
-                    {/* Right: sticky sidebar */}
-                    <aside className="AiPatientDetail__sidebar">
-                        <div className="AiPatientDetail__sticky">
-                            <div className="previewCard">
-                                <div className={`previewCard__thumb ${meta.thumbnail === "pink" ? "previewCard__thumb--pink" : "previewCard__thumb--dark"}`}>
-                                    <span className="previewCard__tag">
-                                        {meta.category}
-                                        <span className="previewCard__dot" />
-                                    </span>
+                                        <div className="previewCard__icon" aria-hidden="true">
+                                            <svg viewBox="0 0 64 64" width="56" height="56">
+                                                <path
+                                                    d="M22 10h16v6H28v6h10v10c0 6-4 12-12 12-7 0-12-5-12-12V22c0-7 4-12 8-12Z"
+                                                    fill="currentColor"
+                                                    opacity="0.65"
+                                                />
+                                                <rect x="28" y="16" width="10" height="6" fill="currentColor" opacity="0.45" />
+                                            </svg>
+                                        </div>
+                                    </div>
 
-                                    <div className="previewCard__icon" aria-hidden="true">
-                                        <svg viewBox="0 0 64 64" width="56" height="56">
-                                            <path
-                                                d="M22 10h16v6H28v6h10v10c0 6-4 12-12 12-7 0-12-5-12-12V22c0-7 4-12 8-12Z"
-                                                fill="currentColor"
-                                                opacity="0.65"
-                                            />
-                                            <rect x="28" y="16" width="10" height="6" fill="currentColor" opacity="0.45" />
-                                        </svg>
+                                    <div className="previewCard__body">
+                                        <h3 className="previewCard__title">{pageTitle}</h3>
+                                        <p className="previewCard__text">
+                                            {script?.brief_info?.topic || "Practice OSCE with structured guidance."}
+                                        </p>
                                     </div>
                                 </div>
 
-                                <div className="previewCard__body">
-                                    <h3 className="previewCard__title">{pageTitle}</h3>
-                                    <p className="previewCard__text">
-                                        {script?.brief_info?.topic || "Practice OSCE with structured guidance."}
-                                    </p>
+                                <div className="ctaCard">
+                                    <h3 className="ctaCard__title">Virtual patient</h3>
+                                    <p className="ctaCard__text">Interact with an AI-based patient &amp; examiner</p>
+
+                                    <button
+                                        type="button"
+                                        className="ctaCard__btn"
+                                        onClick={() => {
+                                            if (onStartPractice) return onStartPractice(stationId);
+                                        }}
+                                    >
+                                        Bắt đầu luyện tập
+                                        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                                            <path d="M13 5l7 7-7 7-1.4-1.4 4.6-4.6H4v-2h12.2l-4.6-4.6L13 5Z" fill="currentColor" />
+                                        </svg>
+                                    </button>
+
                                 </div>
                             </div>
-
-                            <div className="ctaCard">
-                                <h3 className="ctaCard__title">Virtual patient</h3>
-                                <p className="ctaCard__text">Interact with an AI-based patient &amp; examiner</p>
-
-                                <button
-                                    type="button"
-                                    className="ctaCard__btn"
-                                    onClick={() => {
-                                        if (onStartPractice) return onStartPractice(stationId);
-                                    }}
-                                >
-                                    Start Practice
-                                      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-                                        <path d="M13 5l7 7-7 7-1.4-1.4 4.6-4.6H4v-2h12.2l-4.6-4.6L13 5Z" fill="currentColor" />
-                                    </svg>
-                                </button>
-
-                            </div>
-                        </div>
-                    </aside>
-                </div>
+                        </aside>
+                    </div>
+                )}
             </div>
         </div>
     );

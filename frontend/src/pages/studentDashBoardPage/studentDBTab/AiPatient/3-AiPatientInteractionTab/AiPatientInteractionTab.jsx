@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import "./AiPatientInteractionTab.scss";
+import { useNavigate } from "react-router-dom";
 
 const pad2 = (n) => String(n).padStart(2, "0");
 
@@ -56,9 +57,15 @@ function MessageBubble({ role, text, time }) {
 }
 
 export default function AiPatientInteractionTab({ stationId, onBack }) {
-  const stationTitle = "Virtual patient";
-  const stationSubtitle = "Abdominal pain 01";
-  const [messages, setMessages] = useState(() => [
+    const navigate = useNavigate();
+    const [caseData, setCaseData] = useState(null);
+    const [caseLoading, setCaseLoading] = useState(true);
+    const [caseError, setCaseError] = useState("");
+
+    const stationTitle = "Virtual patient";
+    const stationSubtitle = caseData?.title || "Loading case...";
+
+    const [messages, setMessages] = useState(() => [
     {
       id: "m1",
       role: "ai",
@@ -79,6 +86,37 @@ export default function AiPatientInteractionTab({ stationId, onBack }) {
     }, 1000);
     return () => clearInterval(t);
   }, [running]);
+
+  useEffect(() => {
+    if (!stationId) {
+      setCaseError("Missing stationId. Please go back and choose a case again.");
+      setCaseLoading(false);
+      return;
+    }
+
+    const fetchCase = async () => {
+      try {
+        setCaseLoading(true);
+        setCaseError("");
+
+        const res = await fetch(`/api/ai-cases/${stationId}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const json = await res.json();
+        setCaseData(json.data);
+
+      } catch (err) {
+        console.error("Failed to fetch AI case:", err);
+        setCaseError("Failed to load case data. Please try again.");
+      } finally {
+        setCaseLoading(false);
+      }
+    };
+
+    fetchCase();
+  }, [stationId]);
+  const candidateInstruction = caseData?.candidate_instruction || "";
+  const patientScript = caseData?.ai_patient_script_model || "";
 
   const timeLabel = useMemo(() => formatMMSS(secondsLeft), [secondsLeft]);
   const [diagnosisRevealed, setDiagnosisRevealed] = useState(false);
@@ -204,20 +242,32 @@ export default function AiPatientInteractionTab({ stationId, onBack }) {
 
           <section className="vp-below">
             <Collapsible title="Instructions" defaultOpen={false}>
-              <p className="vp-muted">
-                Use this space to guide the conversation and collect relevant
-                details. (demo)
-              </p>
+              {caseLoading ? (
+                <p className="vp-muted">Loading instructions...</p>
+              ) : caseError ? (
+                <p className="vp-muted">{caseError}</p>
+              ) : (
+                <p className="vp-muted" style={{ whiteSpace: "pre-line" }}>
+                  {candidateInstruction || "No candidate instruction provided."}
+                </p>
+              )}
             </Collapsible>
 
             <Collapsible title="Scenario script" defaultOpen={false}>
-              <ul className="vp-list">
-                <li>Onset: last night</li>
-                <li>Location: around belly button, now right lower abdomen</li>
-                <li>Associated: nausea, low appetite</li>
-                <li>No urinary symptoms</li>
-              </ul>
-            </Collapsible>
+              {caseLoading ? (
+                <p className="vp-muted">Loading patient script...</p>
+              ) : caseError ? (
+                <p className="vp-muted">{caseError}</p>
+              ) : typeof patientScript === "string" ? (
+                <p className="vp-muted" style={{ whiteSpace: "pre-line" }}>
+                  {patientScript || "No patient script provided."}
+                </p>
+              ) : (
+                <pre className="vp-muted" style={{ whiteSpace: "pre-wrap" }}>
+                  {JSON.stringify(patientScript, null, 2)}
+                </pre>
+              )}
+            </Collapsible>  
           </section>
         </main>
 
@@ -244,7 +294,7 @@ export default function AiPatientInteractionTab({ stationId, onBack }) {
             </div>
           </section>
           <section className="vp-panel">
-            <div className="vp-panel__title">Diagnosis</div>
+            <div className="vp-panel__title">Chuẩn Đoán</div>
             <div className="vp-panel__body">
               {!diagnosisRevealed ? (
                 <button
@@ -252,13 +302,25 @@ export default function AiPatientInteractionTab({ stationId, onBack }) {
                   className="vp-btn vp-btn--dark"
                   onClick={() => setDiagnosisRevealed(true)}
                 >
-                  Reveal diagnosis
+                  Hiện Chuẩn Đoán
                 </button>
               ) : (
                 <div className="vp-revealBox">{diagnosisText}</div>
               )}
             </div>
           </section>
+
+          <section>
+            <button
+              type="button"
+              className="Ai_submit_btn"
+              onClick={() => navigate(`/Ai_ket_qua/${stationId}`)}
+              disabled={!stationId}
+            >
+              Kết Thúc &#38; Đánh Giá
+            </button>
+          </section>
+
         </aside>
       </div>
     </div>

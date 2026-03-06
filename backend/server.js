@@ -9,6 +9,7 @@ import patientCaseRoutes from './routes/patientCase.route.js';
 import examRoomRoutes from "./routes/examRoom.route.js";
 import examStationRoutes from "./routes/examStation.route.js";
 import examSubmissionRoutes from "./routes/examSubmission.route.js";
+import aiPatientCaseRoutes from "./routes/AiPatientCase.route.js";
 
 const app = express();
 const PORT = 5000;
@@ -27,9 +28,10 @@ app.use("/api/patient-cases", patientCaseRoutes);
 app.use("/api/exam-rooms", examRoomRoutes);
 app.use("/api/exam-stations", examStationRoutes);
 app.use("/api/exam-submissions", examSubmissionRoutes);
+app.use("/api/ai-cases", aiPatientCaseRoutes);
 
 app.listen(PORT, () => {
     console.log(`Listening on Port ${PORT}`);
-    connectDB_local();
-    //connectDB_atlas()
+    // connectDB_local();
+    connectDB_atlas()
 })

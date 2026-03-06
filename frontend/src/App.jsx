@@ -19,6 +19,7 @@ import StudentDashBoardPage from './pages/studentDashBoardPage/StudentDashBoardP
 import InstructorAttempts from './pages/adminPage/adminTab/InstructorAttempts/InstructorAttempts.jsx';
 import CompletePage from './pages/completePage/CompletePage.jsx';
 import ResultPage from './pages/resultPage/ResultPage.jsx';
+import AiResultPage from './pages/studentDashBoardPage/studentDBTab/AiPatient/4-AiResultPage.jsx/AiResultPage.jsx';
 
 const studentInfo = {
   name: "Nguyen Van A",
@@ -102,6 +103,9 @@ const App = () => {
             <Route path='/dang_thi/:roomId' element={<InstructorAttempts />} />
             <Route path='/hoan_thanh' element={<CompletePage  student={studentInfo} stations={sampleStations} />} />
             <Route path='/ket_qua/:submissionId' element={<ResultPage />} />
+
+            <Route path='/Ai_ket_qua/:id' element={<AiResultPage />} />
+            <Route path='/Ai_ket_qua' element={<Navigate to="/sinh-vien" replace />} />
           
         </Routes>
         { !hideFooter && <Footer/>}

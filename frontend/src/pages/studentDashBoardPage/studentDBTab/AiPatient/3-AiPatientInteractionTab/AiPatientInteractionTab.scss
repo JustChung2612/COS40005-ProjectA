@@ -331,3 +331,19 @@
   font-size: 13px;
   line-height: 1.4;
 }
+
+.Ai_submit_btn {
+  border: none;
+  padding: 10px;
+  width: 100%;
+  border-radius: 10px;
+  background: #FF5A5A;
+  font-weight: 600;
+  color: #fff;
+  transition: 0.3s linear all;
+}
+
+.Ai_submit_btn:hover {
+  font-size: 15px;
+  background: #FF8B5A;
+}

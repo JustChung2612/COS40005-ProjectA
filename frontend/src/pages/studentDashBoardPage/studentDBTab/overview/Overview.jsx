@@ -70,7 +70,7 @@ const Overview = () => {
       </section>
 
       {/* Section 2 : Record of Student's Completed Exam Room  */}
-      <section className="main_info">
+      <section className="main_Exam_Room_info">
         <h1>Kết quả phòng thi đã hoàn thành:</h1>
 
         {loading && <p className="muted">Đang tải dữ liệu...</p>}
@@ -79,53 +79,72 @@ const Overview = () => {
           <p className="muted">Bạn chưa hoàn thành phòng thi nào.</p>
         )}
 
-        {!loading &&
-          submissions.map((sub) => {
-            const room = sub.examRoomId; // populated from backend
-            const totalStations = sub.stations?.length || 0;
+        <div className="examRoomCard-container-list" >
+          {!loading &&
+            submissions.map((sub) => {
+              const room = sub.examRoomId; // populated from backend
+              const totalStations = sub.stations?.length || 0;
 
-            return (
-              <div className="examRoomCard-container" key={sub._id}>
-                <div className="card__header">
-                  <div className="row">
-                    <h2 className="r_tite">{room?.exam_room_name || "Phòng thi"}</h2>
-                    <p className="r_code">{room?.exam_room_code || "..."}</p>
+              return (
+                <div className="examRoomCard-container" key={sub._id}>
+                  <div className="card__header">
+                    <div className="row">
+                      <h2 className="r_tite">{room?.exam_room_name || "Phòng thi"}</h2>
+                      <p className="r_code">{room?.exam_room_code || "..."}</p>
+                    </div>
+                  </div>
+
+                  <div className="card__body">
+                    <div className="card_content">
+                      <h4 className="key">Tổng Điểm:</h4>
+                      <p className="value">{sub.totalScore} </p>
+                    </div>
+
+                    <div className="card_content">
+                      <h4 className="key">Tổng Trạm:</h4>
+                      <p className="value">{totalStations}</p>
+                    </div>
+
+                    <div className="card_content">
+                      <h4 className="key">Chuyên Ngành:</h4>
+                      <p className="value">{room?.terminology || "..."}</p>
+                    </div>
+
+                    <div className="card_content">
+                      <Clock3 />
+                      <span style={{ fontWeight: 500 }}>16:00–17:30 (demo)</span>
+                    </div>
+
+                    <button
+                      className="btn"
+                      onClick={() => {
+                        // Helpful for ResultPage to reuse the exact shuffle order per station
+                        // (if ResultPage chooses to read it from navigation state/localStorage)
+                        try {
+                          localStorage.setItem(`osce_submission_cache:${sub._id}`, JSON.stringify(sub));
+                        } catch {
+                          // ignore
+                        }
+                        navigate(`/ket_qua/${sub._id}`, { state: { submission: sub } });
+                      }}
+                    >
+                      Chi tiết
+                    </button>
                   </div>
                 </div>
-
-                <div className="card__body">
-                  <div className="card_content">
-                    <h4 className="key">Tổng Điểm:</h4>
-                    <p className="value">{sub.totalScore} </p>
-                  </div>
-
-                  <div className="card_content">
-                    <h4 className="key">Tổng Trạm:</h4>
-                    <p className="value">{totalStations}</p>
-                  </div>
-
-                  <div className="card_content">
-                    <h4 className="key">Chuyên Ngành:</h4>
-                    <p className="value">{room?.terminology || "..."}</p>
-                  </div>
-
-                  <div className="card_content">
-                    <Clock3 />
-                    <span style={{ fontWeight: 500 }}>16:00–17:30 (demo)</span>
-                  </div>
-
-                  <button
-                    className="btn"
-                    onClick={() => navigate(`/ket_qua/${sub._id}`)}
-                  >
-                    Chi tiết
-                  </button>
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
+        </div>
       </section>
 
+      {/* Section 3 : Record of Student's Completed Ai Exam Room  */}
+      <section className="Ai_Exam_Room_info" >
+        <h1>Kết quả phòng thi Ai đã hoàn thành:</h1>
+
+        <div className="AiResultCard-container-list" >
+
+        </div>
+      </section>
     </>
   )
 }
