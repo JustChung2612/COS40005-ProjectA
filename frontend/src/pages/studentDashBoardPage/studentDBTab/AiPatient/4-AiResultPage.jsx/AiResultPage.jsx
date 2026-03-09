@@ -1,7 +1,9 @@
 // AiResultPage.jsx
+import "./AiResultPage.scss";
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import "./AiResultPage.scss";
+import axios from "axios";
+
 
 const AiResultPage = () => {
   const { id } = useParams(); // caseId
@@ -23,14 +25,13 @@ const AiResultPage = () => {
         setLoading(true);
         setError("");
 
-        const res = await fetch(`/api/ai-cases/${id}`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const res = await axios.get(`http://localhost:5000/api/ai-cases/${id}`);
 
-        const json = await res.json();
-        const foundCase = json?.data;
+        const foundCase = res.data?.data;
 
         setCaseTitle(foundCase?.title || "");
         setAiAssess(foundCase?.ai_assess_schema || null);
+
       } catch (err) {
         console.error("Failed to load AI result:", err);
         setError("Failed to load AI evaluation. Please try again.");

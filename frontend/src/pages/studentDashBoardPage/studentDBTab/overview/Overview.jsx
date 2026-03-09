@@ -139,10 +139,45 @@ const Overview = () => {
 
       {/* Section 3 : Record of Student's Completed Ai Exam Room  */}
       <section className="Ai_Exam_Room_info" >
-        <h1>Kết quả phòng thi Ai đã hoàn thành:</h1>
+        <h1>Kết quả phòng thi AI đã hoàn thành:</h1>
 
-        <div className="AiResultCard-container-list" >
+        <div className="cardGrid">
+          {/* Demo AI patient cards */}
+          <div className="card" role="button" tabIndex={0}>
+            <div className="card__thumb card__thumb--pink">
+              <span className="card__tag">Bệnh sử</span>
+            </div>
+            <div className="card__body">
+              <div className="card__title">Đau bụng cấp tính</div>
+              <div className="card__meta">
+                <span className="card__metaLabel">Diagnosis:</span> Viêm ruột thừa
+              </div>
+            </div>
+          </div>
 
+          <div className="card" role="button" tabIndex={0}>
+            <div className="card__thumb card__thumb--dark">
+              <span className="card__tag">Counselling</span>
+            </div>
+            <div className="card__body">
+              <div className="card__title">Tư vấn tiểu đường</div>
+              <div className="card__meta">
+                <span className="card__metaLabel">Diagnosis:</span> Đái tháo đường type 2
+              </div>
+            </div>
+          </div>
+
+          <div className="card" role="button" tabIndex={0}>
+            <div className="card__thumb card__thumb--pink">
+              <span className="card__tag">Bệnh sử</span>
+            </div>
+            <div className="card__body">
+              <div className="card__title">Khó thở và ho kéo dài</div>
+              <div className="card__meta">
+                <span className="card__metaLabel">Diagnosis:</span> Viêm phổi
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </>
