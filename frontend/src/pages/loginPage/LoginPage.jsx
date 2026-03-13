@@ -73,6 +73,7 @@ export default function LoginPage() {
 
   return (
     <div className="login-container">
+      
       <div className="background-glow" />
       <AnimatedOrbs />
       <div className="login-wrapper">

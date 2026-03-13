@@ -1,0 +1,40 @@
+/* LAPTOP */
+
+@media (max-width:1440px){
+
+.examContainer .createRoomPopup__overlay{
+  width:100vw !important;
+  left:0 !important;
+  right:0 !important;
+  display:flex !important;
+  justify-content:flex-end !important;
+  background:transparent !important;
+}
+
+.examContainer .createRoomPopup{
+  width:360px !important;   
+  max-width:360px !important;
+}
+
+}
+
+
+/* TABLET / IPAD  */
+
+@media (max-width:1024px){
+
+.examContainer .createRoomPopup__overlay{
+  width:100vw !important;
+  left:0 !important;
+  right:0 !important;
+  display:flex !important;
+  justify-content:flex-end !important;
+  background:transparent !important;
+}
+
+.examContainer .createRoomPopup{
+  width:260px !important;   
+  max-width:260px !important;
+}
+
+}

@@ -10,6 +10,7 @@ import examRoomRoutes from "./routes/examRoom.route.js";
 import examStationRoutes from "./routes/examStation.route.js";
 import examSubmissionRoutes from "./routes/examSubmission.route.js";
 import aiPatientCaseRoutes from "./routes/AiPatientCase.route.js";
+import openaiRoutes from "./routes/openai.route.js";
 
 const app = express();
 const PORT = 5000;
@@ -29,6 +30,7 @@ app.use("/api/exam-rooms", examRoomRoutes);
 app.use("/api/exam-stations", examStationRoutes);
 app.use("/api/exam-submissions", examSubmissionRoutes);
 app.use("/api/ai-cases", aiPatientCaseRoutes);
+app.use("/api/openai", openaiRoutes);
 
 app.listen(PORT, () => {
     console.log(`Listening on Port ${PORT}`);

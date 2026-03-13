@@ -14,50 +14,6 @@
         align-items: center;
         justify-content: space-between;
 
-        .adNavSearch{
-            display: flex;
-            line-height: 30px;
-            align-items: center;
-            position: relative;
-            max-width: 600px;
-
-            input {
-                width: 100%;
-                font-size: 17px;
-                height: 45px;
-                line-height: 30px;
-                padding: 0 5rem;
-                padding-left: 3rem;
-                border: 2px solid transparent;
-                border-radius: 10px;
-                outline: none;
-                background-color: #8a8f95;
-                color: #0d0c22;
-                transition: .5s ease;
-            }
-
-            input::placeholder {
-                color: #ffffff;
-            }
-
-            input:focus, input:hover {
-                outline: none;
-                border-color: rgba(129, 140, 248);
-                background-color: #fff;
-                box-shadow: 0 0 0 5px rgb(129 140 248 / 30%);
-            }
-
-            .icon {
-                position: absolute;
-                left: 1rem;
-                fill: none;
-                width: 1.7rem;
-                height: 1.7rem;
-            }
-        }
-
-        
-
         .adNavItems{
             // border: 2px solid orange ;
             display: flex;

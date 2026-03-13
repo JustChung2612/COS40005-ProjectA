@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import axios from '../lib/axios.js';
+import axiosInstance from '../lib/axios.js'; // axiosInstance
+import axios from "axios";
 import { toast } from "react-hot-toast";
 
 export const useUserStore = create((set, get) => ({
@@ -12,7 +13,7 @@ export const useUserStore = create((set, get) => ({
 
         try {
             const { username, email, password, maSinhVien } = signUpData;
-            const res = await axios.post("/auth/signup", 
+            const res = await axiosInstance.post("/auth/signup", 
                                          { username, email, password, maSinhVien });
 
             set({ user: res.data.userData, loading: false });
@@ -33,7 +34,7 @@ export const useUserStore = create((set, get) => ({
 
         try {
             const { email, password } = loginData;
-            const res = await axios.post("/auth/login", { email, password });
+            const res = await axiosInstance.post("/auth/login", { email, password });
 
             set({ user: res.data.userData, loading: false });
 
@@ -52,7 +53,7 @@ export const useUserStore = create((set, get) => ({
         set({ loading: true });
 
         try {
-            const res = await axios.post("/auth/google", { access_token });
+            const res = await axiosInstance.post("/auth/google", { access_token });
 
             set({ user: res.data.userData, loading: false });
             toast.success(res.data.message || "Google login successful!");
@@ -66,7 +67,7 @@ export const useUserStore = create((set, get) => ({
 
     logout: async () => {
         try {
-            await axios.post("/auth/logout");
+            await axiosInstance.post("/auth/logout");
 			set({ user: null });
         } catch(error) {
             toast.error(error.response?.data?.message || "An error occurred during logout");
@@ -77,7 +78,7 @@ export const useUserStore = create((set, get) => ({
     checkAuth: async () => {
         set({ checkingAuth: true });
         try {
-            const response = await axios.get("/auth/profile");
+            const response = await axiosInstance.get("/auth/profile");
             set({ user: response.data, checkingAuth: false });
 
         } catch(error) {
@@ -88,5 +89,3 @@ export const useUserStore = create((set, get) => ({
     },
 
 }));
-
-

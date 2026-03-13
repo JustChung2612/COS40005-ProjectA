@@ -1,12 +1,19 @@
+//PatientCaseList.jsx
 import { useState, useEffect } from "react";
 import PatientCaseCard from "../../../../components/patientCaseCard/PatientCaseCard.jsx";
 import axios from "axios";
+import "./res_patientCaseList.scss";
 import './patientCaseList.scss';
+import { Search } from 'lucide-react';
 
 const PatientCaseList = () => {
   const [examCases, setExamCases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiMessage, setAiMessage] = useState("");
+  const [aiExtractedFilters, setAiExtractedFilters] = useState(null);
 
   const [filters, setFilters] = useState({
     chuan_doan: "",
@@ -24,19 +31,23 @@ const PatientCaseList = () => {
   const targetGroupOptions = ["Người lớn", "Người già", "Trẻ em", "Thai phụ"];
 
   // -------------------- Fetch Patient Cases --------------------
+
+  const fetchPatientCases = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const res = await axios.get("http://localhost:5000/api/patient-cases");
+      setExamCases(res.data?.data || []);
+    } catch (err) {
+      console.error("Failed to fetch Patient Cases:", err);
+      setError("Không thể tải danh sách Bệnh Án");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchPatientCases = async () => {
-      try {
-        setLoading(true);
-        const res = await axios.get("http://localhost:5000/api/patient-cases");
-        setExamCases(res.data?.data || []);
-      } catch (err) {
-        console.error("Failed to fetch Patient Cases:", err);
-        setError("Không thể tải danh sách Bệnh Án");
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchPatientCases();
   }, []);
 
@@ -52,9 +63,28 @@ const PatientCaseList = () => {
     setFilters({ ...filters, do_tuoi: newRange });
   };
 
+  const handleAiKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleAiSearch();
+    }
+  };
+  
+  const handleResetAiSearch = async () => {
+    setAiPrompt("");
+    setAiMessage("");
+    setAiExtractedFilters(null);
+    setError(null);
+
+    await fetchPatientCases();
+  };
+
   const handleApplyFilter = async () => {
     try {
       setLoading(true);
+      setAiMessage("");
+      setAiExtractedFilters(null);
+      setError(null);
+
       const queryParams = new URLSearchParams();
 
       Object.entries(filters).forEach(([key, value]) => {
@@ -76,6 +106,50 @@ const PatientCaseList = () => {
     }
   };
 
+  const handleAiSearch = async () => {
+    try {
+      if (!aiPrompt.trim()) {
+        setAiMessage("Vui lòng nhập yêu cầu để AI tìm bệnh án.");
+        setAiExtractedFilters(null);
+        return;
+      }
+
+      setAiLoading(true);
+      setError(null);
+      setAiMessage("");
+      setAiExtractedFilters(null);
+
+      const res = await axios.post(
+        "http://localhost:5000/api/openai/filter-patient-cases",
+        {
+          prompt: aiPrompt.trim(),
+        }
+      );
+
+      const matchedCases = res.data?.data || [];
+      const count = res.data?.count || 0;
+      const extractedFilters = res.data?.extractedFilters || null;
+
+      setExamCases(matchedCases);
+      setAiExtractedFilters(extractedFilters);
+
+      if (count === 0) {
+        setAiMessage("AI đã hiểu yêu cầu nhưng không tìm thấy bệnh án phù hợp.");
+      } else {
+        setAiMessage(`AI đã tìm thấy ${count} bệnh án phù hợp.`);
+      }
+    } catch (err) {
+      console.error("Error using AI search:", err);
+
+      setAiExtractedFilters(null);
+      setAiMessage(
+        err?.response?.data?.message ||
+          "AI chưa thể tìm bệnh án lúc này. Vui lòng thử lại."
+      );
+    } finally {
+      setAiLoading(false);
+    }
+  };
   // -------------------- UI --------------------
   if (loading) return <div>Đang tải danh sách Bệnh Án...</div>;
   if (error) return <div style={{ color: "red" }}>{error}</div>;
@@ -183,6 +257,81 @@ const PatientCaseList = () => {
         </div>
       </div>
 
+      {/* ---------- AI FILTERING SECTION ---------- */}
+      <div className="Ai_filter_con">
+        <h3 className="Ai_title">Tìm trạm thi dễ hơn với AI</h3>
+
+        <div className="adNavSearch">
+          <Search className="icon" />
+          <input
+            type="text"
+            id="SearchInput"
+            placeholder="Ví dụ: Tìm bệnh án phổi cho người già khó thở..."
+            value={aiPrompt}
+            onChange={(e) => setAiPrompt(e.target.value)}
+            onKeyDown={handleAiKeyDown}
+          />
+
+          <button
+            type="button"
+            className="applyButton"
+            onClick={handleAiSearch}
+            disabled={aiLoading}
+          >
+            {aiLoading ? "AI đang tìm..." : "Tìm với AI"}
+          </button>
+
+          <button
+            type="button"
+            className="applyButton"
+            onClick={handleResetAiSearch}
+            disabled={aiLoading}
+          >
+            Đặt lại
+          </button>
+        </div>
+
+        {aiMessage && (
+          <div
+            style={{
+              marginTop: "0.75rem",
+              fontSize: "0.95rem",
+              color: "#444",
+              fontWeight: "500",
+            }}
+          >
+            {aiMessage}
+          </div>
+        )}
+
+        {aiExtractedFilters && (
+          <div
+            style={{
+              marginTop: "0.75rem",
+              padding: "0.75rem 1rem",
+              background: "#f7f8fa",
+              borderRadius: "10px",
+              fontSize: "0.92rem",
+              color: "#333",
+              lineHeight: "1.6",
+            }}
+          >
+            <strong>AI đã hiểu yêu cầu thành:</strong>
+            <div>Chuẩn đoán: {aiExtractedFilters.chuan_doan || "Không có"}</div>
+            <div>Cơ quan: {aiExtractedFilters.co_quan || "Không có"}</div>
+            <div>Triệu chứng: {aiExtractedFilters.trieu_chung || "Không có"}</div>
+            <div>Độ khó: {aiExtractedFilters.do_kho || "Không có"}</div>
+            <div>Đối tượng: {aiExtractedFilters.doi_tuong || "Không có"}</div>
+            <div>
+              Độ tuổi:{" "}
+              {aiExtractedFilters.min_tuoi !== null || aiExtractedFilters.max_tuoi !== null
+                ? `${aiExtractedFilters.min_tuoi ?? "?"} - ${aiExtractedFilters.max_tuoi ?? "?"}`
+                : "Không có"}
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* ---------- EXAM LIST SECTION ---------- */}
       <div className="examListContainer">
         <h3 className="listTitle">Danh sách Bệnh Án</h3>
@@ -197,7 +346,9 @@ const PatientCaseList = () => {
                 fontWeight: "500",
               }}
             >
-              Không có bệnh án nào, hãy <strong>tải bệnh án ngay!</strong>
+              {aiPrompt.trim()
+              ? <>Không tìm thấy bệnh án phù hợp với yêu cầu AI.</>
+              : <>Không có bệnh án nào, hãy <strong>tải bệnh án ngay!</strong></>}
             </div>
           ) : (
             <div className="examList">

@@ -15,11 +15,7 @@ const AdminNavbar = ({
     <>
       <div className='adminNavbar'>
         <div className="adNavWrapper">
-          <div className="adNavSearch">
-            <Search className='icon' />
-            <input type="text" id="SearchInput" placeholder="Tìm trạm thi dễ hơn với AI..." />
-          </div>
-
+          <div></div>
           <div className="adNavItems" >
             {!selectionMode ? (
               <button className="adNavItem notUser" 

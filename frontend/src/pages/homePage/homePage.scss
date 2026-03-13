@@ -75,13 +75,43 @@
   transition: 200ms;
 }
 
+.account-demo {
+  max-width: 550px;
+  background: #fff ;
+  color: #14b8a6;
+  border-radius: 20px;
+  margin: 50px auto;
+  padding: 10px;
+  display: flex; flex-direction: column; gap: 15px;
+  align-items: center; justify-content: center;
+  box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+  h3 { font-size: 2rem; }
+
+  .account-container {
+    width: 100%;
+    padding: 5px;
+    display: flex; gap: 20px;
+    align-items: center; justify-content: center;
+
+    .acc-box{
+      background-color: #14b8a6;
+      border-radius: 10px;
+      padding: 10px;
+      color: #fff;
+      line-height: 1.6;
+      h4 { font-size: 1.2rem;  text-align: center; margin-bottom: 5px; }
+      p { font-size: 1.1rem;}
+    }
+  }
+}
+
 /* ======= INTRO SECTION ======= */
 .section--intro {
     //border: 3px solid #F25912;
     min-height: 85vh;
   
     .intro__flex {
-        //border: 3px solid #F25912;
+        // border: 3px solid #F25912;
         height: 40rem ;
         width: 85%;
         display: flex;
@@ -292,14 +322,14 @@
 
           // Animation
         
-          @keyframes rotateBox {
-              from {
-                transform: rotate(-10deg);
-              }
-              to {
-                transform: translate(var(--move-x)) rotate(var(--rotate-angle));
-              }
-          }
+          // @keyframes rotateBox {
+          //     from {
+          //       transform: rotate(-10deg);
+          //     }
+          //     to {
+          //       transform: translate(var(--move-x)) rotate(var(--rotate-angle));
+          //     }
+          // }
 
           .box1 {
             --move-x: 0px;
