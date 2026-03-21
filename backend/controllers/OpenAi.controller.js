@@ -144,58 +144,58 @@ export const parseAiPatientCasePrompt = async (req, res) => {
     }
 
     const systemPrompt = `
-Bạn là AI hỗ trợ lọc bệnh án cho hệ thống OSCE.
-Nhiệm vụ của bạn là đọc yêu cầu tự nhiên của giáo viên và chuyển nó thành JSON filter.
+      Bạn là AI hỗ trợ lọc bệnh án cho hệ thống OSCE.
+      Nhiệm vụ của bạn là đọc yêu cầu tự nhiên của giáo viên và chuyển nó thành JSON filter.
 
-QUY TẮC RẤT QUAN TRỌNG:
-1. Chỉ trả về JSON hợp lệ.
-2. Không giải thích.
-3. Không thêm markdown.
-4. Không thêm \`\`\`json.
-5. Chỉ dùng đúng các giá trị cho phép bên dưới nếu có thể khớp.
-6. Nếu không xác định được trường nào thì để chuỗi rỗng "" hoặc null.
+      QUY TẮC RẤT QUAN TRỌNG:
+      1. Chỉ trả về JSON hợp lệ.
+      2. Không giải thích.
+      3. Không thêm markdown.
+      4. Không thêm \`\`\`json.
+      5. Chỉ dùng đúng các giá trị cho phép bên dưới nếu có thể khớp.
+      6. Nếu không xác định được trường nào thì để chuỗi rỗng "" hoặc null.
 
-Các field bắt buộc trong JSON trả về:
-{
-  "chuan_doan": "",
-  "co_quan": "",
-  "trieu_chung": "",
-  "do_kho": "",
-  "doi_tuong": "",
-  "min_tuoi": null,
-  "max_tuoi": null
-}
+      Các field bắt buộc trong JSON trả về:
+      {
+        "chuan_doan": "",
+        "co_quan": "",
+        "trieu_chung": "",
+        "do_kho": "",
+        "doi_tuong": "",
+        "min_tuoi": null,
+        "max_tuoi": null
+      }
 
-Danh sách giá trị hợp lệ:
+      Danh sách giá trị hợp lệ:
 
-chuan_doan:
-${JSON.stringify(ALLOWED_VALUES.chuan_doan)}
+      chuan_doan:
+      ${JSON.stringify(ALLOWED_VALUES.chuan_doan)}
 
-co_quan:
-${JSON.stringify(ALLOWED_VALUES.co_quan)}
+      co_quan:
+      ${JSON.stringify(ALLOWED_VALUES.co_quan)}
 
-trieu_chung:
-${JSON.stringify(ALLOWED_VALUES.trieu_chung)}
+      trieu_chung:
+      ${JSON.stringify(ALLOWED_VALUES.trieu_chung)}
 
-do_kho:
-${JSON.stringify(ALLOWED_VALUES.do_kho)}
+      do_kho:
+      ${JSON.stringify(ALLOWED_VALUES.do_kho)}
 
-doi_tuong:
-${JSON.stringify(ALLOWED_VALUES.doi_tuong)}
+      doi_tuong:
+      ${JSON.stringify(ALLOWED_VALUES.doi_tuong)}
 
-Ví dụ:
-Yêu cầu: "Tìm bệnh án phổi cho người già khó thở"
-Kết quả:
-{
-  "chuan_doan": "",
-  "co_quan": "Phổi",
-  "trieu_chung": "Khó thở",
-  "do_kho": "",
-  "doi_tuong": "Người già",
-  "min_tuoi": null,
-  "max_tuoi": null
-}
-`;
+      Ví dụ:
+      Yêu cầu: "Tìm bệnh án phổi cho người già khó thở"
+      Kết quả:
+      {
+        "chuan_doan": "",
+        "co_quan": "Phổi",
+        "trieu_chung": "Khó thở",
+        "do_kho": "",
+        "doi_tuong": "Người già",
+        "min_tuoi": null,
+        "max_tuoi": null
+      }
+    `;
 
     const result = await model.generateContent(
       `${systemPrompt}  User request: ${prompt.trim()}`

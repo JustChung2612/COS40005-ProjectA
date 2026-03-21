@@ -1,11 +1,7 @@
-<p align="center">
-  <img src="https://img.shields.io/badge/Medic6-OSCE%20Exam%20Platform-14b8a6?style=for-the-badge&logo=react&logoColor=white" alt="Medic 6 Banner" />
-</p>
-
 # 🩺 Medic 6 — OSCE Exam Platform
 
-A full-stack system for **creating, managing, and conducting online OSCE (Objective Structured Clinical Examination)** sessions for medical universities.  
-Teachers can build exam rooms with patient cases, and students can take virtual station-based exams filtered by their department.
+A full-stack web application for creating, managing, and conducting online OSCE (Objective Structured Clinical Examination) sessions for medical universities.  
+The system supports both instructors and students through role-based interfaces and enables realistic station-based exam simulations.
 
 ---
 
@@ -13,92 +9,143 @@ Teachers can build exam rooms with patient cases, and students can take virtual 
 
 | Layer | Technology |
 |:------|:------------|
-| 🖥️ **Frontend** | React (Vite), Zustand, Axios, React Router, SCSS |
-| ⚙️ **Backend** | Node.js, Express.js |
-| 🗄️ **Database** | MongoDB (Mongoose ORM) |
-| 🔐 **Auth / Tokens** | JWT + Redis (for refresh token storage) |
+| 🖥️ Frontend | React (Vite), Zustand, Axios, React Router, SCSS |
+| ⚙️ Backend | Node.js, Express.js |
+| 🗄️ Database | MongoDB (Mongoose) |
+| 🔐 Authentication | JWT + Redis (refresh token storage) |
 
 ---
 
-## 🚀 Getting Started
+# 📘 User Manual
 
+## 👨‍🏫 Teacher Workflow (Admin Panel)
 
-🧭 Project Workflow Overview
-🧩 Teacher Workflow (Admin Panel)
+1. Log in to the Admin Panel at `/quan-tri`
+2. Create a new exam room using the “Tạo Phòng” feature
+3. Add stations and assign patient cases
+4. Arrange stations in the desired order
+5. Publish the exam room (🚀 Phát Đề Thi)
+6. Students from the corresponding department can access the room
+7. Teachers can edit, delete, or monitor exam rooms at any time
 
-👨‍🏫 Teachers log into the Admin Panel (/quan-tri) →
-Create new exam rooms through the “Tạo Phòng” popup →
-Drag and drop patient cases into each exam station →
-Add multiple stations (➕ Trạm) as needed, each containing one or more cases →
-Save and publish the exam room (🚀 Phát Đề Thi) →
-Students in the matching department will automatically see these published rooms on their homepage.
+---
 
-Once published, teachers can edit or delete stations, update room information, or monitor configuration through the Exam Room List section.
+## 👩‍⚕️ Student Workflow
 
+1. Register or log in with personal details
+2. The Home Page displays exam rooms matching the student’s department
+3. Enter an exam by:
+   - Inputting a room code, or  
+   - Clicking “Bắt đầu vào thi”
+4. Complete stations sequentially:
+   - View patient case information
+   - Answer questions within the time limit
+   - Proceed using “Trạm Kế Tiếp”
+5. After finishing the final station:
+   - Click “Kết thúc”
+   - Return to homepage or results page
 
-👩‍⚕️ Student Workflow
+---
 
-👩‍⚕️ Students register or log in with their details (name, class, and department) →
-After login, the Home Page displays only exam rooms related to their department →
-They can either:
+# ⚙️ System Installation and Deployment Guide
 
-Enter a room code manually (🔢), or
+## 1. Prerequisites
 
-Click “Bắt đầu vào thi” on an available exam card (🎓).
+Ensure the following software is installed:
 
-Upon joining, the system retrieves the corresponding Exam Room and its ordered list of stations →
-The student enters the first station page (/osce/tram/:id) →
-Views patient information, clinical history, and questions →
-Completes the station within a timed session ⏱ →
-Moves forward with “Trạm Kế Tiếp” →
-When the final station is finished, the button changes to “Kết thúc” 🏁, returning the student to the homepage (or later, a results page).
+- Node.js (v16 or later recommended)
+- npm
+- MongoDB (local or MongoDB Atlas)
+- Git
+- MongoDB Compass (optional)
 
-# 🚀 Quick Guide To Run Project
+---
 
-## 0. Clone Project
-``` 
-git clone + link 
-```
+## 2. Clone the Repository
 
-## 1. Install/Run Project
+git clone <repository-link>  
+cd <project-folder>
 
-### 1.1 Frontend
-```
-1. cd frontend 
-```
-```
-2. npm install
-```
-```
-3. npm run dev
-```
-### 1.2 Backend
-```
-1. cd backend
-```
-```
-2. npm install
-```
-```
-3. npm start
-```
+---
 
-## 2. Create File named <ins> .env </ins>
-** Copy And Paste this into .env file: **
-```
-MONGO_URL = mongodb://127.0.0.1:27017/Medic-OSCE
-ACCESS_TOKEN_SECRET=access_token_secret
-REFRESH_TOKEN_SECRET=refresh_token_secret
-GOOGLE_CLIENT_ID= ' Your Google Client ID'
-```
+## 3. Install Dependencies
 
+### Frontend
 
+cd frontend  
+npm install  
+npm run dev  
 
-## 3. Import data in database
-1. Make sure laptop have MongoDB Compass or download it.
-2. Open MongoDB Compass , hover ** localhost:27017 ** and click ** Connect **.
-3. Select "Medic-OSCE" database.
-4. Select "patientcases" collection.
-5. Click ** Add Data ** button and choose ** Import JSON or CSV file **.
-6. Open ** COS40005-ProjectA/Data ** folder in the project that just cloned and then select ** PatientCases.json ** file
+Frontend runs at: http://localhost:5173
 
+### Backend
+
+cd backend  
+npm install  
+npm start  
+
+Backend runs at: http://localhost:5000
+
+---
+
+## 4. Configure Environment Variables
+
+Create a `.env` file in the backend directory:
+
+MONGO_URL=mongodb://127.0.0.1:27017/Medic-OSCE  
+ACCESS_TOKEN_SECRET=access_token_secret  
+REFRESH_TOKEN_SECRET=refresh_token_secret  
+GOOGLE_CLIENT_ID=your_google_client_id  
+
+---
+
+## 5. Database Setup
+
+### Import Sample Data
+
+1. Open MongoDB Compass  
+2. Connect to localhost:27017  
+3. Create or select database: Medic-OSCE  
+4. Select collection: patientcases  
+5. Add Data → Import JSON or CSV  
+6. Import PatientCases.json  
+
+---
+
+# 🧠 System Architecture Overview
+
+Frontend (React)  
+↓  
+Backend API (Express)  
+↓  
+MongoDB Database  
+
+Authentication uses JWT tokens with Redis for refresh token storage.
+
+---
+
+# 🧪 Running the Application
+
+1. Start the backend server  
+2. Start the frontend development server  
+3. Open the application in a browser  
+4. Register teacher and student accounts  
+
+---
+
+# 📌 Notes and Limitations
+
+- Designed for educational OSCE simulation
+- Performance depends on dataset size
+- MongoDB service must be running
+- Internet required for external authentication services
+
+---
+
+# 📄 Documentation Deliverables
+
+This README serves as:
+
+✔ User Manual for instructors and students  
+✔ System Installation Guide for developers and administrators  
+✔ Technical overview of the application

@@ -119,8 +119,7 @@ const PatientCaseList = () => {
       setAiMessage("");
       setAiExtractedFilters(null);
 
-      const res = await axios.post(
-        "http://localhost:5000/api/openai/filter-patient-cases",
+      const res = await axios.post("http://localhost:5000/api/openai/filter-patient-cases",
         {
           prompt: aiPrompt.trim(),
         }
@@ -292,13 +291,7 @@ const PatientCaseList = () => {
         </div>
 
         {aiMessage && (
-          <div
-            style={{
-              marginTop: "0.75rem",
-              fontSize: "0.95rem",
-              color: "#444",
-              fontWeight: "500",
-            }}
+          <div  style={{ marginTop: "0.75rem", fontSize: "0.95rem", color: "#444", fontWeight: "500",}}
           >
             {aiMessage}
           </div>
