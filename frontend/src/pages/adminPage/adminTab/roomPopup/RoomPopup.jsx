@@ -1,5 +1,5 @@
+
 import "./roomPopup.scss";
-import "./res_roomPopup.scss";
 import { useState } from "react";
 import { X, ArrowBigLeft, ArrowBigRight, Trash } from 'lucide-react';
 import { toast } from "react-hot-toast";

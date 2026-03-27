@@ -6,18 +6,23 @@
 .createRoomPopup__overlay {
   position: fixed;
   top: 0;
+  left: 0;
   right: 0;
   height: 100%;
-  width: 480px; /* popup width + padding buffer */
+  width: 100%;
   display: flex;
   justify-content: flex-end;
-  pointer-events: none; /* allow interaction behind except popup itself */
+  background: rgba(15, 23, 42, 0.18);
+  /* Keep the dimmed layer visible without blocking drag-and-drop from the page behind it. */
+  pointer-events: none;
   z-index: 1000;
 }
 
 .createRoomPopup {
-  pointer-events: all;
+  // Desktop starts as a right-side drawer, then narrows or goes full-screen in breakpoints.
+  pointer-events: auto;
   width: 450px;
+  max-width: min(100%, 450px);
   background: #fff;
   height: 100%;
   display: flex;
@@ -39,6 +44,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 12px;
   }
 
   .close-btn {
@@ -62,6 +68,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
 }
 
 
@@ -153,6 +160,151 @@
   display: flex;
   justify-content: center;
   gap: 10px;
+  padding: 0 1rem 1rem;
+  align-items: center;
 
 
 }
+
+/* LAPTOP */
+
+@media (max-width:1440px){
+
+  /* The popup is mounted outside .examContainer, so target it directly here. */
+  .createRoomPopup {
+    width: 380px;
+    max-width: min(100%, 380px);
+  }
+
+}
+
+
+/* TABLET / IPAD  */
+
+@media (max-width:1024px){
+
+  .createRoomPopup__overlay {
+    background: rgba(15, 23, 42, 0.28);
+  }
+
+  .createRoomPopup {
+    width: 340px;
+    max-width: min(100%, 340px);
+  }
+
+  .createRoomPopup-header-container {
+    .createRoomPopup-header-main {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .createRoomPopup__controls,
+    .cancel-btn {
+      width: 100%;
+    }
+  }
+
+  .createRoomPopup__footer {
+    flex-direction: column-reverse;
+    align-items: stretch;
+
+    .finish-btn,
+    .next-btn {
+      width: 100%;
+    }
+  }
+
+  .pagination-section {
+    .current-station {
+      font-size: 1rem;
+      text-align: center;
+    }
+  }
+
+}
+
+/* MOBILE */
+
+@media (max-width:768px){
+
+  /* Mobile keeps the popup shorter than full height so the case list stays reachable for drag/drop. */
+  .createRoomPopup__overlay {
+    justify-content: center;
+    align-items: flex-end;
+    background: rgba(15, 23, 42, 0.4);
+  }
+
+  .createRoomPopup {
+    width: 100%;
+    max-width: 100%;
+    height: min(62vh, 62dvh);
+    border-radius: 18px 18px 0 0;
+  }
+
+  .createRoomPopup-header-container {
+    padding: 0.9rem;
+
+    .close-btn {
+      margin-bottom: 0.75rem;
+    }
+
+    .createRoomPopup-header-main h2 {
+      font-size: 1.1rem;
+      line-height: 1.4;
+    }
+  }
+
+  .createRoomPopup__dropzone {
+    margin: 0.75rem;
+    padding: 0.85rem;
+  }
+
+  .added-patient-container {
+    align-items: flex-start;
+
+    .added-patient {
+      padding: 0.6rem 0.7rem;
+    }
+  }
+
+  .pagination-section {
+    gap: 8px;
+
+    .current-station {
+      font-size: 0.92rem;
+      line-height: 1.4;
+    }
+  }
+
+  .createRoomPopup__footer {
+    padding: 0.9rem;
+  }
+}
+
+@media (max-width:480px){
+
+  .createRoomPopup-header-container {
+    .createRoomPopup-header-main h2 {
+      font-size: 1rem;
+    }
+  }
+
+  .createRoomPopup__dropzone {
+    margin: 0.6rem;
+    padding: 0.75rem;
+  }
+
+  .pagination-section {
+    .current-station {
+      font-size: 0.85rem;
+    }
+  }
+
+  .finish-btn,
+  .next-btn,
+  .cancel-btn {
+    padding: 0.75rem 0.9rem;
+    font-size: 0.95rem;
+  }
+}
+

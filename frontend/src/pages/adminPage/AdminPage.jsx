@@ -14,8 +14,9 @@ const AdminPage = () => {
   const [activeSection, setActiveSection] = useState('patientCase');
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // 🆕 Popup control
+
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const handleStartRoom = () => setIsPopupOpen(true);
   const handleClosePopup = () => setIsPopupOpen(false);
@@ -56,7 +57,14 @@ const AdminPage = () => {
     setSelectedIds([]);
   };
 
-  
+  const handleSidebarToggle = () => {
+    setIsSidebarOpen((prev) => !prev);
+  };
+
+  const handleSidebarClose = () => {
+    setIsSidebarOpen(false);
+  };
+
   const sectionComponents = useMemo(
     () => ({
       patientCase: (
@@ -77,7 +85,12 @@ const AdminPage = () => {
   return (
     <>
       <div className="AdminPageHome">
-        <Sidebar active={activeSection} onSelect={setActiveSection} />
+        <Sidebar
+          active={activeSection}
+          onSelect={setActiveSection}
+          isOpen={isSidebarOpen}
+          onClose={handleSidebarClose}
+        />
 
         <div className={`homeContainer ${isPopupOpen ? 'popup-open' : ''}`}>
           <AdminNavbar
@@ -86,6 +99,8 @@ const AdminPage = () => {
             onStartSelection={handleStartSelection}
             onCompleteSelection={handleCompleteSelection}
             onStartRoom={handleStartRoom}
+            onToggleSidebar={handleSidebarToggle}
+            isSidebarOpen={isSidebarOpen}
           />
 
           {sectionComponents[activeSection] || sectionComponents.patientCase}

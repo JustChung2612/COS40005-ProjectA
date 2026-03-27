@@ -1,11 +1,10 @@
 // Sidebar.jsx
-import './res_sidebar.scss';
 import './sidebar.scss'
 import { Link } from "react-router-dom";
-import { BookCopy , Boxes , SquarePen , UserPlus  } from 'lucide-react';
+import { BookCopy , Boxes , SquarePen , UserPlus, X } from 'lucide-react';
 
 
-const Sidebar = ({ active, onSelect }) => {
+const Sidebar = ({ active, onSelect, isOpen = false, onClose = () => {} }) => {
   
   // 1️⃣ Define all menu items here
   const menuItems = [
@@ -20,6 +19,8 @@ const Sidebar = ({ active, onSelect }) => {
   // 2️⃣ Function: handle click
   const handleSelect = (key) => {
      onSelect(key)
+     // Close the drawer after navigating on narrow screens.
+     onClose()
   }
 
   // 3️⃣ Function: determine class
@@ -27,7 +28,14 @@ const Sidebar = ({ active, onSelect }) => {
 
   return (
     <>
-      <div className="sidebar">
+      {/* click outside the drawer to close it. */}
+      <div
+        className={`sidebarOverlay ${isOpen ? 'active' : ''}`}
+        onClick={onClose}
+        aria-hidden={!isOpen}
+      />
+
+      <div className={`sidebar ${isOpen ? 'active' : ''}`}>
 
         <div className="top">
           <div className='logo'> 
@@ -35,6 +43,15 @@ const Sidebar = ({ active, onSelect }) => {
               <img src="./homepage/logo.png" alt="" />
             </Link>
           </div>
+          {/* Visible on mobile only. Desktop keeps the sidebar always open. */}
+          <button
+            type="button"
+            className="sidebarClose"
+            onClick={onClose}
+            aria-label="Đóng sidebar"
+          >
+            <X />
+          </button>
         </div>
         <hr />
 
