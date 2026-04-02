@@ -1,0 +1,627 @@
+/* ===========================
+   🧩 Edit Exam Room Page
+   =========================== */
+.editRoomContainer {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  .back-btn {
+    display: flex; justify-content: center; align-items: center;
+    width: 10rem;
+    margin-bottom: 12px;
+    padding: 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: #f8fafc;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.5s ease;
+  }
+  .back-btn:hover { background-color: #cacdd1; }
+
+  h2 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    font-size: 1rem;
+    color: #333;
+  }
+
+  /* ===== Exam Room Information ===== */
+  .editRoomInfo {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 16px;
+    gap: 8px;
+
+    background: #ffffff;              
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;        
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+    animation: slideIn 0.6s ease forwards;
+
+    h2 {
+      margin: 0;
+      padding: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      text-decoration: none;
+      border-bottom: none;
+      outline: none;
+    }
+
+    .editRoomForm {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+
+      label {
+        font-size: 12px;
+        font-weight: 500;
+        color: #555;
+        white-space: nowrap;
+        margin: 0;
+      }
+
+      input {
+        padding: 6px 10px;
+        font-size: 13px;
+        border-radius: 6px;
+        border: 1px solid #d0d0d0;
+        background: #fafafa;
+        color: #333;
+        width: 120px;
+        transition: all 0.25s ease;
+
+        &:focus {
+          outline: none;
+          border-color: #00aaff;
+          background: #ffffff;
+          box-shadow: 0 0 8px rgba(0, 170, 255, 0.5);
+        }
+
+        &:hover {
+          border-color: #999;
+          background: #fff;
+        }
+      }
+
+      .save-btn {
+        padding: 6px 14px;
+        font-size: 13px;
+        background: #00aaff;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: #0094dd;
+          box-shadow: 0 0 10px rgba(0, 170, 255, 0.6);
+          transform: scale(1.05);
+        }
+
+        &:active {
+          transform: scale(0.97);
+          box-shadow: 0 0 4px rgba(0, 170, 255, 0.5);
+        }
+      }
+    }
+  }
+
+  /* Slide-in animation */
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* ===== Station Name List ===== */
+  .stationNameList {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    
+    .stationNameContainer {
+      margin-top: 10px;
+      display: flex;
+      gap: 1rem;
+      
+      .stationNameItem {   
+        padding: 8px 12px;
+        margin-bottom: 6px;
+        border-radius: 6px;
+        background: white;
+        border: 1px solid #cbd5e1;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      .stationNameItem:hover {
+        background: #f1f5f9;
+      }
+
+      .stationNameItem.active {
+        border-color: #0ea5e9;
+        background-color: #e0f2fe;
+        font-weight: 600;
+      }
+    }
+  }
+
+  /* ===== ⚙️ Station Configuration Section ===== */
+  .stationListSection {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+
+    .stationWorkflowContainer {
+    flex-direction: column !important;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+
+    .stationLeftBox,
+    .stationRightBox {
+      width: 100%;
+      max-height: none;
+      padding: 0.6rem;
+      box-sizing: border-box;
+    }
+  }
+
+    h3 {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      color: #111827;
+    }
+
+    .stationWorkflowContainer {
+      display: flex;
+      gap: 2rem;
+      margin-top: 1rem;
+
+      /* ===== Left Box ===== */
+      .stationLeftBox {
+        flex: 1;
+        background: #f9fafb;
+        border-radius: 10px;
+        padding: 1rem;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+        overflow-y: auto;
+        max-height: 80vh;
+
+        .stationCard {
+          background: #fff;
+          border: 1px solid #e5e7eb;
+          border-radius: 10px;
+          padding: 1rem;
+          margin-bottom: 1rem;
+          transition: all 0.2s ease;
+
+          &:hover {
+            border-color: #14b8a6;
+            box-shadow: 0 0 4px rgba(20, 184, 166, 0.4);
+          }
+
+          h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+          }
+
+          label {
+            display: block;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            color: #374151;
+          }
+
+          input {
+            width: 100%;
+            margin-top: 0.3rem;
+            padding: 0.4rem 0.6rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.95rem;
+
+            &:focus {
+              outline: none;
+              border-color: #14b8a6;
+              box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.2);
+            }
+          }
+
+          .station-button-section {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.6rem;
+
+            .stationSaveBtn, .viewCasesBtn, .deleteBtn {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              gap: 5px;
+              padding: 0.5rem;
+              border: none;
+              border-radius: 8px;
+              cursor: pointer;
+              font-weight: 500;
+              font-size: 0.9rem;
+              transition: 0.2s all ease;
+            }
+
+            .stationSaveBtn {
+              background-color: #14b8a6;
+              color: white;
+
+              &:hover {
+                background-color: #0d9488;
+              }
+            }
+
+            .viewCasesBtn {
+              background-color: #e5e7eb;
+              color: #111827;
+
+              &:hover {
+                background-color: #d1d5db;
+              }
+            }
+
+            .deleteBtn {
+              background: #ED3F27;
+              color: #ffff;
+            }
+          }
+        }
+      }
+
+      /* ===== Right Box ===== */
+      .stationRightBox {
+        flex: 1;
+        background: #f9fafb;
+        border-radius: 10px;
+        padding: 1rem;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+        overflow-y: auto;
+        max-height: 80vh;
+
+        h4 {
+          font-size: 1.1rem;
+          margin-bottom: 0.8rem;
+        }
+
+        .no-case {
+          color: #6b7280;
+          font-style: italic;
+        }
+
+        .patientCaseItem {
+          background: #fff;
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+          padding: 0.8rem;
+          margin-bottom: 0.8rem;
+
+          p {
+            margin: 0;
+            font-size: 0.95rem;
+          }
+
+          .viewBtn {
+            background-color: #14b8a6;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            margin-top: 0.5rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: 0.2s ease;
+
+            &:hover {
+              background-color: #0d9488;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /* ===========================
+     🚀 Publish Button
+     =========================== */
+  .publish-btn,
+  .delete-room-btn {
+    background-color: #37413f;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.7rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    align-self: flex-start;
+    transition: 0.2s ease;
+
+    &:hover {
+      background-color: #0d9488;
+    }
+  }
+
+  /* ===========================
+     📱 Responsive — 430 × 932
+        (iPhone 14 Plus / 15 Plus)
+     =========================== */
+  @media screen and (max-width: 430px) {
+    padding: 1rem;
+    gap: 1rem;
+
+    /* ── Back button ── */
+    .back-btn {
+      width: 100%;
+      justify-content: flex-start;
+      padding: 10px 14px;
+      font-size: 0.95rem;
+    }
+
+    /* ── Page title ── */
+    h2 {
+      font-size: 1.2rem;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    /* ── Room info card ── */
+    .editRoomInfo {
+      padding: 12px;
+      box-sizing: border-box;
+      width: 100%;
+
+      h2 {
+        font-size: 14px;
+      }
+
+      .editRoomForm {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        width: 100%;
+
+        label {
+          font-size: 12px;
+          margin-top: 6px;
+        }
+
+        input {
+          width: 100%;
+          font-size: 14px;
+          padding: 8px 10px;
+          box-sizing: border-box;
+        }
+
+        .save-btn {
+          width: 100%;
+          padding: 10px;
+          font-size: 14px;
+          margin-top: 4px;
+        }
+      }
+    }
+
+    /* ── Station name tabs — scrollable row ── */
+    .stationNameList {
+      margin-top: 0.5rem;
+      padding: 0.75rem;
+
+      h3 {
+        font-size: 1rem;
+        margin-bottom: 8px;
+      }
+
+      .stationNameContainer {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 4px;
+        gap: 0.6rem;
+
+        /* Hide scrollbar visually but keep it functional */
+        scrollbar-width: none;
+        &::-webkit-scrollbar { display: none; }
+
+        .stationNameItem {
+          flex-shrink: 0;
+          font-size: 13px;
+          padding: 7px 12px;
+          white-space: nowrap;
+        }
+      }
+    }
+
+    /* ── Station configuration section ── */
+    .stationListSection {
+      padding: 0.75rem;
+
+      h3 {
+        font-size: 0.95rem;
+        margin-bottom: 0.6rem;
+      }
+
+      /* Keep side-by-side but tighten the gap */
+      .stationWorkflowContainer {
+        flex-direction: row !important;
+        gap: 0.6rem;
+        margin-top: 0.5rem;
+        align-items: flex-start;
+
+        /* Both boxes share equal width, no fixed height */
+        .stationLeftBox,
+        .stationRightBox {
+          flex: 1 1 0;
+          min-width: 0;          /* prevent flex blowout */
+          max-height: none;
+          padding: 0.6rem;
+          box-sizing: border-box;
+        }
+
+        /* ── LEFT: compact station card ── */
+        .stationLeftBox {
+          .stationCard {
+            padding: 0.6rem;
+            margin-bottom: 0;
+
+            /* Header: station name only, ID hidden on mobile */
+            h4 {
+              font-size: 0.82rem;
+              font-weight: 600;
+              margin-bottom: 0.35rem;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+
+              /* Hide the "(ID: xxxxx…)" span — too noisy on small screens */
+              span { display: none; }
+            }
+
+            /* "Bệnh án trong trạm: N" — one tight line */
+            & > p {
+              font-size: 0.72rem;
+              color: #6b7280;
+              margin: 0 0 0.45rem;
+              white-space: nowrap;
+            }
+
+            /* Inline label + input rows */
+            label {
+              display: block;
+              font-size: 0.7rem;
+              color: #6b7280;
+              margin: 0.35rem 0 0.15rem;
+              text-transform: uppercase;
+              letter-spacing: 0.03em;
+            }
+
+            input {
+              width: 100%;
+              box-sizing: border-box;
+              font-size: 0.8rem;
+              padding: 0.3rem 0.4rem;
+              border-radius: 5px;
+            }
+
+            /* Single row of 3 icon-labelled buttons */
+            .station-button-section {
+              display: flex !important;
+              flex-direction: row !important;
+              gap: 0.3rem !important;
+              margin-top: 0.55rem;
+
+              .stationSaveBtn,
+              .viewCasesBtn,
+              .deleteBtn {
+                flex: 1 1 0 !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 2px !important;
+                padding: 0.4rem 0.1rem !important;
+                font-size: 0 !important;      /* hide original text */
+                border-radius: 7px !important;
+                line-height: 1 !important;
+                min-height: 2.4rem;
+
+                /* Show a short label via ::after pseudo-element */
+                &::after {
+                  font-size: 0.62rem !important;
+                  font-weight: 600;
+                  display: block;
+                  line-height: 1.2;
+                  text-align: center;
+                }
+              }
+
+              .stationSaveBtn::after  { content: "Lưu"; }
+              .viewCasesBtn::after    { content: "Bệnh án"; }
+              .deleteBtn::after       { content: "Xóa"; }
+            }
+          }
+        }
+
+        /* ── RIGHT: patient case list ── */
+        .stationRightBox {
+          h4 {
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          .no-case {
+            font-size: 0.75rem;
+          }
+
+          .patientCaseItem {
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 7px;
+
+            p {
+              font-size: 0.75rem;
+              line-height: 1.35;
+              margin: 0 0 0.35rem;
+              /* Two-line clamp instead of single-line nowrap */
+              display: -webkit-box;
+              -webkit-line-clamp: 2;
+              -webkit-box-orient: vertical;
+              overflow: hidden;
+            }
+
+            .viewBtn {
+              width: 100%;
+              text-align: center;
+              padding: 0.35rem 0.4rem;
+              font-size: 0.72rem;
+              border-radius: 5px;
+            }
+          }
+        }
+      }
+    }
+
+    /* ── Bottom action buttons ── */
+    div[style*="display: flex"][style*="gap: 12px"] {
+      flex-direction: column;
+      gap: 10px !important;
+    }
+
+    .publish-btn,
+    .delete-room-btn {
+      width: 100%;
+      text-align: center;
+      padding: 0.75rem 1rem;
+      font-size: 0.95rem;
+    }
+  }
+}

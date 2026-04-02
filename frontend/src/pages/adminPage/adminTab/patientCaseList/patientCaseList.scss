@@ -1,5 +1,3 @@
-
-
 .examContainer{
     //border: 4px solid #ec0c70 ;
     //height: 100%;
@@ -31,58 +29,297 @@
     }
 
     .Ai_filter_con {
-        // border: 2px solid black;
         display: flex; 
-        justify-content: center;
-        align-items: center;
-
+        flex-direction: column;
+        align-items: stretch;
         margin-top: 3rem;
-        gap: 20px;
+        gap: 16px;
+        padding: 20px;
+        background: linear-gradient(135deg, #f8fbff 0%, #eefaf8 100%);
+        border: 1px solid #d9ece8;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
 
-        .Ai_title { font-size: 1.5rem ; }
+        .Ai_title {
+            font-size: 1.5rem;
+            line-height: 1.3;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0;
+        }
 
         .adNavSearch{
             display: flex;
-            line-height: 30px;
             align-items: center;
+            flex-wrap: wrap;
             position: relative;
-            min-width: 600px;
+            width: 100%;
+            min-width: 0;
+            gap: 12px;
 
             input {
-                width: 100%;
+                flex: 1 1 320px;
+                min-width: 0;
                 font-size: 17px;
                 height: 45px;
-                line-height: 30px;
-                padding: 0 5rem;
+                line-height: 1.4;
+                padding: 0 1rem 0 3rem;
                 padding-left: 3rem;
-                border: 2px solid transparent;
+                border: 1px solid #cbd5e1;
                 border-radius: 10px;
                 outline: none;
-                background-color: #8a8f95;
+                background-color: #ffffff;
                 color: #0d0c22;
                 transition: .5s ease;
             }
 
             input::placeholder {
-                color: #ffffff;
+                color: #64748b;
             }
 
             input:focus, input:hover {
                 outline: none;
-                border-color: rgba(129, 140, 248);
+                border-color: #14b8a6;
                 background-color: #fff;
-                box-shadow: 0 0 0 5px rgb(129 140 248 / 30%);
+                box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.14);
             }
 
             .icon {
                 position: absolute;
                 left: 1rem;
                 fill: none;
-                width: 1.7rem;
-                height: 1.7rem;
+                width: 1.1rem;
+                height: 1.1rem;
+                color: #64748b;
+                pointer-events: none;
+            }
+
+            .applyButton {
+                grid-column: auto;
+                width: auto;
+                min-width: 140px;
+                margin-top: 0;
+                padding: 0.85rem 1rem;
+                border-radius: 10px;
+                font-size: 0.95rem;
+                font-weight: 600;
+            }
+
+            .applyButton:last-child {
+                background: #e2e8f0;
+                color: #0f172a;
+            }
+
+            .applyButton:last-child:hover {
+                background: #cbd5e1;
             }
         }
     }
 
 }
 
+/* =========================
+   LAPTOP (<=1440px)
+========================= */
+
+@media (max-width:1440px){
+
+  .examContainer{
+    padding:12px;
+  }
+
+  .examListContainer{
+    padding:12px;
+  }
+
+  .listTitle{
+    font-size:2.1rem;
+    margin-top:1.6rem;
+  }
+
+  .examList{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:1.1rem;
+    max-height:72vh;
+    overflow-y:auto;
+  }
+
+  /* FILTER */
+
+  .filterGroup{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+  }
+
+  .filterItem{
+    display:flex;
+    flex-direction:column;
+  }
+
+  .filterItem label{
+    font-size:14px;
+  }
+
+  .filterItem select{
+    padding:6px;
+    font-size:14px;
+  }
+
+  .examContainer .Ai_filter_con {
+    padding: 18px;
+  }
+
+}
+
+
+/* =========================
+   TABLET / IPAD (<=1024px)
+========================= */
+
+@media (max-width:1024px){
+
+  .examContainer{
+    padding:10px;
+  }
+
+  .examListContainer{
+    padding:10px;
+  }
+
+  .listTitle{
+    font-size:1.9rem;
+    text-align:center;
+    margin-top:1.4rem;
+  }
+
+  .examList{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:1rem;
+    max-height:70vh;
+    overflow-y:auto;
+  }
+
+  /* FILTER */
+
+  .filterGroup{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+  }
+
+  .filterItem{
+    display:flex;
+    flex-direction:column;
+  }
+
+  .filterItem label{
+    font-size:13px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .filterItem select{
+    width:100%;
+    padding:6px;
+    font-size:13px;
+  }
+
+  .rangeItem{
+    grid-column:1 / span 2;
+  }
+
+  .applyButton{
+    grid-column:1 / span 2;
+    width:100%;
+  }
+
+  .examContainer .Ai_filter_con {
+    margin-top: 2rem;
+    padding: 16px;
+  }
+
+  .examContainer .Ai_filter_con .Ai_title{
+    font-size: 1.3rem;
+  }
+
+  .examContainer .Ai_filter_con .adNavSearch input{
+    flex-basis: 100%;
+    font-size: 15px;
+  }
+
+  .examContainer .Ai_filter_con .adNavSearch .applyButton{
+    flex: 1 1 calc(50% - 6px);
+    min-width: 0;
+  }
+
+  .AdminPageHome .homeContainer.popup-open .examContainer .Ai_filter_con{
+    gap: 12px;
+  }
+
+  .AdminPageHome .homeContainer.popup-open .examContainer .Ai_filter_con .Ai_title{
+    text-align: center;
+    font-size: 1.2rem;
+  }
+
+  .AdminPageHome .homeContainer.popup-open .examContainer .Ai_filter_con .adNavSearch{
+    gap: 10px;
+  }
+
+  .AdminPageHome .homeContainer.popup-open .examContainer .Ai_filter_con .adNavSearch input{
+    flex-basis: 100%;
+  }
+
+  .AdminPageHome .homeContainer.popup-open .examContainer .Ai_filter_con .adNavSearch .applyButton{
+    flex: 1 1 100%;
+    width: 100%;
+  }
+
+  .AdminPageHome .homeContainer.popup-open .examContainer .examListContainer .listTitle{
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+
+  .AdminPageHome .homeContainer.popup-open .examContainer .examListContainer .examList{
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width:768px){
+
+  .examContainer .Ai_filter_con {
+    margin-top: 1.5rem;
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .examContainer .Ai_filter_con .Ai_title {
+    font-size: 1.15rem;
+    text-align: center;
+  }
+
+  .examContainer .Ai_filter_con .adNavSearch {
+    gap: 10px;
+  }
+
+  .examContainer .Ai_filter_con .adNavSearch input {
+    height: 42px;
+    font-size: 14px;
+    padding: 0 0.9rem 0 2.7rem;
+  }
+
+  .examContainer .Ai_filter_con .adNavSearch .icon {
+    left: 0.9rem;
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .examContainer .Ai_filter_con .adNavSearch .applyButton {
+    flex: 1 1 100%;
+    width: 100%;
+    padding: 0.8rem 1rem;
+  }
+}

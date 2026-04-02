@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import PatientCaseCard from "../../../../components/patientCaseCard/PatientCaseCard.jsx";
 import axios from "axios";
-import "./res_patientCaseList.scss";
 import './patientCaseList.scss';
 import { Search } from 'lucide-react';
 

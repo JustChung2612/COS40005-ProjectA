@@ -262,15 +262,19 @@ export const gradeEssayAnswers = async (req, res) => {
 
     // station grading completeness
     const hasText = station.answers.some((a) => a.kieu === "text");
-    
-    station.isFullyGraded = allTextGraded;
-    station.needsManualGrading = hasText && !allTextGraded;
     const allTextGraded =
-          !hasText ||
-          station.answers
-    .filter((a) => a.kieu === "text")
-    .every((a) => a.manualScore !== undefined && a.manualScore !== null && String(a.manualScore).trim() !== "");
-
+    !hasText ||
+    station.answers
+      .filter((a) => a.kieu === "text")
+      .every(
+        (a) =>
+          a.manualScore !== undefined &&
+          a.manualScore !== null &&
+          String(a.manualScore).trim() !== ""
+      );
+     station.isFullyGraded = allTextGraded;
+     station.needsManualGrading = hasText && !allTextGraded;
+    
     // recompute totals across submission
     sub.totalAutoScore = sub.stations.reduce((sum, s) => sum + (Number(s.autoScore) || 0), 0);
     sub.totalManualScore = sub.stations.reduce((sum, s) => sum + (Number(s.manualScore) || 0), 0);
@@ -289,7 +293,7 @@ export const gradeEssayAnswers = async (req, res) => {
 
     return res.status(200).json({
       message: "✅ Chấm tự luận thành công.",
-      data: sub,
+      data: populated,
     });
   } catch (error) {
     console.error("❌ gradeEssayAnswers:", error);

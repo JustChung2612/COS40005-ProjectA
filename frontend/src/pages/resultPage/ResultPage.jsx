@@ -255,7 +255,8 @@ const ResultPage = () => {
   }, [stationSub]);
 
   const handleSaveEssay = async () => {
-    if (!submissionId || !stationSub?._id) return;
+    const currentStationId = stationSub?.stationId?._id || stationSub?.stationId;
+    if (!submissionId || !currentStationId) return;
 
     try {
       setSaving(true);
@@ -274,7 +275,7 @@ const ResultPage = () => {
       const res = await axios.patch(
         `http://localhost:5000/api/exam-submissions/${submissionId}/grade-essay`,
         {
-          stationId: stationSub.stationId?._id || stationSub.stationId,
+          stationId: currentStationId,
           grades,
         }
       );
@@ -286,6 +287,36 @@ const ResultPage = () => {
       toast.error(err.response?.data?.message || "Không thể lưu điểm tự luận.");
     } finally {
       setSaving(false);
+    }
+  };
+
+  // Week 10 Update - Handle Ai Grading Auto
+  const handleAiGrading = async (q, row) => {
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/openai/grade-essay",
+        {
+          questionText: q.noi_dung,
+          studentAnswer: row?.answer || "",
+          maxScore: q.diem,
+          caseTitle: caseSource?.ten_benh_an,
+        }
+      );
+
+      const { manualScore, comment } = res.data.data;
+
+      setEssayDraft((p) => ({
+        ...p,
+        [essayKey(q.id)]: {
+          manualScore,
+          comment,
+        },
+      }));
+
+      toast.success("🤖 AI đã chấm xong!");
+    } catch (err) {
+      console.error("❌ AI grading error:", err);
+      toast.error("AI chấm bài thất bại.");
     }
   };
 
@@ -658,6 +689,15 @@ const ResultPage = () => {
                                           }
                                         />
                                       </div>
+
+                                      <button
+                                        type="button"
+                                        className="btn btn--secondary"
+                                        onClick={() => handleAiGrading(q, row)}
+                                      >
+                                        AI grading 🤖
+                                      </button>
+
                                     </div>
                                   ) : (
                                     <p>{row?.comment || "Chưa có nhận xét."}</p>

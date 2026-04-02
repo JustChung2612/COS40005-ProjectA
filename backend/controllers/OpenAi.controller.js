@@ -247,3 +247,75 @@ export const parseAiPatientCasePrompt = async (req, res) => {
     });
   }
 };
+
+// AI Grading Essay Question Feature in ResultPage.jsx:
+
+export const aiGradeEssay = async (req, res) => {
+  try {
+    const { questionText, studentAnswer, maxScore, caseTitle } = req.body;
+
+    if (!questionText || !studentAnswer) {
+      return res.status(400).json({
+        message: "Thiếu dữ liệu để AI chấm bài.",
+      });
+    }
+
+    const prompt = `
+      Bạn là giảng viên chấm thi OSCE.
+
+      Hãy chấm câu trả lời tự luận của sinh viên.
+
+      Thông tin:
+      - Bệnh án: ${caseTitle || "Không rõ"}
+      - Câu hỏi: ${questionText}
+      - Thang điểm tối đa: ${maxScore}
+
+      Câu trả lời của sinh viên:
+      "${studentAnswer}"
+
+      YÊU CẦU:
+      1. Trả về JSON hợp lệ
+      2. Không giải thích thêm
+      3. Không markdown
+
+      Format:
+      {
+        "manualScore": number,
+        "comment": "string"
+      }
+    `;
+
+    const result = await model.generateContent(prompt);
+    const rawText = cleanJsonText(result.response.text() || "");
+
+    let parsed;
+    try {
+      parsed = JSON.parse(rawText);
+    } catch (err) {
+      return res.status(500).json({
+        message: "AI trả về JSON không hợp lệ.",
+        rawText,
+      });
+    }
+
+    // sanitize score
+    let score = Number(parsed.manualScore);
+    if (!Number.isFinite(score)) score = 0;
+
+    score = Math.max(0, Math.min(score, Number(maxScore) || 10));
+
+    return res.status(200).json({
+      message: "AI grading completed",
+      data: {
+        manualScore: score,
+        comment: String(parsed.comment || ""),
+      },
+    });
+  } catch (error) {
+    console.error("❌ aiGradeEssay:", error);
+    return res.status(500).json({
+      message: "Lỗi khi AI chấm bài.",
+      error: error.message,
+    });
+  }
+};

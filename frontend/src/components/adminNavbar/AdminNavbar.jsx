@@ -1,26 +1,39 @@
-// components/adminNavbar/AdminNavbar.jsx
 import './adminNavbar.scss'
-import { Search, NotebookPen, CheckCircle2 } from 'lucide-react';
+import { Search, NotebookPen, CheckCircle2, Menu } from 'lucide-react';
 import { useUserStore } from '../../stores/useUserStore';
 
 const AdminNavbar = ({
   selectionMode = false,
   selectedCount = 0,
   onCompleteSelection = () => {},
-  onStartRoom = () => {},  // ✅ UPDATED: add onStartRoom for the Create Room popup
+  onStartRoom = () => {},
+  onToggleSidebar = () => {},
+  isSidebarOpen = false,
 }) => {
-  const { user, logout } = useUserStore();
+  const { user } = useUserStore();
 
   return (
     <>
       <div className='adminNavbar'>
         <div className="adNavWrapper">
-          <div></div>
+          {/* Mobile trigger for the admin sidebar drawer. */}
+          <button
+            type="button"
+            className="sidebarToggle"
+            onClick={onToggleSidebar}
+            aria-label="Open admin sidebar"
+            aria-expanded={isSidebarOpen}
+          >
+            <Menu />
+          </button>
+
+          <div className="adNavSearch">
+
+          </div>
+
           <div className="adNavItems" >
             {!selectionMode ? (
-              <button className="adNavItem notUser" 
-                onClick={onStartRoom}  // ✅ UPDATED
-              >
+              <button className="adNavItem notUser" onClick={onStartRoom}>
                 <NotebookPen/>
                 Tạo Phòng
               </button>
@@ -33,8 +46,10 @@ const AdminNavbar = ({
 
             <div className="adNavItem ">
               <div className="user" >
-                <img src="https://img.freepik.com/premium-photo/3d-cartoon-avatar-man-minimal-3d-character-avatar-profile_652053-2067.jpg" 
-                    alt="Admin Avatar" />
+                <img
+                  src="https://img.freepik.com/premium-photo/3d-cartoon-avatar-man-minimal-3d-character-avatar-profile_652053-2067.jpg"
+                  alt="Admin Avatar"
+                />
                 <span>{user.username}</span>
               </div>
             </div>

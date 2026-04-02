@@ -14,6 +14,64 @@
         align-items: center;
         justify-content: space-between;
 
+        .sidebarToggle {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border: 1px solid #dbe2ea;
+            border-radius: 10px;
+            background: #ffffff;
+            color: #0f172a;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .adNavSearch{
+            display: flex;
+            line-height: 30px;
+            align-items: center;
+            position: relative;
+            max-width: 600px;
+
+            input {
+                width: 100%;
+                font-size: 17px;
+                height: 45px;
+                line-height: 30px;
+                padding: 0 5rem;
+                padding-left: 3rem;
+                border: 2px solid transparent;
+                border-radius: 10px;
+                outline: none;
+                background-color: #8a8f95;
+                color: #0d0c22;
+                transition: .5s ease;
+            }
+
+            input::placeholder {
+                color: #ffffff;
+            }
+
+            input:focus, input:hover {
+                outline: none;
+                border-color: rgba(129, 140, 248);
+                background-color: #fff;
+                box-shadow: 0 0 0 5px rgb(129 140 248 / 30%);
+            }
+
+            .icon {
+                position: absolute;
+                left: 1rem;
+                fill: none;
+                width: 1.7rem;
+                height: 1.7rem;
+            }
+        }
+
+        
+
         .adNavItems{
             // border: 2px solid orange ;
             display: flex;
@@ -69,3 +127,57 @@
 
     }
 }
+
+@media (max-width: 768px) {
+    .adminNavbar {
+        .adNavWrapper {
+            gap: 12px;
+            padding: 16px;
+
+            .sidebarToggle {
+                display: inline-flex;
+            }
+
+            .adNavSearch {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .adNavItems {
+                .adNavItem {
+                    margin-right: 10px;
+                    padding: 8px;
+                    font-size: 0.95rem;
+                }
+
+                .user span {
+                    display: none;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 560px) {
+  .adminNavbar {
+    .adNavWrapper {
+      .adNavSearch {
+        width: 100%;
+      }
+
+      .adNavSearch input {
+        height: 38px;
+        font-size: 14px;
+        padding: 0 1rem 0 2.5rem;
+        border-radius: 8px;
+      }
+
+      .adNavSearch .icon {
+        left: 0.75rem;
+        width: 1rem;
+        height: 1rem;
+      }
+    }
+  }
+}
+

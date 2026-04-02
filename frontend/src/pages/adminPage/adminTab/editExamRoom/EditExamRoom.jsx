@@ -1,4 +1,5 @@
 import "./editExamRoom.scss";
+import "./res_editExamRoom.scss";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
