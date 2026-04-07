@@ -1,0 +1,31 @@
+# API Keys & Secrets
+.env
+*.env
+.env.*
+google-credentials.json
+
+# Virtual Environment
+venv/
+env/
+ENV/
+virtualenv/
+virtualpatient_env/
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

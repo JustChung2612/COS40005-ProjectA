@@ -100,7 +100,22 @@
       border-color: #f44336;
     }
 
-    ul li { list-style-type: none; }
+    .result_list {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .result_list li {
+      list-style-type: disc;
+      margin-bottom: 6px;
+      line-height: 1.35;
+      word-break: break-word;
+    }
+
+    .list_empty_item {
+      color: #666;
+      font-style: italic;
+    }
   }
 
   /* ================= QUALITATIVE ================= */
